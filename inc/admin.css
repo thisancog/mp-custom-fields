@@ -1,0 +1,547 @@
+/******************************
+	General GUI
+ ******************************/
+
+.mpcf-parent {}
+
+.mpcf-panels {
+	display: flex;
+	justify-content: space-between;
+	width: calc(100% + 6px);
+	height: calc(100% + 24px);
+	margin: -6px 0 0 -12px;
+}
+
+.mpcf-options .mpcf-panels {
+	position: relative;
+	width: calc(100% - 22px);
+	margin: 20px 0;
+	padding: 0;
+	border: 1px solid #E5E5E5;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	line-height: 1;
+	background: #FFF;
+}
+
+.mpcf-panels-menu {
+	width: 250px;
+	margin: 0 30px -12px 0;
+	padding: 20px 0 0 0;
+	background: #F5F5F5;
+	border-right: 1px solid #DDD;
+}
+
+.mpcf-options .mpcf-panels-menu {
+	margin-bottom: 0;
+}
+
+.mpcf-panels-menu li {
+	position: relative;
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding: 12px 0 12px 12px;
+	cursor: pointer;
+	color: #666;
+	background: #F5F5F5;
+	border-top: 1px solid #DDD;
+	user-select: none;
+}
+
+.mpcf-panels-menu li:last-child {
+	border-bottom: 1px solid #DDD;
+}
+
+.mpcf-panels-menu li.active {
+	background: #FFF;
+	color: #000;
+	font-weight: bold;
+	margin-right: -1px;
+	border-right: 1px solid #FFF;
+}
+
+.mpcf-panels-menu li:not(.active):hover .mpcf-panel-title {
+	color: #0073AA;
+}
+
+.mpcf-panel-icon {
+	position: relative;
+	width: 20px;
+	height: 20px;
+	margin-right: 8px;
+}
+
+.mpcf-panels-menu li.active .mpcf-panel-icon {
+	color: #0073AA;
+}
+
+.mpcf-panels-menu li.active:before,
+.mpcf-panels-menu li.active:after,
+.mpcf-panels-menu li.active .mpcf-panel-icon:after {
+	content: '';
+}
+
+.mpcf-panels-menu li.active:before,
+.mpcf-panels-menu li.active:after,
+.mpcf-panels-menu li.active .mpcf-panel-icon:before,
+.mpcf-panels-menu li.active .mpcf-panel-icon:after {
+	position: absolute;
+	bottom: -10px;
+	right: -1px;
+	z-index: 1;
+
+	display: block;
+	width: 10px;
+	height: 10px;
+	background-color: #FFF;
+	border-right: 1px solid #FFF;
+}
+
+.mpcf-panels-menu li.active:after {
+	bottom: -11px;
+	background-color: #F5F5F5;
+	border-top: 1px solid #DDD;
+	border-right: 1px solid #DDD;
+	border-top-right-radius: 10px;
+}
+
+.mpcf-panels-menu li.active .mpcf-panel-icon:before,
+.mpcf-panels-menu li.active .mpcf-panel-icon:after {
+	bottom: -13px;
+	left: -13px;
+	right: initial;
+	background-color: #F5F5F5;
+	border-left: 1px solid #DDD;
+}
+
+.mpcf-panels-menu li.active .mpcf-panel-icon:before {
+	z-index: 2;
+	padding: 0 0 22px 12px;
+	background-color: #FFF;
+	border-bottom-left-radius: 10px;
+	border-bottom: 1px solid #DDD;
+	border-left: 1px solid #DDD;
+}
+
+.mpcf-panel-icon img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: center center;
+}
+
+.mpcf-panel-title:first-child {
+	margin-left: 28px;
+}
+
+.mpcf-panels-tabs {
+	width: 100%;
+	margin: 32px 0 20px;
+}
+
+.mpcf-panel {
+	display: none;
+}
+
+.mpcf-panel.active-panel {
+	display: block;
+}
+
+
+/******************************
+	General fields
+ ******************************/
+
+.mpcf-field-option {
+	display: flex;
+	margin-bottom: 15px;
+	width: 100%;
+	max-width: 800px;
+}
+
+.mpcf-required {}
+
+.mpcf-label {
+	width: 18%;
+	min-width: 80px;
+	margin-right: 20px;
+}
+
+.mpcf-required .mpcf-label label:after {
+	content: ' *';
+	color: #F00;
+}
+
+.mpcf-field {
+	width: calc(82% - 20px);
+}
+
+.mpcf-subfield {
+	display: flex;
+	justify-content: space-between;
+}
+
+.mpcf-field input[type="text"],
+.mpcf-field input[type="email"],
+.mpcf-field textarea {
+	width: 100%;
+}
+
+.mpcf-description {
+	margin: 8px 0 10px;
+	font-style: oblique;
+}
+
+.mpcf-nohtml5-description {
+	display: none;
+}
+
+.mpcf-nohtml5 .mpcf-nohtml5-description {
+	display: inline-block;
+	margin-left: 10px;
+	font-style: oblique;
+}
+
+.mpcf-button {
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+	vertical-align: middle;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: #0073AA;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+
+	-webkit-transition: color 0.3s ease;
+	   -moz-transition: color 0.3s ease;
+	     -o-transition: color 0.3s ease;
+			transition: color 0.3s ease;
+}
+
+.mpcf-button + .mpcf-button:not(.mpcf-clearmedia) {
+	margin-left: 10px;
+}
+
+.mpcf-button:hover,
+.mpcf-button:focus {
+	color: #00A8A5;
+	outline: none;
+}
+
+.mpcf-options-inputs {
+	margin: 20px 0 0 28px;
+}
+
+.mpcf-required-hint {
+	margin-top: 40px;
+	color: #F00;
+}
+
+.mpcf-loading-container {
+	display: none;
+}
+
+.mpcf-loading-container.mpcf-loading-active,
+.mpcf-loading-container.mpcf-loading-active:before,
+.mpcf-loading-container.mpcf-loading-active:after {
+	border-radius: 50%;
+}
+
+.mpcf-loading-container.mpcf-loading-active {
+	position: relative;
+	display: block;
+	margin: 55px auto;
+	width: 5em;
+	height: 5em;
+	color: #0073AA;
+	font-size: 11px;
+	box-shadow: inset 0 0 0 0.5em;
+	-webkit-transform: translateZ(0);
+	    -ms-transform: translateZ(0);
+	        transform: translateZ(0);
+}
+
+.mpcf-loading-container.mpcf-loading-active:before,
+.mpcf-loading-container.mpcf-loading-active:after {
+	content: '';
+	position: absolute;
+	width: 2.6em;
+	height: 5.1em;
+	background: #FFF;
+}
+
+.mpcf-loading-container.mpcf-loading-active:before {
+	top: -0.05em;
+	left: -0.05em;
+	border-radius: 5.1em 0 0 5.1em;
+	-webkit-transform-origin: 2.6em 2.55em;
+			transform-origin: 2.6em 2.55em;
+	-webkit-animation: loading 2s infinite ease 1.5s;
+			animation: loading 2s infinite ease 1.5s;
+}
+
+.mpcf-loading-container.mpcf-loading-active:after {
+	top: -0.05em;
+	left: 2.55em;
+	border-radius: 0 5.1em 5.1em 0;
+	-webkit-transform-origin: 0px 2.55em;
+			transform-origin: 0px 2.55em;
+	-webkit-animation: loading 2s infinite ease;
+			animation: loading 2s infinite ease;
+}
+
+@-webkit-keyframes loading {
+	0%   { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+	100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@keyframes loading {
+	0%   { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+	100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+
+
+
+
+
+/******************************
+	Specific fields
+ ******************************/
+
+.mpcf-text-input {}
+
+.mpcf-textarea {}
+
+.mpcf-textarea textarea {
+	resize: vertical;
+	min-height: 75px;
+}
+
+.mpcf-mediapicker {
+	display: flex;
+}
+
+.mpcf-preview-content {
+	position: relative;
+	margin-right: 20px;
+	border: 1px dotted #DDD;
+}
+
+.mpcf-preview-content:before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-size: 40px;
+	line-height: 1;
+	color: #DDD;
+	background: #FFF;
+}
+
+.mpcf-imagepreview,
+.mpcf-videopreview {
+	position: relative;
+	display: block;
+	width: 160px;
+	height: auto;
+	z-index: 2;
+	cursor: pointer;
+}
+
+.mpcf-imagepreview.hidden,
+.mpcf-videopreview.hidden,
+.mpcf-clearmedia.hidden {
+	display: none;
+}
+
+.mpcf-imagepreview[src=""] {
+	opacity: 0;
+	height: 120px;
+}
+
+.mpcf-videopreview {}
+
+.mpcf-content-buttons {
+	width: 100px;
+}
+
+.mpcf-editor {
+	padding-top: 10px;
+}
+
+.mpcf-map {
+	width: 100%;
+	height: 300px;
+	margin-top: 10px;
+}
+
+.mpcf-inactive .mpcf-nomap {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	border: 1px dotted #DDD;
+	box-sizing: border-box;
+	font-style: oblique;
+}
+
+.mpcf-file-input .mpcf-field {
+	margin-top: 4px;
+}
+
+.mpcf-file-picker {
+	position: absolute;
+	z-index: -1;
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+}
+
+.mpcf-file-picker + label {
+	cursor: pointer;
+}
+
+.mpcf-file-picker:focus + label,
+.mpcf-file-picker.focus + label,
+.mpcf-file-picker + label:hover {
+	color: #00A8A5;
+	outline: none;
+}
+
+body.no-js .mpcf-file-picker + label {
+	display: none;
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-wrapper {
+	display: flex;
+	align-items: center;
+}
+
+.mpcf-buttongroup input {
+	position: absolute;
+	z-index: -1;
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+}
+
+.mpcf-buttongroup input:before {
+	content: none;
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-option label {
+	display: block;
+	padding: 5px 8px;
+	border: 1px solid #DDD;
+	background-color: #F5F5F5;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	user-select: none;
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-option + .mpcf-buttongroup-option label {
+	border-left: 0;
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-option:first-child label {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-option:last-child label {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.mpcf-buttongroup input:checked + label,
+.mpcf-buttongroup input:focus + label {
+	border-color: #0073AA #006799 #006799;
+	background-color: #0073AA;
+	color: #FFF;
+	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799;
+}
+
+.mpcf-buttongroup input:focus + label {
+	border-color: #5B9DD9;
+	box-shadow: 0 0 2px rgba(30,140,190,.8);
+}
+
+.mpcf-buttongroup .mpcf-buttongroup-option label img {
+	height: 18px;
+	width: auto;
+}
+
+.mpcf-repeater-wrapper {
+	position: relative;
+	margin: -16px 0 0;
+	counter-reset: section;
+}
+
+.mpcf-repeater-wrapper li {
+	position: relative;
+	left: 0;
+	padding: 16px 32px 16px 38px;
+	margin-bottom: 0;
+	border-bottom: 1px solid #DDD;
+	list-style-type: none;
+}
+
+.mpcf-repeater-wrapper li:before {
+	content: counter(section) ". ";
+	position: absolute;
+	top: 18px;
+	left: 16px;
+	counter-increment: section;
+}
+
+.mpcf-repeater-wrapper li:nth-child(2n) {
+	background-color: #F5F5F5;
+}
+
+.mpcf-repeater-row-controls {
+	position: absolute;
+	top: 18px;
+	right: 4px;
+	opacity: 0;
+}
+
+.mpcf-repeater-wrapper li:hover .mpcf-repeater-row-controls,
+.mpcf-repeater-wrapper li:focus .mpcf-repeater-row-controls,
+.mpcf-repeater-wrapper li:focus-within .mpcf-repeater-row-controls {
+	opacity: 1;
+}
+
+.mpcf-repeater-row-controls div {
+	width: 20px;
+	height: 20px;
+	border: 1px solid #DDD;
+	border-radius: 50%;
+	cursor: pointer
+}
+
+.mpcf-repeater-row-controls div + div {
+	margin-top: 8px;
+}
+
+.mpcf-repeater-row-controls div:before {
+	vertical-align: middle;
+	color: #888;
+	font-size: 16px;
+}
+
+.mpcf-repeater-controls {
+	margin-top: 10px;
+	padding-left: 38px;
+}
+

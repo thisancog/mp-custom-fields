@@ -1,0 +1,1409 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2018-03-30 00:05+0200\n"
+"PO-Revision-Date: 2018-03-30 00:05+0200\n"
+"Last-Translator: Matthias Planitzer\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-Basepath: ../..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_x\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: inc\n"
+
+#: inc/gui.php:177
+#, php-format
+msgid "An error uploading the file for \"%s\" occurred: %s"
+msgstr ""
+"Ein Fehler ist während des Hochladens der Datei f&uuml;r „%s\" aufgetreten: "
+"%s"
+
+#: inc/gui.php:190
+#, php-format
+msgid "There was an error trying to delete the file for \"%s\"."
+msgstr ""
+"Ein Fehler ist während des Löschens der Datei f&uuml;r „%s\" aufgetreten."
+
+#: inc/gui.php:230
+msgid "* required fields"
+msgstr "* Pflichtfelder"
+
+#: inc/gui.php:319
+#, php-format
+msgid "format: yyyy-mm-dd (e.g. %s)"
+msgstr "Format: JJJJ-MM-TT (bspw. %s)"
+
+#: inc/gui.php:346
+#, php-format
+msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
+msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
+
+#: inc/gui.php:428
+msgid "Delete file"
+msgstr "Datei l&ouml;schen"
+
+#: inc/gui.php:435 mp-custom-fields.php:51
+msgid "Upload file"
+msgstr "Datei hochladen"
+
+#: inc/gui.php:458
+msgid "Search for address or place…"
+msgstr "Suche nach Adresse oder Ort…"
+
+#: inc/gui.php:464
+#, php-format
+msgid ""
+"No map showing up? Generate a free Google Maps API key and enter it <a href="
+"\"%s\" target=\"_blank\">here</a>."
+msgstr ""
+"Wird keine Karte angezeigt? Erstelle einen kostenlosen Google Maps API "
+"Schl&uuml;ssel und gib ihn <a href=\"%s\" target=\"_blank\">hier</a> ein."
+
+#: inc/gui.php:486 mp-custom-fields.php:48
+msgid "Change media"
+msgstr "Medium &auml;ndern"
+
+#: inc/gui.php:486 mp-custom-fields.php:47
+msgid "Add media"
+msgstr "Medium hinzuf&uuml;gen"
+
+#: inc/gui.php:502 mp-custom-fields.php:52
+msgid "Remove"
+msgstr "Entfernen"
+
+#: inc/gui.php:528
+#, php-format
+msgid "format: yyyy-mm (e.g. %s)"
+msgstr "Format: JJJJ-MM (bspw. %s)"
+
+#: inc/gui.php:620
+msgid "Add"
+msgstr "Hinzuf&uuml;gen"
+
+#: inc/gui.php:712
+#, php-format
+msgid "format: hh:mm:ss (e.g. %s)"
+msgstr "Format: HH:MM:SS (bspw. %s)"
+
+#: inc/gui.php:736
+#, php-format
+msgid "format: yyyy-Www (e.g. %s)"
+msgstr "Format: JJJJ-Www (bspw. %s)"
+
+#: inc/mpcf-options.php:19
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+"Du hast nicht die notwendigen Berechtigungen, um diese Seite anzuzeigen."
+
+#: inc/mpcf-options.php:37
+msgid "Interfaces"
+msgstr "Schnittstellen"
+
+#: inc/mpcf-options.php:43
+msgid "Google Maps API Key"
+msgstr "Google Maps API Schl&uuml;ssel"
+
+#: inc/mpcf-options.php:44
+#, php-format
+msgid ""
+"Generate a free API key <a href=\"%s\" target=\"_blank\" rel=\"noopener"
+"\">here</a> to use Google Maps for the map picker and enter it here."
+msgstr ""
+"Erstelle <a href=\"%s\" target=\"_blank\" rel=\"noopener\">hier</a> einen "
+"kostenlosen API-Schl&uuml;ssel um f&uuml;r das Kartenfeld Google Maps "
+"benutzen zu k&ouml;nnen und gib ihn hier ein."
+
+#: inc/mpcf-options.php:52
+msgid "MP Custom Fields Options"
+msgstr "MP Custom Fields Einstellungen"
+
+#: inc/mpcf-options.php:55
+msgid "Options were saved."
+msgstr "Einstellungen wurden gespeichert."
+
+#: inc/mpcf-options.php:66
+msgid "Save"
+msgstr "Speichern"
+
+#: inc/register.php:28
+#, php-format
+msgid "%s Options"
+msgstr "%s Einstellungen"
+
+#: mp-custom-fields.php:49
+msgid "Choose media"
+msgstr "Medium w&auml;hlen"
+
+#: mp-custom-fields.php:50
+msgid "files selected"
+msgstr "Dateien ausgew&auml;hlt"
+
+#: mp-custom-fields.php:63
+msgid "MP Custom Fields"
+msgstr "MP Custom Fields"
+
+#~ msgid "The type of the file for \"%s\" is not valid."
+#~ msgstr "Der Typ der Datei f&uuml;r „%s“ ist ung&uuml;ltig."
+
+#~ msgid "format: YYYY-MM-DD (e.g. %s)"
+#~ msgstr "Format: JJJJ-MM-TT (bspw. %s)"
+
+#~ msgid "Change item"
+#~ msgstr "Element &auml;ndern"
+
+#~ msgid "Description"
+#~ msgstr "Beschreibung"
+
+#~ msgid "Move"
+#~ msgstr "Bewegen"
+
+#~ msgid "Move item"
+#~ msgstr "Element bewegen"
+
+#~ msgid "Remove item"
+#~ msgstr "Element entfernen"
+
+#~ msgid "Work"
+#~ msgstr "Arbeit"
+
+#~ msgid "General information"
+#~ msgstr "Allgemeine Informationen"
+
+#~ msgid "Front page preview:"
+#~ msgstr "Startseitenvorschau:"
+
+#~ msgid "Gallery"
+#~ msgstr "Galerie"
+
+#~ msgid "Add item"
+#~ msgstr "Element hinzuf&uuml;gen"
+
+#~ msgid ""
+#~ "You can't add another element if any already existing ones are empty."
+#~ msgstr ""
+#~ "Du kannst kein weiteres Element hinzuf&uuml;gen, wenn eines der bereits "
+#~ "existierenden leer ist."
+
+#~ msgid "Year"
+#~ msgstr "Jahr"
+
+#~ msgid "Media"
+#~ msgstr "Medien"
+
+#~ msgid "Runtime"
+#~ msgstr "Laufzeit"
+
+#~ msgid "Options"
+#~ msgstr "Einstellungen"
+
+#~ msgid "An error occurred. The server sent out this message:"
+#~ msgstr ""
+#~ "Es ist ein Fehler aufgetreten. Der Server hat diese Nachricht gesendet:"
+
+#~ msgid "Vita"
+#~ msgstr "Vita"
+
+#~ msgid "Exhibitions"
+#~ msgstr "Ausstellungen"
+
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
+
+#~ msgid "Vita intro:"
+#~ msgstr "Einf&uuml;hrung:"
+
+#~ msgid "Vita:"
+#~ msgstr "Vita:"
+
+#~ msgid "Add vita item"
+#~ msgstr "Eintrag hinzuf&uuml;gen"
+
+#~ msgid "Single exhibitions:"
+#~ msgstr "Einzelausstellungen:"
+
+#~ msgid "Venue"
+#~ msgstr "Ort"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Group exhibitions:"
+#~ msgstr "Gruppenausstellungen:"
+
+#~ msgid "Mail address:"
+#~ msgstr "Mailadresse:"
+
+#~ msgid "Expiration date:"
+#~ msgstr "Ablaufdatum:"
+
+#~ msgid "Works"
+#~ msgstr "Arbeiten"
+
+#~ msgid "Add work"
+#~ msgstr "Arbeit hinzufügen"
+
+#~ msgid "Edit work"
+#~ msgstr "Arbeit bearbeiten"
+
+#~ msgid "New work"
+#~ msgstr "Neue Arbeit"
+
+#~ msgid "View work"
+#~ msgstr "Arbeit ansehen"
+
+#~ msgid "Search works"
+#~ msgstr "Arbeiten suchen"
+
+#~ msgid "No work found"
+#~ msgstr "Keine Arbeit gefunden"
+
+#~ msgid "No work found in trash"
+#~ msgstr "Keine Arbeit im Papierkorb gefunden"
+
+#~ msgid "Parent work:"
+#~ msgstr "&Uuml;bergeordnete Arbeit:"
+
+#~ msgid "All works"
+#~ msgstr "Alle Arbeiten"
+
+#~ msgid "Portfolio"
+#~ msgstr "Portfolio"
+
+#~ msgid "Insert into work"
+#~ msgstr "In Arbeit einf&uuml;gen"
+
+#~ msgid "Uploaded to this work"
+#~ msgstr "Dieser Arbeit hinzugef&uuml;gt"
+
+#~ msgid "An artwork."
+#~ msgstr "Ein Kunstwerk."
+
+#~ msgid "Artwork options"
+#~ msgstr "Kunstwerk Einstellungen"
+
+#~ msgid "Portfolio Archive"
+#~ msgstr "Portfolio-Archiv"
+
+#~ msgid "News options"
+#~ msgstr "News Einstellungen"
+
+#~ msgid "Intro text:"
+#~ msgstr "Einf&uuml;hrung:"
+
+#~ msgid "Job description:"
+#~ msgstr "Jobbeschreibung:"
+
+#~ msgid "Change image"
+#~ msgstr "Bild &auml;ndern"
+
+#~ msgid "Add image"
+#~ msgstr "Bild hinzuf&uuml;gen"
+
+#~ msgid "Choose image"
+#~ msgstr "Bild w&auml;hlen"
+
+#~ msgid "Start date:"
+#~ msgstr "Beginn:"
+
+#~ msgid "Client:"
+#~ msgstr "Kunde:"
+
+#~ msgid "Client URL:"
+#~ msgstr "Kunden-URL:"
+
+#~ msgid "End date:"
+#~ msgstr "Ende:"
+
+#~ msgid "Leave empty if this lasts until today."
+#~ msgstr "Freilassen wenn diese Referenz bis zum heutigen Tage andauert."
+
+#~ msgid "Text for front page:"
+#~ msgstr "Text f&uuml;r Startseite:"
+
+#~ msgid "today"
+#~ msgstr "heute"
+
+#~ msgid "Cases"
+#~ msgstr "Referenzen"
+
+#~ msgid "Case"
+#~ msgstr "Referenz"
+
+#~ msgid "Add Case"
+#~ msgstr "Referenz hinzuf&uuml;gen"
+
+#~ msgid "Edit Case"
+#~ msgstr "Referenz bearbeiten"
+
+#~ msgid "New Case"
+#~ msgstr "Neue Referenz"
+
+#~ msgid "View Case"
+#~ msgstr "Referenz ansehen"
+
+#~ msgid "Search Cases"
+#~ msgstr "Referenzen suchen"
+
+#~ msgid "No Case found"
+#~ msgstr "Keine Referenz gefunden"
+
+#~ msgid "No Case found in trash"
+#~ msgstr "Keine Referenz im Papierkorb gefunden"
+
+#~ msgid "Parent Case:"
+#~ msgstr "&Uuml;bergeordnete Referenz:"
+
+#~ msgid "All Cases"
+#~ msgstr "Alle Referenzen"
+
+#~ msgid "Insert into Case"
+#~ msgstr "In Referenz einf&uuml;gen"
+
+#~ msgid "Uploaded to this Case"
+#~ msgstr "Dieser Referenz hinzugef&uuml;gt"
+
+#~ msgid "A client case to highlight Sara's capabilities."
+#~ msgstr "Eine Referenz um Saras F&auml;higkeiten hervorzuheben."
+
+#~ msgid "Case options"
+#~ msgstr "Referenzoptionen"
+
+#~ msgid "Image:"
+#~ msgstr "Bild:"
+
+#~ msgid "Link:"
+#~ msgstr "Link:"
+
+#~ msgid "Portfolio items"
+#~ msgstr "Referenzen"
+
+#~ msgid ""
+#~ "You can't add another element if any already existing ones have empty "
+#~ "titles."
+#~ msgstr ""
+#~ "Du kannst keine weitere Referenz hinzuf&uuml;gen, wenn eine der bereits "
+#~ "existierenden einen leeren Titel hat."
+
+#~ msgid "Client"
+#~ msgstr "Kunde"
+
+#~ msgid "Service:"
+#~ msgstr "Leistung"
+
+#~ msgid "show on front page"
+#~ msgstr "auf der Startseite anzeigen"
+
+#~ msgid "Featured image"
+#~ msgstr "Beitragsbild"
+
+#~ msgid "Featured video:"
+#~ msgstr "Beitragsvideo:"
+
+#~ msgid "Paste embed code here."
+#~ msgstr "F&uuml;ge den Einbettungscode hier ein."
+
+#~ msgid "Image for front page:"
+#~ msgstr "Bild f&uuml;fr Startseite:"
+
+#~ msgid ""
+#~ "Leave empty if the featured image for the header (see right) should also "
+#~ "be used for the front paged."
+#~ msgstr ""
+#~ "Lass dies frei, wenn das Beitragsbild des Headers (siehe rechts) auch "
+#~ "f&uuml;r die Startseite benutzt werden soll."
+
+#~ msgid "Header color:"
+#~ msgstr "Header-Farbe:"
+
+#~ msgid ""
+#~ "display header in light colors while it hovers over this post's featured "
+#~ "image"
+#~ msgstr ""
+#~ "zeige den Header in hellen Farben an w&auml;hrend er sich &uuml;ber dem "
+#~ "Beitragsbild dieses Artikels befindet"
+
+#~ msgid "A client case to highlight Sara's capabilities. "
+#~ msgstr "Eine Referenz um Saras F&auml;higkeiten hervorzuheben."
+
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgid "Embed code..."
+#~ msgstr "Embed-Code…"
+
+#~ msgid "Change teaser image"
+#~ msgstr "Vorschaubild &auml;ndern"
+
+#~ msgid "Add teaser image"
+#~ msgstr "Vorschaubild hinzuf&uuml;gen"
+
+#~ msgid "Use image"
+#~ msgstr "Bild benutzen"
+
+#~ msgid "Remove image"
+#~ msgstr "Bild entfernen"
+
+#~ msgid "Use video"
+#~ msgstr "Video benutzen"
+
+#~ msgid "Add new video"
+#~ msgstr "Neues Video hinzuf&uuml;gen"
+
+#~ msgid "Choose video"
+#~ msgstr "Video w&auml;hlen"
+
+#~ msgid "Change video"
+#~ msgstr "Video &auml;ndern"
+
+#~ msgid "Remove video"
+#~ msgstr "Video entfernen"
+
+#~ msgid ""
+#~ "A post to display in the journals tab, usually nothing much more than a "
+#~ "picture and a short caption"
+#~ msgstr ""
+#~ "Ein Artikel f&uuml;r das Journals-Tab, f&uuml; gew&ouml;hnlich nicht mehr "
+#~ "als ein Bild und eine kurze Beschriftung"
+
+#~ msgid "Journal"
+#~ msgstr "Journal"
+
+#~ msgid "Journal post"
+#~ msgstr "Journal-Artikel"
+
+#~ msgid "Add new journal post"
+#~ msgstr "Neuen Journal-Artikel erstellen"
+
+#~ msgid "Edit journal post"
+#~ msgstr "Journal-Artikel bearbeiten"
+
+#~ msgid "New journal post"
+#~ msgstr "Neuer Journal-Artikel"
+
+#~ msgid "View journal post"
+#~ msgstr "Journal-Artikel ansehen"
+
+#~ msgid "Search journal posts"
+#~ msgstr "Journal-Artikel suchen"
+
+#~ msgid "No journal posts found"
+#~ msgstr "Keine Journal-Artikel gefunden"
+
+#~ msgid "No journal posts found in trash"
+#~ msgstr "Keine Journal-Artikel im Papierkorb gefunden"
+
+#~ msgid "Parent journal post"
+#~ msgstr "&Uuml;bergeordneter Journal-Artikel"
+
+#~ msgid "All journal posts"
+#~ msgstr "Alle Journal-Artikel"
+
+#~ msgid "Insert into journal post"
+#~ msgstr "In Journal-Artikel einf&uuml;gen"
+
+#~ msgid "Uploaded to this journal post"
+#~ msgstr "In diesen Journal-Artikel hochgeladen"
+
+#~ msgid "Homepage"
+#~ msgstr "Homepage"
+
+#~ msgid "Video teaser:"
+#~ msgstr "Video-Teaser:"
+
+#~ msgid "Video preview image:"
+#~ msgstr "Video-Preview-Bild:"
+
+#~ msgid "Add video"
+#~ msgstr "Video hinzuf&uuml;gen"
+
+#~ msgid "Stand out?"
+#~ msgstr "Hervorheben?"
+
+#~ msgid "usual behaviour"
+#~ msgstr "&uuml;bliche Anzeige"
+
+#~ msgid "let the post stand out"
+#~ msgstr "Artikel sticht hervor"
+
+#~ msgid "Position"
+#~ msgstr "Position"
+
+#~ msgid "Indentation and size"
+#~ msgstr "Einr&uuml;ckung und Gr&ouml;&szlig;e"
+
+#~ msgid "Horizontal spacing"
+#~ msgstr "Horizontaler Abstand"
+
+#~ msgid "none"
+#~ msgstr "keiner"
+
+#~ msgid "small"
+#~ msgstr "klein"
+
+#~ msgid "medium"
+#~ msgstr "mittelgro&szlig;"
+
+#~ msgid "large"
+#~ msgstr "gro&szlig;"
+
+#~ msgid "Vertical spacing"
+#~ msgstr "Vertikaler Abstand"
+
+#~ msgid "extra large"
+#~ msgstr "extra gro&szlig;"
+
+#~ msgid "Single page"
+#~ msgstr "Artikelseite"
+
+#~ msgid "Slide show:"
+#~ msgstr "Slideshow:"
+
+#~ msgid "Autoplay slide show"
+#~ msgstr "Slideshow automatisch starten"
+
+#~ msgid "Repeat slide show"
+#~ msgstr "Slideshow wiederholen"
+
+#~ msgid "Pause slide show on hover (only if autoplay is activated)"
+#~ msgstr ""
+#~ "bei dar&uuml;berfahren mit der Maus pausieren (nur wenn sie automatisch "
+#~ "abgespielt wird)"
+
+#~ msgid ""
+#~ "If the visitor returns, start slide show at the last viewed position "
+#~ "(sets a cookie)"
+#~ msgstr ""
+#~ "Wenn der Besucher zur&uuml;ckkehrt, Slideshow an der letzten Stelle "
+#~ "fortsetzen (setzt ein Cookie)"
+
+#~ msgid "Animation type:"
+#~ msgstr "Animations-Typ:"
+
+#~ msgid "scroll"
+#~ msgstr "scroll"
+
+#~ msgid "direct scroll"
+#~ msgstr "direct scroll"
+
+#~ msgid "fade"
+#~ msgstr "fade"
+
+#~ msgid "crossfade"
+#~ msgstr "crossfade"
+
+#~ msgid "cover"
+#~ msgstr "cover"
+
+#~ msgid "cover-fade"
+#~ msgstr "cover-fade"
+
+#~ msgid "uncover"
+#~ msgstr "uncover"
+
+#~ msgid "uncover-fade"
+#~ msgstr "uncover-fade"
+
+#~ msgid "Pause each frame for"
+#~ msgstr "jeden Slide f&uml;r"
+
+#~ msgid "milliseconds in autoplay mode"
+#~ msgstr "Millisekunden im Autoplay-Modus pausieren"
+
+#~ msgid "Animation duration:"
+#~ msgstr "Animationsdauer:"
+
+#~ msgid ""
+#~ "(in milliseconds &mdash; values smaller than 10 will be interpreted as "
+#~ "pixels/millisecond)"
+#~ msgstr ""
+#~ "(in Millisekunden – Werte kleiner als 10 werden als Pixel/Millisekunde "
+#~ "gewertet)"
+
+#~ msgid "Home page"
+#~ msgstr "Startseite"
+
+#~ msgid "Choose picture"
+#~ msgstr "Bild w&auml;hlen"
+
+#~ msgid "Embed code:"
+#~ msgstr "Embed-Code:"
+
+#~ msgid "Add new image"
+#~ msgstr "Bild hinzuf&uuml;gen"
+
+#~ msgid "Use an image instead"
+#~ msgstr "Stattdessen ein Bild benutzen"
+
+#~ msgid "Use a video instead"
+#~ msgstr "Stattdessen ein Video benutzen"
+
+#~ msgid "Footnote"
+#~ msgstr "Fu&szlig;note"
+
+#~ msgid "Clear"
+#~ msgstr "Zurücksetzen"
+
+#~ msgid "Default"
+#~ msgstr "Standard"
+
+#~ msgid "Select Color"
+#~ msgstr "W&auml;hlen"
+
+#~ msgid "Info"
+#~ msgstr "Info"
+
+#~ msgid "Author:"
+#~ msgstr "Autor:"
+
+#~ msgid "Photos:"
+#~ msgstr "Fotos:"
+
+#~ msgid "Place:"
+#~ msgstr "Ort:"
+
+#~ msgid "Date:"
+#~ msgstr "Datum:"
+
+#~ msgid "Time:"
+#~ msgstr "Zeit:"
+
+#~ msgid "Mail:"
+#~ msgstr "Mail:"
+
+#~ msgid "Telephone:"
+#~ msgstr "Telefon:"
+
+#~ msgid "Price:"
+#~ msgstr "Preis:"
+
+#~ msgid "Color for highlights:"
+#~ msgstr "Farbe für Hervorhebungen:"
+
+#~ msgid "Picture for archives:"
+#~ msgstr "Bild f&uuml;r Archive:"
+
+#~ msgid "Change picture"
+#~ msgstr "Bild &auml;ndern"
+
+#~ msgid "Remove picture"
+#~ msgstr "Bild entfernen"
+
+#~ msgid "Teaser size"
+#~ msgstr "Gr&ouml;&szlig;e des Teaserbildes"
+
+#~ msgid "full size"
+#~ msgstr "volle Gr&ouml;&szlig;e"
+
+#~ msgid "integrated into post"
+#~ msgstr "in den Artikel integriert"
+
+#~ msgid "Size:"
+#~ msgstr "Gr&ouml;&szlig;e"
+
+#~ msgid "Stand alone?"
+#~ msgstr "Einzeln anzeigen?"
+
+#~ msgid "Texts"
+#~ msgstr "Texte"
+
+#~ msgid "Teaser (single post):"
+#~ msgstr "Teaser (auf Artikelseite):"
+
+#~ msgid "Teaser (archive page):"
+#~ msgstr "Teaser (auf Archivseiten):"
+
+#~ msgid "Sponsorship:"
+#~ msgstr "Sponsoring:"
+
+#~ msgid "General"
+#~ msgstr "Allgemein"
+
+#~ msgid "Highlight color:"
+#~ msgstr "Highlight-Farbe:"
+
+#~ msgid "Position for Social Media Bar:"
+#~ msgstr "Position der Social-Media-Leiste:"
+
+#~ msgid "display after"
+#~ msgstr "zeige nach dem"
+
+#~ msgid "post"
+#~ msgstr "Artikel an"
+
+#~ msgid "don't show social media bar"
+#~ msgstr "Social-Media-Leiste nicht anzeigen"
+
+#~ msgid "Facebook:"
+#~ msgstr "Facebook:"
+
+#~ msgid "Page:"
+#~ msgstr "Seite:"
+
+#~ msgid "Twitter:"
+#~ msgstr "Twitter:"
+
+#~ msgid "Account:"
+#~ msgstr "Account:"
+
+#~ msgid "Instagram:"
+#~ msgstr "Instagram:"
+
+#~ msgid "Footnotes:"
+#~ msgstr "Fu&szlig;noten:"
+
+#~ msgid "parse and provide footnotes for single posts"
+#~ msgstr "Fu&szlig;noten auf Artikelseiten auslesen und bereitstellen"
+
+#~ msgid "hide footnotes from single posts"
+#~ msgstr "Fu&szlig;noten auf Artikelseiten ausblenden"
+
+#~ msgid "To implement in theme, echo result of get_fb_footnotes()."
+#~ msgstr ""
+#~ "Um Fu&szlig;noten im Theme anzuzeigen, get_fb_footnotes() aufrufen und "
+#~ "ausgeben."
+
+#~ msgid "fetch latest image instead"
+#~ msgstr "zeige stattdessen letzten Instagram-Post"
+
+#~ msgid "Big post:"
+#~ msgstr "Gro&szlig;e Artikel:"
+
+#~ msgid "hide footnotes from posts"
+#~ msgstr "Fu&szlig;noten auf Artikelseiten "
+
+#~ msgid "Projects"
+#~ msgstr "Projekte"
+
+#~ msgid "Project"
+#~ msgstr "Projekt"
+
+#~ msgid "Add new project"
+#~ msgstr "Projekt erstellen"
+
+#~ msgid "Edit project"
+#~ msgstr "Projekt bearbeiten"
+
+#~ msgid "New project"
+#~ msgstr "Neues Projekt"
+
+#~ msgid "View project"
+#~ msgstr "Projekt anschauen"
+
+#~ msgid "Search projects"
+#~ msgstr "Projekte suchen"
+
+#~ msgid "No project found"
+#~ msgstr "Kein Projekt gefunden"
+
+#~ msgid "No projects found in trash"
+#~ msgstr "Kein Projekt im Papierkorb gefunden"
+
+#~ msgid "Parent project:"
+#~ msgstr "Elternprojekt:"
+
+#~ msgid "All projects"
+#~ msgstr "Alle Projekte"
+
+#~ msgid "Insert into project"
+#~ msgstr "In Projekt einf&uuml;gen"
+
+#~ msgid "Uploaded to this project"
+#~ msgstr "In diesem Projekt hochgeladen"
+
+#~ msgid "Project options"
+#~ msgstr "Projekt-Optionen"
+
+#~ msgid "Post options"
+#~ msgstr "Artikeloptionen"
+
+#~ msgid "Images and videos"
+#~ msgstr "Bilder und Videos"
+
+#~ msgid "Subtitle:"
+#~ msgstr "Untertitel:"
+
+#~ msgid "Team:"
+#~ msgstr "Team:"
+
+#~ msgid "Remove teaser image"
+#~ msgstr "Vorschaubild entfernen"
+
+#~ msgid "Services:"
+#~ msgstr "Leistungen:"
+
+#~ msgid "Project Options"
+#~ msgstr "Projekt-Optionen"
+
+#~ msgid "Images and Videos"
+#~ msgstr "Bilder und Videos"
+
+#~ msgid "This widget displays the ten most shared posts."
+#~ msgstr "Dieses Widget gibt die zehn am meisten geteilten Artikel aus."
+
+#~ msgid "This widget displays the ten most popular posts."
+#~ msgstr "Dieses Widget gibt die zehn beliebtesten Artikel aus."
+
+#~ msgid "Credits"
+#~ msgstr "Credits"
+
+#~ msgid "Text"
+#~ msgstr "Text"
+
+#~ msgid "Sponsoring disclaimer"
+#~ msgstr "Advertorial-Hinweis"
+
+#~ msgid "Credentials"
+#~ msgstr "Credits und Advertorials"
+
+#~ msgid "&lt; Previous page"
+#~ msgstr "&lt; Vorherige Seite"
+
+#~ msgid "Next page &gt;"
+#~ msgstr "N&auml;chste Seite &gt;"
+
+#~ msgid "All rights reserved."
+#~ msgstr "Alle Rechte vorbehalten."
+
+#~ msgid "Home"
+#~ msgstr "Home"
+
+#~ msgid "Your comment awaits moderation. It&#39;ll be public soon."
+#~ msgstr "Dein Kommentar muss noch freigegeben werden."
+
+#~ msgid "Reply"
+#~ msgstr "Antworten"
+
+#~ msgid "Reply %s "
+#~ msgstr "%s antworten"
+
+#~ msgid "Login to comment"
+#~ msgstr "Einloggen um zu kommentieren"
+
+#~ msgid "Post type"
+#~ msgstr "Artikeltyp"
+
+#~ msgid "Show sidebar"
+#~ msgstr "Sidebar anzeigen"
+
+#~ msgid "Don't show sidebar"
+#~ msgstr "Sidebar nicht anzeigen"
+
+#~ msgid "Teaser type"
+#~ msgstr "Vorschaubild"
+
+#~ msgid "Regular teaser image"
+#~ msgstr "Gew&ouml;hnliches  Vorschaubild"
+
+#~ msgid "Wide screen teaser image"
+#~ msgstr "Vollbild"
+
+#~ msgid "Header menu"
+#~ msgstr "Header-Men&uuml;"
+
+#~ msgid "Footer menu"
+#~ msgstr "Footer-Men&uuml;"
+
+#~ msgid "Load next posts"
+#~ msgstr "Weitere Artikel laden"
+
+#~ msgid "The journey ends here."
+#~ msgstr "Hier endet die Reise."
+
+#~ msgid "Leave a comment"
+#~ msgstr "Hinterlasse einen Kommentar"
+
+#~ msgid "Leave a comment for"
+#~ msgstr "Hinterlasse einen Kommentar f&uuml;r"
+
+#~ msgid "You forgot to write a comment."
+#~ msgstr "Du hast vergessen, einen Kommentar zu schreiben."
+
+#~ msgid "Name"
+#~ msgstr "Name"
+
+#~ msgid "Please fill in your name"
+#~ msgstr "Bitte gib deinen Namen an"
+
+#~ msgid "Mail"
+#~ msgstr "Mail"
+
+#~ msgid "Please fill in your email address"
+#~ msgstr "Bitte gib deine Mail-Adresse an"
+
+#~ msgid "Please fill a correct email address"
+#~ msgstr "Bitte gib eine g&uuml;ltige Mail-Adresse an"
+
+#~ msgid "Website (optional)"
+#~ msgstr "Webseite (optional)"
+
+#~ msgid "Please fill in a correct URL"
+#~ msgstr "Bitte gib eine g&uuml;ltige URL an"
+
+#~ msgid "Share:"
+#~ msgstr "Teilen:"
+
+#~ msgid "Share on Facebook"
+#~ msgstr "Auf Facebook teilen"
+
+#~ msgid "Share on Twitter"
+#~ msgstr "Auf Twitter teilen"
+
+#~ msgid "Share on Google Plus"
+#~ msgstr "Auf Google Plus teilen"
+
+#~ msgid "Send a mail"
+#~ msgstr "Sende eine E-Mail"
+
+#~ msgid "Categories"
+#~ msgstr "Themen"
+
+#~ msgid "Home sidebar"
+#~ msgstr "Homepage-Sidebar"
+
+#~ msgid "Single sidebar"
+#~ msgstr "Artikel-Sidebar"
+
+#~ msgid "Search for:"
+#~ msgstr "Suche nach:"
+
+#~ msgid "Read more&hellip;"
+#~ msgstr "Weiterlesen&hellip;"
+
+#~ msgid "Like"
+#~ msgstr "Like"
+
+#~ msgid "Follow"
+#~ msgstr "Folge"
+
+#~ msgid "Add module"
+#~ msgstr "Modul hinzuf&uuml;gen"
+
+#~ msgid "Latest posts from category"
+#~ msgstr "Aktuelle Artikel einer Kategorie"
+
+#~ msgid "Code"
+#~ msgstr "Code"
+
+#~ msgid "Latest posts"
+#~ msgstr "Aktuelle Artikel"
+
+#~ msgid "Link URL"
+#~ msgstr "Link URL"
+
+#~ msgid "Popular posts"
+#~ msgstr "Beliebte Artikel"
+
+#~ msgid "Remove module"
+#~ msgstr "Modul entfernen"
+
+#~ msgid "Social Media"
+#~ msgstr "Social Media"
+
+#~ msgid "Latest posts with tag"
+#~ msgstr "Aktuelle Artikel eines Tags"
+
+#~ msgid "Teaser"
+#~ msgstr "Teaser"
+
+#~ msgid "Electru 2015 Options"
+#~ msgstr "Electru 2015 Einstellungen"
+
+#~ msgid ""
+#~ "Please activate the Electru Helper Plugin in the plugin menu to enable "
+#~ "the theme to work properly."
+#~ msgstr ""
+#~ "Bitte aktiviere das Electru Hilfsplugin im Plugin-Men&uuml;, damit das "
+#~ "Theme ordnungsgem&auml;&szlig; funktioniert."
+
+#~ msgid "Advertisement"
+#~ msgstr "Werbung"
+
+#~ msgid "Miscellaneous"
+#~ msgstr "Sonstiges"
+
+#~ msgid "General options:"
+#~ msgstr "Allgemeine Einstellungen:"
+
+#~ msgid "Exclude posts from subsequent lists, when they were displayed before"
+#~ msgstr ""
+#~ "Schließe Artikel von nachfolgenden Listen aus, wenn sie bereits angezeigt "
+#~ "wurden"
+
+#~ msgid "Modules:"
+#~ msgstr "Module:"
+
+#~ msgid "Exclude sticky posts (that are part of the teaser slideshow)"
+#~ msgstr ""
+#~ "Schlie&szlig;e angepinnte Artikel aus (die Teil der Teaser-Slideshow sind)"
+
+#~ msgid "Category:"
+#~ msgstr "Kategorie:"
+
+#~ msgid "Tag:"
+#~ msgstr "Tag:"
+
+#~ msgid "Images and Videos:"
+#~ msgstr "Bilder und Videos:"
+
+#~ msgid "Embed code"
+#~ msgstr "Embed-Code"
+
+#~ msgid "Displays the most popular and the most shared post."
+#~ msgstr "Zeigt den beliebtesten und den am meisten geteilten Artikel an."
+
+#~ msgid "Popular post title:"
+#~ msgstr "Titel f&uuml;r den beliebtesten Artikel:"
+
+#~ msgid "Most shared post title:"
+#~ msgstr "Titel f&uuml;r den am meisten geteilten Artikel:"
+
+#~ msgid "Publishing period:"
+#~ msgstr "Ver&ouml;ffentlichungszeitraum:"
+
+#~ msgid "from last week"
+#~ msgstr "letzte Woche"
+
+#~ msgid "from last month"
+#~ msgstr "letzter Monat"
+
+#~ msgid "from last year"
+#~ msgstr "letztes Jahr"
+
+#~ msgid "from all time"
+#~ msgstr "aller Zeiten"
+
+#~ msgid "Post:"
+#~ msgstr "Artikel:"
+
+#~ msgid "Color scheme:"
+#~ msgstr "Farbschema:"
+
+#~ msgid "White text, links in highlight color"
+#~ msgstr "Wei&szlig;er Text, Links in Highlight-Farbe"
+
+#~ msgid "Black text, links in highlight color"
+#~ msgstr "Schwarzer Text, Links in Highlight-Farbe"
+
+#~ msgid "Text in highlight color, white links"
+#~ msgstr "Text in Highlight-Farbe, wei&szlig;e Links"
+
+#~ msgid "Module title:"
+#~ msgstr "Titel des Moduls:"
+
+#~ msgid "Facebook page URL:"
+#~ msgstr "Facebook URL:"
+
+#~ msgid "Facebook image:"
+#~ msgstr "Bild f&uuml;r Facebook:"
+
+#~ msgid "Twitter account:"
+#~ msgstr "Twitter-Account:"
+
+#~ msgid "Twitter image:"
+#~ msgstr "Bild f&uuml;r Twitter:"
+
+#~ msgid "Instagram account:"
+#~ msgstr "Instagram-Account:"
+
+#~ msgid "Instagram image:"
+#~ msgstr "Bild f&uuml;r Instagram:"
+
+#~ msgid "Show latest Instagram post instead"
+#~ msgstr "Zeige stattdessen letzten Instagram-Post"
+
+#~ msgid "Generates a slide show of all sticky posts in chronological order."
+#~ msgstr ""
+#~ "Erstellt eine Slideshow aller angepinnter Artikel in chronologischer "
+#~ "Reihenfolge."
+
+#~ msgid "HTML code:"
+#~ msgstr "HTML-Code:"
+
+#~ msgid "Billboard:"
+#~ msgstr "Billboard:"
+
+#~ msgid "Leaderboard:"
+#~ msgstr "Leaderboard:"
+
+#~ msgid "Sidebar on homepage:"
+#~ msgstr "Sidebar auf der Homepage"
+
+#~ msgid "Custom CSS:"
+#~ msgstr "Eigenes CSS:"
+
+#~ msgid "Time period:"
+#~ msgstr "Zeitraum:"
+
+#~ msgid "Share the love"
+#~ msgstr "Share the love"
+
+#~ msgid "White text, red highlights"
+#~ msgstr "Wei&szlig;er Text, rote Highlights"
+
+#~ msgid "Black text, red highlights"
+#~ msgstr "Schwarzer Text, rote Highlights"
+
+#~ msgid "Red text, white highlights"
+#~ msgstr "Roter Text, wei&szlig;e Highlights"
+
+#~ msgid "Likes"
+#~ msgstr "Likes"
+
+#~ msgid "Follower"
+#~ msgstr "Follower"
+
+#~ msgid "Number of posts:"
+#~ msgstr "Anzahl der Artikel:"
+
+#~ msgid "Slideshows"
+#~ msgstr "Slideshows"
+
+#~ msgid "Regular post with sidebar"
+#~ msgstr "Normaler Artikel mit Sidebar"
+
+#~ msgid "Wide screen"
+#~ msgstr "Breitbild"
+
+#~ msgid "Regular post"
+#~ msgstr "normaler Artikel"
+
+#~ msgid "Split screen"
+#~ msgstr "geteilter Bildschirm"
+
+#~ msgid "Teaser text on article page"
+#~ msgstr "Aufmacher auf der Artikelseite"
+
+#~ msgid "show excerpt on article page"
+#~ msgstr "zeige auf der Artikelseite den Auszug"
+
+#~ msgid "show subtitle on article page"
+#~ msgstr "zeige auf der Artikelseite den Untertitel"
+
+#~ msgid "Teaser text on archive pages"
+#~ msgstr "Aufmacher auf Archivseiten"
+
+#~ msgid "show excerpt on archive pages"
+#~ msgstr "zeige auf Archivseiten den Auszug"
+
+#~ msgid "show subtitle on archive pages"
+#~ msgstr "zeige auf Archivseiten den Untertitel"
+
+#~ msgid "Preview image"
+#~ msgstr "Vorschaubild"
+
+#~ msgid "rather display excerpt than teaser image on home and archive pages"
+#~ msgstr ""
+#~ "auf der Startseite und in den Archiven den Auszug statt des "
+#~ "Vorschaubildes anzeigen"
+
+#~ msgid "display teaser image on the article page "
+#~ msgstr "zeige das Vorschaubild auf der Artikelseite an"
+
+#~ msgid "Is this article sponsored?"
+#~ msgstr "Wird dieser Artikel gesponsert?"
+
+#~ msgid "Name:"
+#~ msgstr "Name:"
+
+#~ msgid "Role:"
+#~ msgstr "Rolle:"
+
+#~ msgid "Remove member"
+#~ msgstr "Mitglied entfernen:"
+
+#~ msgid "Topics"
+#~ msgstr "Themen"
+
+#~ msgid "Footer about menu"
+#~ msgstr "Footer-&Uuml;ber-Men&uuml;"
+
+#~ msgid "Footer categories menu"
+#~ msgstr "Footer-Themen-Men&uuml;"
+
+#~ msgid "Footer contact menu"
+#~ msgstr "Footer-Kontakt-Men&uuml;"
+
+#~ msgid "Search"
+#~ msgstr "Suche"
+
+#~ msgid "Previous page"
+#~ msgstr "Vorherige Seite"
+
+#~ msgid "Next page"
+#~ msgstr "Nächste Seite"
+
+#~ msgid ""
+#~ "This page is gone. We'll look for it, but to be honest, there's little "
+#~ "chance of finding it."
+#~ msgstr ""
+#~ "Diese Seite ist verschwunden. Wir werden danach suchen, aber seien wir "
+#~ "mal ehrlich: Sie wird wohl nie wieder auftauchen."
+
+#~ msgid "Back to the home page"
+#~ msgstr "Zur&uuml;ck zur Startseite"
+
+#~ msgid "Random posts"
+#~ msgstr "Zuf&auml;llige Artikel"
+
+#~ msgid "Edit"
+#~ msgstr "Bearbeiten"
+
+#~ msgid "This is a sponsored post."
+#~ msgstr "Dieser Artikel wurde durch Drittmittel erm&ouml;glicht."
+
+#~ msgid "Next post"
+#~ msgstr "N&auml;chster Artikel"
+
+#~ msgid "Previous post"
+#~ msgstr "Vorheriger Artikel"
+
+#~ msgid "Similar posts"
+#~ msgstr "&Auml;hnliche Artikel"
+
+#~ msgid "This post is password protected. Please login to read the comments."
+#~ msgstr ""
+#~ "Dieser Beitrag ist passwortgeschützt. Bitte einloggen um die Kommentare "
+#~ "zu lesen."
+
+#~ msgid "Comments"
+#~ msgstr "Kommentare"
+
+#~ msgid "Other opinions"
+#~ msgstr "Andere Meinungen"
+
+#~ msgid "Leave a comment for %s"
+#~ msgstr "Hinterlasse einen Kommentar für %s"
+
+#~ msgid "You need to be"
+#~ msgstr "Du musst"
+
+#~ msgid "logged in"
+#~ msgstr "eingeloggt sein"
+
+#~ msgid "to leave a comment."
+#~ msgstr "um einen Kommentar zu hinterlassen."
+
+#~ msgid "Submit"
+#~ msgstr "Absenden"
+
+#~ msgid "Cancel reply."
+#~ msgstr "Abbrechen"
+
+#~ msgid "Logged in as"
+#~ msgstr "Eingeloggt als"
+
+#~ msgid "Log out"
+#~ msgstr "Ausloggen"
+
+#~ msgid "Similar articles"
+#~ msgstr "&Auml;hnliche Artikel"
+
+#~ msgid "Write a mail to %s"
+#~ msgstr "Schreib eine Mail an %s"
+
+#~ msgid "%s wrote %d posts"
+#~ msgstr "%s schrieb %d Artikel"
+
+#~ msgid "All posts by %s"
+#~ msgstr "Alle Artikel von %s"
+
+#~ msgid "Search results for &raquo;%s&laquo;"
+#~ msgstr "Surchergebnisse f&uuml;r &raquo;%s&laquo;"
+
+#~ msgid "No search results for &raquo;%s&laquo; found"
+#~ msgstr "Keine Suchergebnisse f&uuml;r &raquo;%s&laquo; gefunden"
+
+#~ msgid "Follow %s on Instagram"
+#~ msgstr "Folge %s auf Instagram"
+
+#~ msgid "Castor & Pollux Options"
+#~ msgstr "Castor & Pollux Einstellungen"
+
+#~ msgid "display every"
+#~ msgstr "stelle jeden"
+
+#~ msgid "th post after the first post in a bigger size"
+#~ msgstr ". Artikel nach dem ersten Artikel gr&ouml;&szlig;er dar"
+
+#~ msgid "don't show teaser image on the article page "
+#~ msgstr "zeige das Vorschaubild auf der Artikelseite an"
+
+#~ msgid "Preview image on archive pages"
+#~ msgstr "Vorschaubild auf Archivseiten"
+
+#~ msgid "Rather display excerpt than teaser image on home and archive pages"
+#~ msgstr ""
+#~ "Auf der Startseite und in den Archiven den Auszug statt des "
+#~ "Vorschaubildes anzeigen"
+
+#~ msgid "What others had to say."
+#~ msgstr "Was andere dazu zu sagen hatten."
+
+#~ msgid "Archive page behavior"
+#~ msgstr "Vorschau"
+
+#~ msgid "Automatic scrolling"
+#~ msgstr "automatisch abspielen"
+
+#~ msgid "Active"
+#~ msgstr "aktiv"
+
+#~ msgid "Pause on hover"
+#~ msgstr "bei hover pausieren"
+
+#~ msgid "Passive"
+#~ msgstr "passiv"
+
+#~ msgid "Die Halkyonischen Tage 2015 Options"
+#~ msgstr "Die Halkyonischen Tage 2015 Optionen"
+
+#~ msgid "Posts"
+#~ msgstr "Artikel"
+
+#~ msgid "Folge %s auf Instagram"
+#~ msgstr "Fo"
+
+#~ msgid "Text only"
+#~ msgstr "nur Text"
+
+#~ msgid "Share on Pinterest"
+#~ msgstr "Auf Pinterest teilen"
+
+#~ msgid "Comments are closed."
+#~ msgstr "Kommentare sind geschlossen."
+
+#~ msgid "Read more &raquo;"
+#~ msgstr "Zum Artikel &raquo;"
+
+#~ msgid "Gallery type"
+#~ msgstr "Galerie-Typ"
+
+#~ msgid "Slider"
+#~ msgstr "Slider"
+
+#~ msgid "Full width carousel"
+#~ msgstr "Karussell in ganzer Breite"
+
+#~ msgid "Website"
+#~ msgstr "Webseite"
+
+#~ msgid "Disclaimer"
+#~ msgstr "Hinweis"
+
+#~ msgid "All photos from"
+#~ msgstr "Alle Fotos aus"
+
+#~ msgid "About"
+#~ msgstr "Über"
+
+#~ msgid "Imprint"
+#~ msgstr "Impressum"
