@@ -35,6 +35,8 @@ function mpcf_init() {
 	$o = get_option('mpcf_options');
 	if (!isset($o) || empty($o))
 		update_option('mpcf_options', mpcf_default_options());
+	
+	mpcf_register_modules();
 }
 
 

@@ -1,5 +1,6 @@
 <?php
 
+require_once('modules.php');
 require_once('mpcf-options.php');
 require_once('register.php');
 require_once('gui.php');

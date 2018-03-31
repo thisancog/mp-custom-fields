@@ -67,6 +67,7 @@ function mpcf_build_gui_as_panels($panels, $values) {
 
 
 function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
+	$o = get_option('mpcf_options');
 	setlocale(LC_TIME, get_locale());
 	$required = false;
 
@@ -83,8 +84,6 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			case 'buttongroup':	mpcf_build_buttongroup($field); break;
 			case 'checkbox':	mpcf_build_checkbox($field); break;
 			case 'color':		mpcf_build_color_input($field); break;
-			case 'date':		mpcf_build_date_input($field); break;
-			case 'datetime':	mpcf_build_datetime_input($field); break;
 			case 'editor':		mpcf_build_editor($field); break;
 			case 'email':		mpcf_build_email_input($field); break;
 			case 'file':		mpcf_build_file_input($field); break;
@@ -97,8 +96,6 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			case 'range':		mpcf_build_range_input($field); break;
 			case 'repeater':	$hasRequireds = mpcf_build_repeater($field); break;
 			case 'select':		mpcf_build_select_input($field); break;
-			case 'text':		mpcf_build_text_input($field); break;
-			case 'textarea':	mpcf_build_textarea($field); break;
 			case 'time':		mpcf_build_time_input($field); break;
 			case 'week':		mpcf_build_week_input($field); break;
 
@@ -108,8 +105,29 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 
 
 			default: 
-				$func = $field['type'];
-				if (function_exists($func)) $func($field);
+				$type = $field['type'];
+
+				if (isset($o['modules'][$type])) {
+					$classname = $o['modules'][$type]['name'];
+					$class = new $classname();
+
+					$isRequired = isset($field['required']) && $field['required'] ? ' mpcf-required' : '';
+					$hasHTML5  = isset($class->html5) && $class->html5 ? ' mpcf-nohtml5' : '';
+					$html5Test = isset($class->html5) && $class->html5 ? ' data-invalid-test="Not-a-valid-value"' : '' ?>
+
+					<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
+						<div class="mpcf-label">
+							<label for="<?php echo $field['name']; ?>"><?php echo $field['label']; ?></label>
+						</div>
+						<div class="mpcf-field">
+			
+			<?php			$class->build_field($field);
+							mpcf_build_description($field['description']); ?>
+
+						</div>
+					</div>
+<?php			}
+
 				break;
 		}
 
@@ -323,54 +341,10 @@ function mpcf_build_color_input($args) { ?>
 }
 
 
-function mpcf_build_date_input($args) { ?>
-	<div class="mpcf-date-input mpcf-field-option mpcf-nohtml5<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-date">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="date"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-dd (e.g. %s)', 'mpcf'), current_time('Y-m-d')); ?></div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
 function mpcf_update_edit_form() {
 	echo ' enctype="multipart/form-data"';
 }
 
-
-
-function mpcf_build_datetime_input($args) { ?>
-	<div class="mpcf-datetime-input mpcf-field-option mpcf-nohtml5<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-datetime">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="datetime-local"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-ddThh:mm (e.g. %s)', 'mpcf'), current_time('Y-m-d\TH:i')); ?></div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
 
 
 function mpcf_build_editor($args) {
@@ -680,46 +654,6 @@ function mpcf_build_select_input($args) {
 				<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $title; ?></option>
 <?php		} ?>
 			</select>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_text_input($args) { ?>
-	<div class="mpcf-text-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input 
-				type="text"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : ''); ?>
-				<?php echo (isset($args['minlength']) && !empty($args['minlength']) ? ' minlength="' . $args['minlength'] . '"' : ''); ?>
-				<?php echo (isset($args['maxlength']) && !empty($args['maxlength']) ? ' maxlength="' . $args['maxlength'] . '"' : ''); ?>>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_textarea($args) { ?>
-	<div class="mpcf-textarea mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<textarea
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				<?php echo (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : ''); ?>
-				<?php echo ($args['required'] ? ' required' : ''); ?>><?php echo $args['value']; ?></textarea>
 
 			<?php mpcf_build_description($args['description']) ?>
 		</div>
