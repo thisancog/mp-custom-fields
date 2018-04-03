@@ -20,7 +20,7 @@ function mpcf_options() {
 	}
 
 	if (isset($_POST["update_settings"])) {
-		$o = get_option('bf_helper_options');
+		$o = get_option('mpcf_options');
 
 		$options = array(
 			'googlemapskey'			=> $_POST['googlemapskey']

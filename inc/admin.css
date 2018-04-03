@@ -188,7 +188,7 @@
 }
 
 .mpcf-description {
-	margin: 8px 0 10px;
+	margin: 32px 0 10px;
 	font-style: oblique;
 }
 
@@ -344,7 +344,14 @@
 	font-size: 40px;
 	line-height: 1;
 	color: #DDD;
-	background: #FFF;
+}
+
+.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content {
+	border-color: #CCC;
+}
+
+.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content:before {
+	color: #CCC;
 }
 
 .mpcf-imagepreview,

@@ -108,6 +108,7 @@ var repeaterField = function() {
 
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
+			registerMediaPicker();
 		});
 
 		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields }, function(response) {
@@ -122,6 +123,7 @@ var repeaterField = function() {
 			newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
 
 			reorder();
+			registerMediaPicker();
 		});
 
 		var removeRow = function(e) {
@@ -141,12 +143,17 @@ var repeaterField = function() {
 					fieldIndex = 0;
 
 				[].forEach.call(inputs, function(input) {
-					let newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']',
-						newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'];
+					let type = input.getAttribute('type');
+					if (type === 'button' || type === 'submit') return;
+
+					let newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'];
 
 					if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+
 					if (input.hasAttribute('name'))	{
+						let newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']';
+
 						input.setAttribute('name', newName);
 						fieldIndex++;
 					}
@@ -307,11 +314,16 @@ $(document).ready(function() {
  **************************************************************/
 
 $(document).ready(function($) {
-	$('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia').click(function(e) { changeMedia(this, e); });
-	$('.mpcf-clearmedia').click(function() { clearimg(this); });
+	registerMediaPicker();
 });
 
+function registerMediaPicker() {
+	$('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia').click(function(e) { changeMedia(this, e); });
+	$('.mpcf-clearmedia').click(function() { clearimg(this); });
+}
+
 function changeMedia(elem, e) {
+	console.log('a');
 	e.preventDefault();
 	var image = wp.media({ 
 		title: localizedmpcf.chooseMedia,

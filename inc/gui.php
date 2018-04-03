@@ -75,8 +75,10 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		if (!isset($field['type'])) continue;
 
 		$field = mpcf_sanitize_args($field);
+
 		$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
-		$field['value'] = is_array($field['value']) ? $field['value'][0] : $field['value'];
+	//	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
+
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
 
@@ -116,9 +118,13 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 					$html5Test = isset($class->html5) && $class->html5 ? ' data-invalid-test="Not-a-valid-value"' : '' ?>
 
 					<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
-						<div class="mpcf-label">
+
+			<?php		if (isset($field['label']) && !empty($field['label'])) { ?>
+							<div class="mpcf-label">
 							<label for="<?php echo $field['name']; ?>"><?php echo $field['label']; ?></label>
 						</div>
+			<?php 		} ?>
+						
 						<div class="mpcf-field">
 			
 			<?php			$class->build_field($field);
@@ -231,7 +237,9 @@ function mpcf_ajax_get_component() {
 
 	ob_start();
 	if (isset($_POST['values'])) {
+
 		$values = json_decode(stripcslashes($_POST['values']), true);
+
 		foreach ($values as $i => $row) { ?>
 			<li class="mpcf-repeater-row">
 				<?php mpcf_build_gui_from_fields($fields, $row, false); ?>
@@ -483,7 +491,13 @@ function mpcf_build_media_selector($args) {
 	$id = 'mpcf-changemedia-' . $args['name']; ?>
 
 	<div class="mpcf-image-selector mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
+
+<?php 	if (isset($args['label']) && !empty($args['label'])) { ?>
+
 		<div class="mpcf-label"><label for="<?php echo $id; ?>"><?php echo $args['label']; ?></label></div>
+
+<?php 	} ?>
+
 		<div class="mpcf-field mpcf-mediapicker">
 			<div class="mpcf-preview-content dashicons-format-image dashicons-before">
 				<img src="<?php echo $image; ?>" class="mpcf-imagepreview <?php echo $imgclass; ?>">
@@ -605,7 +619,9 @@ function mpcf_build_range_input($args) { ?>
 
 
 function mpcf_build_repeater($args) {
-	$args['value'] = unserialize($args['value']) ?>
+	if (is_string($args['value']))
+		$args['value'] = unserialize($args['value']); ?>
+	
 	<div class="mpcf-repeater mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label><?php echo $args['label']; ?></label></div>
 		<div class="mpcf-field">
