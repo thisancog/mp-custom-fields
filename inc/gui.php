@@ -77,7 +77,8 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field = mpcf_sanitize_args($field);
 
 		$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
-	//	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
+		if ($field['type'] !== 'repeater')
+			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
@@ -619,8 +620,8 @@ function mpcf_build_range_input($args) { ?>
 
 
 function mpcf_build_repeater($args) {
-	if (is_string($args['value']))
-		$args['value'] = unserialize($args['value']); ?>
+	if (is_array($args['value']) && is_string($args['value'][0]))
+		$args['value'] = unserialize($args['value'][0]); ?>
 	
 	<div class="mpcf-repeater mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label><?php echo $args['label']; ?></label></div>

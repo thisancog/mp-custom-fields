@@ -47,17 +47,25 @@ var panelSwitch = function() {
  **************************************************************/
 
 var goToInvalids = function() {
-	var inputs = document.querySelectorAll('.mpcf-parent input');
+	[].forEach.call(document.querySelectorAll('.mpcf-parent'), function(parent) {
+		focusInvalids(parent);
+	});
+}
 
-	[].forEach.call(inputs, function(input) {
+var focusInvalids = function(elem) {
+	[].forEach.call(elem.querySelectorAll('input'), function(input) {
 		input.addEventListener('invalid', function(e) {
-			var active = document.querySelector('.mpcf-panels-tabs .active-panel'),
+			var menu = document.querySelector('.mpcf-panels-menu'),
+				active = document.querySelector('.mpcf-panels-tabs .active-panel'),
 				parent = e.target;
 
 			active.classList.remove('active-panel');
+			menu.querySelector('li[data-index="' + active.getAttribute('data-index') + '"]').classList.remove('active');
 
 			while ((parent = parent.parentElement) && !parent.classList.contains('mpcf-panel'));
 			parent.classList.add('active-panel');
+
+			menu.querySelector('li[data-index="' + parent.getAttribute('data-index') + '"]').classList.add('active');
 		});
 	});
 }
@@ -109,6 +117,7 @@ var repeaterField = function() {
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
+			focusInvalids(rowsWrapper);
 		});
 
 		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields }, function(response) {
@@ -124,6 +133,7 @@ var repeaterField = function() {
 
 			reorder();
 			registerMediaPicker();
+			focusInvalids(newRow);
 		});
 
 		var removeRow = function(e) {
