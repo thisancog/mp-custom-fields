@@ -667,7 +667,7 @@ function mpcf_build_select_input($args) {
 				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>>
 
 <?php 		foreach ($args['options'] as $name => $title) {
-				$selected = $args['value'] === $name || (is_array($args['value']) && in_array($name, $args['value'])); ?>
+				$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value'])); ?>
 				<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $title; ?></option>
 <?php		} ?>
 			</select>
