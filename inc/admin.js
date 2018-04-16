@@ -328,12 +328,17 @@ $(document).ready(function($) {
 });
 
 function registerMediaPicker() {
-	$('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia').click(function(e) { changeMedia(this, e); });
-	$('.mpcf-clearmedia').click(function() { clearimg(this); });
+	var change = $('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia'),
+		clear = $('.mpcf-clearmedia');
+
+	change.unbind('click');
+	clear.unbind('click');
+
+	change.click(function(e) { changeMedia(this, e); });
+	clear.click(function() { clearimg(this); });
 }
 
-function changeMedia(elem, e) {
-	console.log('a');
+function changeMedia(elem, e) {	
 	e.preventDefault();
 	var image = wp.media({ 
 		title: localizedmpcf.chooseMedia,
