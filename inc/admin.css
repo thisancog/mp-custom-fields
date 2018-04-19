@@ -97,12 +97,17 @@
 	border-right: 1px solid #FFF;
 }
 
-.mpcf-panels-menu li.active:after {
+.mpcf-panels-menu li.active:not(:last-child):after {
 	bottom: -11px;
 	background-color: #F5F5F5;
 	border-top: 1px solid #DDD;
 	border-right: 1px solid #DDD;
 	border-top-right-radius: 10px;
+}
+
+.mpcf-panels-menu li.active:last-child:before,
+.mpcf-panels-menu li.active:last-child:after {
+	display: none;
 }
 
 .mpcf-panels-menu li.active .mpcf-panel-icon:before,
