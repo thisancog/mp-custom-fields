@@ -329,6 +329,12 @@
 
 .mpcf-mediapicker {
 	display: flex;
+	flex-wrap: wrap;
+}
+
+
+.mpcf-mediapicker .mpcf-description {
+	width: 100%;
 }
 
 .mpcf-preview-content {
