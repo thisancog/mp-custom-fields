@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-03-30 10:10+0200\n"
-"PO-Revision-Date: 2018-03-30 10:10+0200\n"
+"POT-Creation-Date: 2018-04-23 11:41+0200\n"
+"PO-Revision-Date: 2018-04-23 11:41+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.5\n"
 "X-Poedit-Basepath: ../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -17,46 +17,36 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:180
+#: inc/gui.php:205
 #, php-format
 msgid "An error uploading the file for \"%s\" occurred: %s"
 msgstr ""
 "Ein Fehler ist während des Hochladens der Datei f&uuml;r „%s\" aufgetreten: "
 "%s"
 
-#: inc/gui.php:193
+#: inc/gui.php:218
 #, php-format
 msgid "There was an error trying to delete the file for \"%s\"."
 msgstr ""
 "Ein Fehler ist während des Löschens der Datei f&uuml;r „%s\" aufgetreten."
 
-#: inc/gui.php:251
+#: inc/gui.php:278
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:340
-#, php-format
-msgid "format: yyyy-mm-dd (e.g. %s)"
-msgstr "Format: JJJJ-MM-TT (bspw. %s)"
-
-#: inc/gui.php:367
-#, php-format
-msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
-msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
-
-#: inc/gui.php:449
+#: inc/gui.php:432
 msgid "Delete file"
 msgstr "Datei l&ouml;schen"
 
-#: inc/gui.php:456 mp-custom-fields.php:51
+#: inc/gui.php:439 mp-custom-fields.php:53
 msgid "Upload file"
 msgstr "Datei hochladen"
 
-#: inc/gui.php:479
+#: inc/gui.php:462
 msgid "Search for address or place…"
 msgstr "Suche nach Adresse oder Ort…"
 
-#: inc/gui.php:485
+#: inc/gui.php:468
 #, php-format
 msgid ""
 "No map showing up? Generate a free Google Maps API key and enter it <a href="
@@ -65,36 +55,42 @@ msgstr ""
 "Wird keine Karte angezeigt? Erstelle einen kostenlosen Google Maps API "
 "Schl&uuml;ssel und gib ihn <a href=\"%s\" target=\"_blank\">hier</a> ein."
 
-#: inc/gui.php:507 mp-custom-fields.php:48
-msgid "Change media"
-msgstr "Medium &auml;ndern"
+#: inc/gui.php:490
+msgid "Change"
+msgstr "&Auml;ndern"
 
-#: inc/gui.php:507 mp-custom-fields.php:47
-msgid "Add media"
-msgstr "Medium hinzuf&uuml;gen"
+#: inc/gui.php:490 inc/gui.php:638
+msgid "Add"
+msgstr "Hinzuf&uuml;gen"
 
-#: inc/gui.php:523 mp-custom-fields.php:52
+#: inc/gui.php:512 mp-custom-fields.php:54
 msgid "Remove"
 msgstr "Entfernen"
 
-#: inc/gui.php:549
+#: inc/gui.php:538
 #, php-format
 msgid "format: yyyy-mm (e.g. %s)"
 msgstr "Format: JJJJ-MM (bspw. %s)"
 
-#: inc/gui.php:647
-msgid "Add"
-msgstr "Hinzuf&uuml;gen"
-
-#: inc/gui.php:747
+#: inc/gui.php:698
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
 
-#: inc/gui.php:771
+#: inc/gui.php:722
 #, php-format
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
+
+#: inc/modules/mpcf-datefield.php:41
+#, php-format
+msgid "format: yyyy-mm-dd (e.g. %s)"
+msgstr "Format: JJJJ-MM-TT (bspw. %s)"
+
+#: inc/modules/mpcf-datetime.php:40
+#, php-format
+msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
+msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
 
 #: inc/mpcf-options.php:19
 msgid "You do not have sufficient permissions to access this page."
@@ -137,14 +133,22 @@ msgid "%s Options"
 msgstr "%s Einstellungen"
 
 #: mp-custom-fields.php:49
+msgid "Add media"
+msgstr "Medium hinzuf&uuml;gen"
+
+#: mp-custom-fields.php:50
+msgid "Change media"
+msgstr "Medium &auml;ndern"
+
+#: mp-custom-fields.php:51
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:50
+#: mp-custom-fields.php:52
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:63
+#: mp-custom-fields.php:65
 msgid "MP Custom Fields"
 msgstr "MP Custom Fields"
 
