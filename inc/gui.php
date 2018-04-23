@@ -487,7 +487,7 @@ function mpcf_build_media_selector($args) {
 
 	$vidclass	= (strpos($type, 'video') > -1) ? '' : 'hidden';
 	$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : 'hidden';
-	$caption	= (!empty($args['value'])) ? __('Change media', 'mpcf') : __('Add media', 'mpcf');
+	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
 	$clearclass	= !empty($args['value']) ? '' : 'hidden';
 	$id = 'mpcf-changemedia-' . $args['name']; ?>
 
