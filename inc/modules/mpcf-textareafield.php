@@ -22,15 +22,17 @@ class MPCFTextareaField extends MPCFModule {
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
 			'placeholder',
-			'required'
+			'required',
+			'rows'
 		);
 	}
 
 	function build_field($args = array()) {
 		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : ''); ?>
+		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '');
+		$rows = isset($args['rows']) && !empty($args['rows']) ? ' rows="' . $args['rows'] . '"' : ''; ?>
 		
-		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" <?php echo $required . $placeholder; ?>><?php echo $args['value']; ?></textarea>
+		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" <?php echo $required . $placeholder . $rows; ?>><?php echo $args['value']; ?></textarea>
 
 <?php
 	}
