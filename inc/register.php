@@ -8,7 +8,6 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
 	$boxes = get_option('mpcf_meta_boxes', array());
-	$boxes = array();
 
 	$defaults = array(
 		'post_type'	=> 'post',
@@ -38,7 +37,6 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 		$id = $baseID . ($i > 0 ? '-' . $i : '');
 		$i++;
 	}
-
 
 	$boxes[$id] = $newbox;
 	update_option('mpcf_meta_boxes', $boxes);
