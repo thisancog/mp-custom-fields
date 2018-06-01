@@ -180,13 +180,17 @@ var repeaterField = function() {
  **************************************************************/
 
 $(document).ready(function() {
-	var inputs = document.querySelectorAll('.mpcf-file-picker');
-	[].forEach.call(inputs, function(input) {
-		var label = input.nextElementSibling,
+	var fields = document.querySelectorAll('.mpcf-file-input');
+
+	[].forEach.call(fields, function(field) {
+		var input = field.querySelector('.mpcf-file-picker'),
+			label = field.querySelector('.mpcf-field label'),
 			content = label.innerHTML;
 
 		input.addEventListener('change', function(e) {
-			var file = '';
+			var file = '',
+				value = '';
+
 			if (this.files && this.files.length > 1) {
 				file = this.files.length + ' ' + localizedmpcf.filesSelected;
 			} else {
