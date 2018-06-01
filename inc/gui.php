@@ -359,7 +359,7 @@ function mpcf_build_editor($args) {
 	<div class="mpcf-editor mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
 		<div class="mpcf-field">
-			<?php wp_editor($args['value'], $id, $editorargs); ?>
+			<?php wp_editor(mpcf_mknice($args['value']), $id, $editorargs); ?>
 			<?php mpcf_build_description($args['description']) ?>
 		</div>
 	</div>
