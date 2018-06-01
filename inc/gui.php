@@ -189,36 +189,19 @@ function mpcf_save_meta_boxes($post_id) {
 				update_post_meta($post_id, $field['name'], mpcf_mksafe($_POST[$field['name']]));
 			} else if ($field['type'] === 'checkbox') {
 				update_post_meta($post_id, $field['name'], false);
-			} else if ($field['type'] === 'file') {
-				if (!empty($_FILES[$field['name']]['name'])) {
-					$file = $_FILES[$field['name']]['name'];
+			}
 
-					if (isset($field['accept']) && !empty($field['accept'])) {
-						$supported = array_map('trim', explode(',', $field['accept']));
-						$type = wp_check_filetype(basename($file))['type'];
+			if ($field['type'] === 'file') {
+				require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+				require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+				require_once(ABSPATH . "wp-admin" . '/includes/media.php');
 
-						if (!in_array($type, $supported)) continue;
-					}
+				$attachment_id = !empty($_FILES[$field['name']]['name'])
+							   ? media_handle_upload($field['name'], $post_id)
+							   : get_post_meta($post_id, $field['name']);
 
-					$upload = wp_upload_bits($file, null, file_get_contents($_FILES[$field['name']]['tmp_name']));
-					if (isset($upload['error']) && $upload['error'] != 0) {
-						wp_die(sprintf(__('An error uploading the file for "%s" occurred: %s', 'mpcf'), $field['label'], $upload['error']));
-					} else {
-						update_post_meta($post_id, $field['name'], $upload);
-					}
-				} else {
-					$file = get_post_meta($post_id, $field['name'], true);
-					$urlfield = isset($_POST[$field['name'] . '-url']) ? $_POST[$field['name'] . '-url'] : '';
-
-					if (strlen(trim($file['url'])) > 0 && strlen(trim($urlfield)) == 0) {
-						if (unlink($file['file'])) {
-							update_post_meta($post_id, $field['name'], null);
-							update_post_meta($post_id, $field['name'] . '-url', '');
-						} else {
-							wp_die(sprintf(__('There was an error trying to delete the file for "%s".', 'mpcf'), $field['label']));
-						}
-					}
-				}
+				$val = is_wp_error($attachment_id) ? '' : $attachment_id;
+				update_post_meta($post_id, $field['name']);
 			}
 		}
 	}
@@ -410,8 +393,7 @@ function mpcf_build_email_input($args) { ?>
 
 
 
-function mpcf_build_file_input($args) {
-	$args['value'] = unserialize($args['value']); ?>
+function mpcf_build_file_input($args) { ?>
 	<div class="mpcf-file-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
 		<div class="mpcf-field">
@@ -421,20 +403,14 @@ function mpcf_build_file_input($args) {
 				class="mpcf-file-picker"
 				name="<?php echo $args['name']; ?>"
 				id="<?php echo $args['name']; ?>"
-				value=""
 				<?php echo ($args['required'] ? ' required' : ''); ?>
 				<?php echo (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : ''); ?>
 				<?php echo (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : ''); ?>
 				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>>
 
-<?php 		if (isset($args['value']['url']) && !empty($args['value']['url'])) { ?>
-				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php echo basename($args['value']['url']); ?></label>
-				<input type="button" class="mpcf-remove-file mpcf-button" value="<?php _e('Delete file', 'mpcf'); ?>" />
-				<input
-					type="hidden"
-					class="mpcf-file-url"
-					name="<?php echo $args['name']; ?>-url"
-					value="<?php echo $args['value']['url']; ?>" />
+<?php 		if (isset($args['value']) && !empty($args['value'])) { ?>
+				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php echo basename(wp_get_attachment_url($args['value'])); ?></label>
+				<input type="button" class="mpcf-remove-file mpcf-button" value="<?php _e('Remove file', 'mpcf'); ?>" />
 <?php 		} else { ?>
 				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php _e('Upload file', 'mpcf'); ?></label>
 <?php 		} ?>
