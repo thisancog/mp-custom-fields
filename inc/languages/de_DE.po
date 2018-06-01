@@ -1,0 +1,169 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2018-06-01 11:33+0200\n"
+"PO-Revision-Date: 2018-06-01 11:33+0200\n"
+"Last-Translator: Matthias Planitzer\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.5\n"
+"X-Poedit-Basepath: ../..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_x\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: footer.php:31
+#, php-format
+msgid ""
+"This website would like to store small text files (\"cookies\") on your "
+"computer. %sRead our privacy policy.%s"
+msgstr ""
+"Diese Website möchte kleine Textdateien („Cookies“) auf Ihrem Computer "
+"speichern. %sLesen Sie unsere Datenschutzerklärung.%s"
+
+#: footer.php:31
+msgid "Privacy policy"
+msgstr "Datenschutzerklärung"
+
+#: footer.php:34
+msgid "Allow"
+msgstr "Zulassen"
+
+#: footer.php:35
+msgid "No thanks"
+msgstr "Nein danke"
+
+#: functions.php:313
+msgid ""
+"Warning: This theme needs the \"Digital Business University Helper\" to work "
+"properly."
+msgstr ""
+"Achtung: Dieses Theme benötigtg das Plugin „Digital Business University "
+"Helper“ um ordnungsgem&auml;&szlig; zu funktionieren."
+
+#: functions.php:315
+msgid "<br/>It appears not to be activated."
+msgstr "<br/>Es scheint nicht aktiviert zu sein."
+
+#: functions.php:316
+#, php-format
+msgid " <a href=\"%s\">Go to the plugin panel</a> and activate it."
+msgstr " <a href=„%s“>Gehe zur Plugin-Seite</a> und aktiviere es."
+
+#: functions.php:318
+msgid "<br/>It appears it isn't installed or is corrupted."
+msgstr "<br>Es scheint, es ist nicht installiert oder ist beschädigt."
+
+#: functions.php:350
+msgid "Header menu"
+msgstr "Header-Men&uuml;"
+
+#: functions.php:351
+msgid "Footer left menu"
+msgstr "Footer-Menü links"
+
+#: functions.php:352
+msgid "Footer right menu"
+msgstr "Footer-Menü rechts"
+
+#: header.php:15
+msgid "University"
+msgstr "Hochschule"
+
+#: header.php:16
+msgid "Study"
+msgstr "Studium"
+
+#: header.php:17
+msgid "Vocational training"
+msgstr "Weiterbildung"
+
+#: header.php:24
+msgid "Back to the homepage"
+msgstr "Zurück zur Homepage"
+
+#: inc/templates/general/home-about.php:14
+msgid "University of the future"
+msgstr "Uni der Zukunft"
+
+#: inc/templates/general/home-about.php:17
+msgid "Find out more"
+msgstr "Jetzt mehr erfahren"
+
+#~ msgid "This page vanished. Please go %sback%s."
+#~ msgstr "Diese Seite ist verschwunden. Bitte geh %szur&uuml;ck%s."
+
+#~ msgid "Press S to save background doodle."
+#~ msgstr "Dr&uuml;cke S um das Hintergrundgekritzel zu speichern."
+
+#~ msgid "More posts&hellip;"
+#~ msgstr "Mehr Artikel&hellip;"
+
+#~ msgid "Daimler AG %s"
+#~ msgstr "Daimler AG %s"
+
+#~ msgid ""
+#~ "Warning: This theme needs the \"Extended Wohnzimmer Helper\" to work "
+#~ "properly."
+#~ msgstr ""
+#~ "Achtung: Dieses Theme ben&ouml;tigt das „Extended Wohnzimmer Helper“ um "
+#~ "ordnungsgem&auml;&szlig; funktionieren zu k&ouml;nnen."
+
+#~ msgid "Footer menu"
+#~ msgstr "Footer-Men&uuml;"
+
+#~ msgid "Footer disclaimer menu"
+#~ msgstr "Footer-Disclaimer-Men&uuml;"
+
+#~ msgid "Menu"
+#~ msgstr "Menü"
+
+#~ msgid "Posts in category %s"
+#~ msgstr "Beitr&auml;ge der Kategorie %s"
+
+#~ msgid "Posts tagged as %s"
+#~ msgstr "Beitr&auml;ge &uuml;ber %s"
+
+#~ msgid "%s&rsquo;s posts"
+#~ msgstr "%ss Beitr&auml;ge"
+
+#~ msgid "Mail: "
+#~ msgstr "Mail: "
+
+#~ msgid "Tel: "
+#~ msgstr "Tel: "
+
+#~ msgid "Address: "
+#~ msgstr "Anschrift: "
+
+#~ msgid "Further posts"
+#~ msgstr "Weitere Artikel"
+
+#~ msgid "Extended Wohnzimmer"
+#~ msgstr "Extended Wohnzimmer"
+
+#~ msgid "Edit"
+#~ msgstr "Bearbeiten"
+
+#~ msgid ""
+#~ "This website would like to store small text files (\"cookies\") on your "
+#~ "computer to personalise the experience. %sRead our privacy policy.%s"
+#~ msgstr ""
+#~ "Diese Website möchte kleine Textdateien („Cookies“) auf Ihrem Computer "
+#~ "speichern, um die Erfahrung zu personalisieren. %sLesen Sie unsere "
+#~ "Datenschutzerklärung.%s"
+
+#~ msgid "This page vanished. Please go back."
+#~ msgstr "Diese Seite ist verschwunden. Bitte geh zur&uuml;ck."
+
+#~ msgid "&copy; Daimler AG %s"
+#~ msgstr "&copy; Daimler AG %s"
+
+#~ msgid "Warning: This theme needs the \"Extended Helper\" to work properly."
+#~ msgstr ""
+#~ "Achtung: Dieses Theme ben&ouml;tigt das „K Helper Plugin“ um "
+#~ "ordnungsgem&auml;&szlig; funktionieren zu k&ouml;nnen."
