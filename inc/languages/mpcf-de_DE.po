@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-04-23 11:41+0200\n"
-"PO-Revision-Date: 2018-04-23 11:41+0200\n"
+"POT-Creation-Date: 2018-06-01 12:55+0200\n"
+"PO-Revision-Date: 2018-06-01 12:55+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,36 +17,23 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:205
-#, php-format
-msgid "An error uploading the file for \"%s\" occurred: %s"
-msgstr ""
-"Ein Fehler ist während des Hochladens der Datei f&uuml;r „%s\" aufgetreten: "
-"%s"
-
-#: inc/gui.php:218
-#, php-format
-msgid "There was an error trying to delete the file for \"%s\"."
-msgstr ""
-"Ein Fehler ist während des Löschens der Datei f&uuml;r „%s\" aufgetreten."
-
-#: inc/gui.php:278
+#: inc/gui.php:261
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:432
-msgid "Delete file"
-msgstr "Datei l&ouml;schen"
+#: inc/gui.php:413
+msgid "Remove file"
+msgstr "Datei entfernen"
 
-#: inc/gui.php:439 mp-custom-fields.php:53
+#: inc/gui.php:415 mp-custom-fields.php:53
 msgid "Upload file"
 msgstr "Datei hochladen"
 
-#: inc/gui.php:462
+#: inc/gui.php:438
 msgid "Search for address or place…"
 msgstr "Suche nach Adresse oder Ort…"
 
-#: inc/gui.php:468
+#: inc/gui.php:444
 #, php-format
 msgid ""
 "No map showing up? Generate a free Google Maps API key and enter it <a href="
@@ -55,29 +42,29 @@ msgstr ""
 "Wird keine Karte angezeigt? Erstelle einen kostenlosen Google Maps API "
 "Schl&uuml;ssel und gib ihn <a href=\"%s\" target=\"_blank\">hier</a> ein."
 
-#: inc/gui.php:490
+#: inc/gui.php:466
 msgid "Change"
 msgstr "&Auml;ndern"
 
-#: inc/gui.php:490 inc/gui.php:638
+#: inc/gui.php:466 inc/gui.php:614
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
-#: inc/gui.php:512 mp-custom-fields.php:54
+#: inc/gui.php:488 mp-custom-fields.php:54
 msgid "Remove"
 msgstr "Entfernen"
 
-#: inc/gui.php:538
+#: inc/gui.php:514
 #, php-format
 msgid "format: yyyy-mm (e.g. %s)"
 msgstr "Format: JJJJ-MM (bspw. %s)"
 
-#: inc/gui.php:698
+#: inc/gui.php:674
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
 
-#: inc/gui.php:722
+#: inc/gui.php:698
 #, php-format
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
@@ -127,7 +114,7 @@ msgstr "Einstellungen wurden gespeichert."
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/register.php:28
+#: inc/register.php:27
 #, php-format
 msgid "%s Options"
 msgstr "%s Einstellungen"
@@ -151,6 +138,18 @@ msgstr "Dateien ausgew&auml;hlt"
 #: mp-custom-fields.php:65
 msgid "MP Custom Fields"
 msgstr "MP Custom Fields"
+
+#~ msgid "An error uploading the file for \"%s\" occurred: %s"
+#~ msgstr ""
+#~ "Ein Fehler ist während des Hochladens der Datei f&uuml;r „%s\" "
+#~ "aufgetreten: %s"
+
+#~ msgid "There was an error trying to delete the file for \"%s\"."
+#~ msgstr ""
+#~ "Ein Fehler ist während des Löschens der Datei f&uuml;r „%s\" aufgetreten."
+
+#~ msgid "Delete file"
+#~ msgstr "Datei l&ouml;schen"
 
 #~ msgid "The type of the file for \"%s\" is not valid."
 #~ msgstr "Der Typ der Datei f&uuml;r „%s“ ist ung&uuml;ltig."
