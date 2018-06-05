@@ -198,7 +198,7 @@ function mpcf_save_meta_boxes($post_id) {
 
 				$attachment_id = !empty($_FILES[$field['name']]['name'])
 							   ? media_handle_upload($field['name'], $post_id)
-							   : get_post_meta($post_id, $field['name']);
+							   : $_POST[$field['name'] . '-id'] == -1 ? '' : get_post_meta($post_id, $field['name']);
 
 				$val = is_wp_error($attachment_id) ? '' : $attachment_id;
 				update_post_meta($post_id, $field['name']);
@@ -353,7 +353,7 @@ function mpcf_build_editor($args) {
 		'textarea_rows'		=> isset($args['rows']) ? $args['rows'] : 10,
 		'textarea_name'		=> $args['name'],
 		'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : true,
-		'wpautop'			=> isset($args['addparagraphs']) ? !!$args['addparagraphs'] : true,
+		'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
 	); ?>
 
 	<div class="mpcf-editor mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
@@ -414,6 +414,12 @@ function mpcf_build_file_input($args) { ?>
 <?php 		} else { ?>
 				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php _e('Upload file', 'mpcf'); ?></label>
 <?php 		} ?>
+
+			<input type="hidden"
+					class="mpcf-file-id"
+					name="<?php echo $args['name']; ?>-id"
+					id="<?php echo $args['name']; ?>-id"
+					value="<?php echo $args['value']; ?>" />
 
 			<?php mpcf_build_description($args['description']) ?>
 		</div>
