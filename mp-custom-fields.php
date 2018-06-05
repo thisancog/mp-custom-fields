@@ -13,6 +13,7 @@ Author: Matthias Planitzer
 
 require_once('inc/includes.php');
 
+add_action('add_meta_boxes', 'mpcf_add_metaboxes');
 add_action('admin_init', 'mpcf_admin_init');
 add_action('admin_menu', 'mpcf_setup_theme_admin_menu');
 add_action('init', 'mpcf_init');
@@ -74,8 +75,6 @@ function mpcf_setup_theme_admin_menu() {
 
 	wp_enqueue_style('mpcf-admin-styles', plugins_url('inc/admin.css', __FILE__));
 	wp_enqueue_style('wp-color-picker');
-
-	mpcf_add_metaboxes();
 }
 
 
