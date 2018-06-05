@@ -184,6 +184,7 @@ $(document).ready(function() {
 
 	[].forEach.call(fields, function(field) {
 		var input = field.querySelector('.mpcf-file-picker'),
+			id = field.querySelector('.mpcf-file-id'),
 			label = field.querySelector('.mpcf-field label'),
 			content = label.innerHTML;
 
@@ -198,6 +199,7 @@ $(document).ready(function() {
 			}
 
 			label.innerHTML = file ? file : localizedmpcf.fileUpload;
+			url.value = file;
 		});
 
 		input.addEventListener('focus', function() { input.classList.add('focus'); });
@@ -207,7 +209,7 @@ $(document).ready(function() {
 	var btn = $('.mpcf-remove-file');
 	btn.each(function() {
 		$(this).click(function(e) {
-			$(this).parent().find('.mpcf-file-url').val('');
+			$(this).parent().find('.mpcf-file-id').val(-1);
 			$(this).parent().find('.mpcf-file-picker').val('');
 			$(this).parent().find('label').text(localizedmpcf.fileUpload);
 			$(this).hide();
