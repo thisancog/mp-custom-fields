@@ -10,12 +10,13 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 	$boxes = get_option('mpcf_meta_boxes', array());
 
 	$defaults = array(
-		'post_type'	=> 'post',
-		'title'		=> '',
-		'context'	=> 'normal',
-		'priority'	=> 'default',
-		'fields'	=> array(),
-		'panels'	=> array()
+		'post_type'		=> 'post',
+		'page_template'	=> '',
+		'title'			=> '',
+		'context'		=> 'normal',
+		'priority'		=> 'default',
+		'fields'		=> array(),
+		'panels'		=> array()
 	);
 
 	$newbox = array_merge($defaults, $arguments);
@@ -39,6 +40,7 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 	}
 
 	$boxes[$id] = $newbox;
+
 	update_option('mpcf_meta_boxes', $boxes);
 	return $newbox;
 }
@@ -53,14 +55,14 @@ function mpcf_remove_custom_fields($boxID) {
 	$boxes = get_option('mpcf_meta_boxes', array());
 	$removed = null;
 
-	$boxes = array_filter($boxes, function($box) use ($boxID, &$removed) {
-		if ($box['id'] === $boxID) {
+	$boxes = array_filter($boxes, function($box, $id) use ($boxID, &$removed) {
+		if ($id === $boxID) {
 			$removed = $box;
 			return false;
 		}
 
 		return true;
-	});
+	}, ARRAY_FILTER_USE_BOTH);
 
 	update_option('mpcf_meta_boxes', $boxes);
 	return $removed;
@@ -72,10 +74,32 @@ function mpcf_remove_custom_fields($boxID) {
  *****************************************************/
 
 function mpcf_add_metaboxes() {
+	global $post;
 	$boxes = get_option('mpcf_meta_boxes', array());
+	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
 
 	foreach ($boxes as $id => $box) {
-		add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $box['post_type'], $box['context'], $box['priority']);
+		$post_type = $box['post_type'];
+		$page_template = $box['page_template'];
+
+		if ($post_type === 'page' && !empty($page_template)) {
+			if (is_string($page_template)) $page_template = array($page_template);
+			$valids = array_filter($page_template, function($template) {
+				return substr($template, 0, 1) !== '-';
+			});
+
+			$invalids = array_filter($page_template, function($template) {
+				return substr($template, 0, 1) === '-';
+			});
+
+			if (!empty($invalids) && in_array('-' . $currentTemplate, $invalids))
+				continue;
+
+			if (!empty($valids) && !in_array($currentTemplate, $valids))
+				continue;
+		}
+
+		add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $box['context'], $box['priority']);
 	}
 }
 
