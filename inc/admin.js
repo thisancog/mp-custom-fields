@@ -199,7 +199,7 @@ $(document).ready(function() {
 			}
 
 			label.innerHTML = file ? file : localizedmpcf.fileUpload;
-			url.value = file;
+			id.value = file;
 		});
 
 		input.addEventListener('focus', function() { input.classList.add('focus'); });
