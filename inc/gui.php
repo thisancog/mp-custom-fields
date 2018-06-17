@@ -185,28 +185,39 @@ function mpcf_save_meta_boxes($post_id) {
 		}
 
 		foreach ($fields as $field) {
-			if (isset($_POST[$field['name']])) {
-				update_post_meta($post_id, $field['name'], mpcf_mksafe($_POST[$field['name']]));
-			} else if ($field['type'] === 'checkbox') {
+			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
+			$actions = isset($field['actions']) ? $field['actions'] : array();
+
+			if (!isset($_POST[$field['name']]) && $field['type'] === 'checkbox')
 				update_post_meta($post_id, $field['name'], false);
-			}
 
 			if ($field['type'] === 'file') {
 				require_once(ABSPATH . "wp-admin" . '/includes/image.php');
 				require_once(ABSPATH . "wp-admin" . '/includes/file.php');
 				require_once(ABSPATH . "wp-admin" . '/includes/media.php');
 
-				$attachment_id = !empty($_FILES[$field['name']]['name'])
-							   ? media_handle_upload($field['name'], $post_id)
-							   : $_POST[$field['name'] . '-id'] == -1 ? '' : get_post_meta($post_id, $field['name']);
+				$att = !empty($_FILES[$field['name']]['name'])
+					 ? media_handle_upload($field['name'], $post_id)
+					 : $_POST[$field['name'] . '-id'] == -1 ? '' : get_post_meta($post_id, $field['name']);
 
-				$val = is_wp_error($attachment_id) ? '' : $attachment_id;
-				update_post_meta($post_id, $field['name']);
+				$value = is_wp_error($att) ? '' : $att;
+			}
+
+			if (isset($actions['save_before'])) {
+				$value = call_user_func($actions['save_before'], $post_id, $field['name'], $value);
+			}
+
+			update_post_meta($post_id, $field['name'], $value);
+
+			if (isset($actions['save_after'])) {
+				call_user_func($actions['save_after'], $post_id, $field['name'], $value);
 			}
 		}
 	}
 
-	if (isset($_POST['activetab']))		update_post_meta($post_id, 'activetab', $_POST['activetab']);
+
+	if (isset($_POST['activetab']))	
+		update_post_meta($post_id, 'activetab', $_POST['activetab']);
 }
 
 
@@ -392,7 +403,7 @@ function mpcf_build_email_input($args) { ?>
 }
 
 
-
+/*
 function mpcf_build_file_input($args) { ?>
 	<div class="mpcf-file-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
@@ -421,6 +432,50 @@ function mpcf_build_file_input($args) { ?>
 					id="<?php echo $args['name']; ?>-id"
 					value="<?php echo $args['value']; ?>" />
 
+			<?php mpcf_build_description($args['description']) ?>
+		</div>
+	</div>
+
+<?php
+}
+
+*/
+
+function mpcf_build_file_input($args) {
+	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
+	$clearclass	= !empty($args['value']) ? '' : 'hidden';
+	$id = 'mpcf-changemedia-' . $args['name'];
+
+	$file = get_attached_file($args['value']);
+	$size = filesize($file);
+	$sizes = array('b', 'KB', 'MB', 'GB');
+	$s = floor(log($size) / log(1024));
+	$filesize = sprintf('%d ' . $sizes[$s], $size / pow(1024, floor($s)));
+
+//	$accept = (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : '');
+//	$size = (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : '');
+//	$required = ($args['required'] ? ' required' : '');
+
+	$multiple = isset($args['multiple']) && !empty($args['multiple']) ? 'true' : 'false'; ?>
+
+	<div class="mpcf-file-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
+
+<?php 	if (isset($args['label']) && !empty($args['label'])) { ?>
+
+		<div class="mpcf-label"><label for="<?php echo $id; ?>"><?php echo $args['label']; ?></label></div>
+
+<?php 	} ?>
+
+		<div class="mpcf-field mpcf-mediapicker mpcf-filepicker" data-multiple="<?php echo $multiple; ?>">
+			<div class="mpcf-preview-content mpcf-preview-content-file">
+				<span class="filename"><?php echo basename($file); ?></span>
+				<span class="filesize"><?php echo $filesize; ?></span>
+			</div>
+			<div class="mpcf-content-buttons">
+				<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
+				<input type="button" class="mpcf-changefile mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
+			</div>
 			<?php mpcf_build_description($args['description']) ?>
 		</div>
 	</div>

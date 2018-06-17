@@ -177,7 +177,8 @@ var repeaterField = function() {
 
 /**************************************************************
 	Handle files
- **************************************************************/
+ **************************************************************
+
 
 $(document).ready(function() {
 	var fields = document.querySelectorAll('.mpcf-file-input');
@@ -334,7 +335,7 @@ $(document).ready(function($) {
 });
 
 function registerMediaPicker() {
-	var change = $('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia'),
+	var change = $('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia, .mpcf-filepicker .filename'),
 		clear = $('.mpcf-clearmedia');
 
 	change.unbind('click');
@@ -346,17 +347,29 @@ function registerMediaPicker() {
 
 function changeMedia(elem, e) {	
 	e.preventDefault();
+
+	var parent = $(elem).parents('.mpcf-mediapicker'),
+		multiple = parent.data('multiple');
+
+	console.log(multiple);
+
 	var image = wp.media({ 
 		title: localizedmpcf.chooseMedia,
-		multiple: false
+		multiple: multiple
 	}).open()
 	.on('select', function(e){
-		var choice = image.state().get('selection').first().toJSON(),
-			parent = $(elem).parents('.mpcf-mediapicker');
+		var choice = image.state().get('selection').first().toJSON();
 
 		parent.find('.mpcf-media-id').val(choice.id);
 		parent.find('.mpcf-changemedia').val(localizedmpcf.changeMedia);
 		parent.find('.mpcf-clearmedia').removeClass('hidden');
+
+		if (parent.is('.mpcf-filepicker')) {
+
+			parent.find('.mpcf-preview-content-file .filename').html(choice.filename);
+			parent.find('.mpcf-preview-content-file .filesize').html(choice.filesizeHumanReadable);
+			return;
+		}
 
 		if (choice.mime.indexOf('image') > -1) {
 			parent.find('.mpcf-imagepreview').attr('src', choice.url);

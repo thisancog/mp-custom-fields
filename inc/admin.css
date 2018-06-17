@@ -337,13 +337,13 @@
 	width: 100%;
 }
 
-.mpcf-preview-content {
+.mpcf-preview-content:not(.mpcf-preview-content-file) {
 	position: relative;
 	margin-right: 20px;
 	border: 1px dotted #DDD;
 }
 
-.mpcf-preview-content:before {
+.mpcf-preview-content:not(.mpcf-preview-content-file):before {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -358,11 +358,26 @@
 	color: #DDD;
 }
 
-.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content {
+.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content:not(.mpcf-preview-content-file) {
 	border-color: #CCC;
 }
 
-.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content:before {
+.mpcf-repeater-row:nth-child(2n) .mpcf-preview-content:not(.mpcf-preview-content-file):before {
+	color: #CCC;
+}
+
+.mpcf-preview-content-file {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.mpcf-preview-content-file .filename {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.mpcf-preview-content-file .filesize {
+	margin-left: 1em;
 	color: #CCC;
 }
 
@@ -391,6 +406,10 @@
 
 .mpcf-content-buttons {
 	width: 100px;
+}
+
+.mpcf-filepicker .mpcf-content-buttons {
+	width: auto;
 }
 
 .mpcf-editor {
