@@ -656,9 +656,14 @@ function mpcf_build_select_input($args) {
 				name="<?php echo $args['name']; ?><?php echo (isset($args['multiple']) && !empty($args['multiple']) ? '[]' : ''); ?>"
 				id="<?php echo $args['name']; ?>"
 				<?php echo (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : ''); ?>
-				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>>
+				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>
+				<?php echo (isset($args['required']) && !empty($args['required']) ? ' required' : ''); ?>>
 
-<?php 		foreach ($args['options'] as $name => $title) {
+<?php 		if ($args['required']) { ?>
+				<option value="" disabled<?php echo (empty($args['value']) ? ' selected' : ''); ?>>-----</option>
+<?php 		}
+
+ 			foreach ($args['options'] as $name => $title) {
 				$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value'])); ?>
 				<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $title; ?></option>
 <?php		} ?>

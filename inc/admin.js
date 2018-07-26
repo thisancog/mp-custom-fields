@@ -53,10 +53,10 @@ var goToInvalids = function() {
 }
 
 var focusInvalids = function(elem) {
-	[].forEach.call(elem.querySelectorAll('input'), function(input) {
+	[].forEach.call(elem.querySelectorAll('input, select, textarea'), function(input) {
 		input.addEventListener('invalid', function(e) {
-			var menu = document.querySelector('.mpcf-panels-menu'),
-				active = document.querySelector('.mpcf-panels-tabs .active-panel'),
+			var menu = input.closest('.mpcf-panels').querySelector('.mpcf-panels-menu'),
+				active = input.closest('.mpcf-panels').querySelector('.mpcf-panels-tabs .active-panel'),
 				parent = e.target;
 
 			active.classList.remove('active-panel');
