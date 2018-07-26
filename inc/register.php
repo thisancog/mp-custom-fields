@@ -83,7 +83,11 @@ function mpcf_add_metaboxes() {
 		$page_template = $box['page_template'];
 
 		if ($post_type === 'page' && !empty($page_template)) {
-			if (is_string($page_template)) $page_template = array($page_template);
+			if (is_string($page_template))
+				$page_template = explode(',', $page_template);
+
+			$page_template = array_map('trim', $page_template);
+
 			$valids = array_filter($page_template, function($template) {
 				return substr($template, 0, 1) !== '-';
 			});

@@ -541,10 +541,38 @@ body.no-js .mpcf-file-picker + label {
 	top: 18px;
 	left: 16px;
 	counter-increment: section;
+	z-index: 2;
 }
 
 .mpcf-repeater-wrapper li:nth-child(2n) {
 	background-color: #F5F5F5;
+}
+
+.mpcf-repeater-row.dragover {
+	position: relative;
+	padding-top: calc(5rem + 16px);
+	background-color: #E5E5E5;
+}
+
+.mpcf-repeater-wrapper li.dragover:before {
+	top: calc(5rem + 18px);
+}
+
+.mpcf-repeater-row.dragover:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 5rem;
+	width: 100%;
+	z-index: 1;
+
+	border-bottom: 1px solid #DDD;
+	background-color: white;
+}
+
+.mpcf-repeater-row.dragged {
+	background-color: #F0F0F0;
 }
 
 .mpcf-repeater-row-controls {

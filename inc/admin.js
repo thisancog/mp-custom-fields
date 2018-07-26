@@ -21,20 +21,20 @@ var panelSwitch = function() {
 			listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
 			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
 
-		[].filter.call(listItems, (item) => item.getAttribute('data-index') === start).forEach((item) => item.classList.add('active'));
-		[].filter.call(panels, (panel) => panel.getAttribute('data-index') === start).forEach((panel) => panel.classList.add('active-panel'));
+		[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
+		[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
 
 		[].forEach.call(listItems, function(listItem) {
 			listItem.addEventListener('click', function() {
 				if (listItem.classList.contains('active')) return;
 
-				var dest = listItem.getAttribute('data-index');
+				var dest = listItem.dataset.index;
 
 				[].forEach.call(listItems, (listItem) => listItem.classList.remove('active'));
 				[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
 
 				listItem.classList.add('active');
-				[].filter.call(panels, (panel) => panel.getAttribute('data-index') === dest).forEach((panel) => panel.classList.add('active-panel'));
+				[].filter.call(panels, (panel) => panel.dataset.index === dest).forEach((panel) => panel.classList.add('active-panel'));
 				panelSet.querySelector('.activetab').setAttribute('value', dest);
 			});
 		});
@@ -60,12 +60,12 @@ var focusInvalids = function(elem) {
 				parent = e.target;
 
 			active.classList.remove('active-panel');
-			menu.querySelector('li[data-index="' + active.getAttribute('data-index') + '"]').classList.remove('active');
+			menu.querySelector('li[data-index="' + active.dataset.index + '"]').classList.remove('active');
 
 			while ((parent = parent.parentElement) && !parent.classList.contains('mpcf-panel'));
 			parent.classList.add('active-panel');
 
-			menu.querySelector('li[data-index="' + parent.getAttribute('data-index') + '"]').classList.add('active');
+			menu.querySelector('li[data-index="' + parent.dataset.index + '"]').classList.add('active');
 		});
 	});
 }
@@ -80,7 +80,7 @@ var checkHTML5Support = function() {
 	[].forEach.call(elems, function(elem) {
 		var input = document.createElement('input'),
 			type = elem.querySelector('input').getAttribute('type'),
-			invalid = elem.getAttribute('data-invalid-test');
+			invalid = elem.dataset.invalidTest;
 
 		input.setAttribute('type', type);
 		input.setAttribute('value', invalid);
@@ -100,13 +100,17 @@ var repeaterField = function() {
 	var repeaters = document.querySelectorAll('.mpcf-repeater');
 	[].forEach.call(repeaters, function(repeater) {
 		var rowsWrapper = repeater.querySelector('.mpcf-repeater-wrapper'),
-			baseName = rowsWrapper.getAttribute('data-basename'),
+			baseName = rowsWrapper.dataset.basename,
 			loader = repeater.querySelector('.mpcf-loading-container'),
-			fields = rowsWrapper.getAttribute('data-fields'),
+			fields = rowsWrapper.dataset.fields,
 			fieldsObj = JSON.parse(fields),
-			values = rowsWrapper.getAttribute('data-values'),
+			values = rowsWrapper.dataset.values,
 			addBtn = repeater.querySelector('.mpcf-repeater-add-row'),
-			rowHTML = null;
+			rowHTML = null,
+			dragDropHandler = null;
+
+
+		// populate repeater
 
 		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields, 'values': values }, function(response) {
 			rowsWrapper.innerHTML = response;
@@ -114,16 +118,22 @@ var repeaterField = function() {
 				btn.addEventListener('click', removeRow);
 			});
 
+			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), { cbEnd: reorder, clickElem: '.mpcf-repeater-row-move' });
+
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
 			focusInvalids(rowsWrapper);
 		});
 
+		// prefetch blank row
+
 		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields }, function(response) {
 			rowHTML = response;
 		});
 
+
+		// add row
 		addBtn.addEventListener('click', function() {
 			var newRow = document.createElement('li');
 			newRow.classList.add('mpcf-repeater-row');
@@ -131,10 +141,15 @@ var repeaterField = function() {
 			rowsWrapper.appendChild(newRow);
 			newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
 
+			dragDropHandler.addElements(newRow);
+
 			reorder();
 			registerMediaPicker();
 			focusInvalids(newRow);
 		});
+
+
+		// remove Row
 
 		var removeRow = function(e) {
 			var el = e.target;
@@ -144,6 +159,9 @@ var repeaterField = function() {
 			el.parentElement.removeChild(el);
 			reorder();
 		}
+
+
+		// reorder rows and assign new indices
 
 		var reorder = function() {
 			var rows = rowsWrapper.querySelectorAll('.mpcf-repeater-row');
@@ -173,50 +191,6 @@ var repeaterField = function() {
 	});
 }
 
-
-
-/**************************************************************
-	Handle files
- **************************************************************
-
-
-$(document).ready(function() {
-	var fields = document.querySelectorAll('.mpcf-file-input');
-
-	[].forEach.call(fields, function(field) {
-		var input = field.querySelector('.mpcf-file-picker'),
-			id = field.querySelector('.mpcf-file-id'),
-			label = field.querySelector('.mpcf-field label'),
-			content = label.innerHTML;
-
-		input.addEventListener('change', function(e) {
-			var file = '',
-				value = '';
-
-			if (this.files && this.files.length > 1) {
-				file = this.files.length + ' ' + localizedmpcf.filesSelected;
-			} else {
-				file = e.target.value.split('\\').pop();
-			}
-
-			label.innerHTML = file ? file : localizedmpcf.fileUpload;
-			id.value = file;
-		});
-
-		input.addEventListener('focus', function() { input.classList.add('focus'); });
-		input.addEventListener('blur', function() { input.classList.remove('focus'); });
-	})
-
-	var btn = $('.mpcf-remove-file');
-	btn.each(function() {
-		$(this).click(function(e) {
-			$(this).parent().find('.mpcf-file-id').val(-1);
-			$(this).parent().find('.mpcf-file-picker').val('');
-			$(this).parent().find('label').text(localizedmpcf.fileUpload);
-			$(this).hide();
-		});
-	});
-});
 
 
 
@@ -351,8 +325,6 @@ function changeMedia(elem, e) {
 	var parent = $(elem).parents('.mpcf-mediapicker'),
 		multiple = parent.data('multiple');
 
-	console.log(multiple);
-
 	var image = wp.media({ 
 		title: localizedmpcf.chooseMedia,
 		multiple: multiple
@@ -394,4 +366,190 @@ function clearimg(elem) {
 	parent.find('.mpcf-changemedia').val(localizedmpcf.addMedia);
 	parent.find('.mpcf-clearmedia').addClass('hidden');
 }
+
+
+
+
+
+/**************************************************************
+	General helpers
+ **************************************************************/
+
+/**********
+	Drag and drop
+ **********/
+
+class addDragDrop {
+	constructor (target, args = {}) {
+		if (!target) return false;
+
+		this.self = this;
+		this.elems = [];
+		this.dragSource = null;
+		this.isDragging = false;
+		this.defaults = {
+			cbStart: null,
+			cbOver: null,
+			cbEnter: null,
+			cbLeave: null,
+			cbDrop: null,
+			cbEnd: null,
+			clickElem: null
+		};
+
+		this.args = Object.assign(this.defaults, args);
+		this.addElements(target);
+		return this;
+	}
+
+	addElements(newElems) {
+		var obj = this;
+
+		if (newElems.length)
+			newElems = [].slice.call(newElems);
+		else
+			newElems = [newElems];
+
+		this.elems = this.elems.concat(newElems);
+
+		newElems.forEach(function(elem) {
+			obj.addHandlers(elem);
+		});
+	}
+
+	addHandlers(elem) {
+		elem.addEventListener('mousedown', (e) => this.handleClick(e),     false);
+		elem.addEventListener('dragstart', (e) => this.handleDragStart(e), false);
+		elem.addEventListener('dragenter', (e) => this.handleDragEnter(e), false);
+		elem.addEventListener('dragover',  (e) => this.handleDragOver(e),  false);
+		elem.addEventListener('dragleave', (e) => this.handleDragLeave(e), false);
+		elem.addEventListener('drop',      (e) => this.handleDragDrop(e),  false);
+		elem.addEventListener('dragend',   (e) => this.handleDragEnd(e),   false);
+	}
+
+	handleClick(e) {
+		var elem = e.target;
+
+		if (this.args.clickElem !== null) {
+			if (!elem.matches(this.args.clickElem))
+				elem = elem.closest(this.args.clickElem);
+
+			if (elem === null) return;
+		}
+
+		while (this.elems.indexOf(elem) === -1 && elem.parentNode !== null)
+			elem = elem.parentNode;
+
+		if (elem === null) return;
+
+		elem.draggable = true;
+		this.isDragging = true;
+	}
+
+	handleDragStart(e) {
+		if (!this.isDragging) return;
+
+		var elem = e.target,
+			inputs = elem.querySelectorAll('input, textarea');
+
+		this.dragSource = elem;
+		e.dataTransfer.effectAllowed = 'move';
+
+		[].forEach.call(inputs, function(input) {
+			input.dataset.value = input.value;
+		});
+
+		e.dataTransfer.setData('text/html', elem.outerHTML);
+		elem.classList.add('dragged');
+
+		if (typeof this.args.cbStart === 'function')
+			this.args.cbStart(elem);
+	}
+
+	handleDragOver(e) {
+		var elem = e.target;
+
+		if (e.preventDefault)
+			e.preventDefault();
+
+		elem.classList.add('dragover');
+		e.dataTransfer.dropEffect = 'move';
+
+		if (typeof this.args.cbOver === 'function')
+			this.args.cbOver(elem);
+
+		return false;
+	}
+
+	handleDragEnter(e) {
+		var elem = e.target;
+
+		if (typeof this.args.cbEnter === 'function')
+			this.args.cbEnter(elem);
+	}
+
+	handleDragLeave(e) {
+		var elem = e.target;
+
+		elem.classList.remove('dragover');
+
+		if (typeof this.args.cbLeave === 'function')
+			this.args.cbLeave(elem);
+	}
+
+	handleDragDrop(e) {
+		if (!this.isDragging) return;
+
+		var elem = e.target;
+
+		if (e.stopPropagation)
+			e.stopPropagation();
+
+		if (this.dragSource !== elem) {
+			var dropHtml = e.dataTransfer.getData('text/html'),
+				parent = elem.parentNode,
+				dropElem;
+
+			parent.removeChild(this.dragSource);
+			elem.insertAdjacentHTML('beforebegin', dropHtml);
+			dropElem = elem.previousSibling;
+			this.addHandlers(dropElem);
+
+			[].forEach.call(dropElem.querySelectorAll('input, textarea'), function(input) {
+				input.value = input.dataset.value;
+				input.removeAttribute('data-value');
+			});
+
+
+			[].forEach.call(parent.querySelectorAll('meta'), function(meta) {
+				parent.removeChild(meta);
+			});
+		}
+
+		elem.classList.remove('dragover');
+		this.isDragging = false;
+
+		if (typeof this.args.cbDrop === 'function')
+			this.args.cbDrop(elem);
+
+		return false;
+	}
+
+	handleDragEnd(e) {
+		var elem = e.target;
+
+		this.isDragging = false;
+
+		this.elems.forEach(function(elem) {
+			elem.draggable = false;
+			elem.classList.remove('dragover', 'dragged');
+		});
+
+		if (typeof this.args.cbEnd === 'function')
+			this.args.cbEnd(elem);
+	}
+}
+
+
+
 

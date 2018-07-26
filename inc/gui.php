@@ -191,18 +191,6 @@ function mpcf_save_meta_boxes($post_id) {
 			if (!isset($_POST[$field['name']]) && $field['type'] === 'checkbox')
 				update_post_meta($post_id, $field['name'], false);
 
-			if ($field['type'] === 'file') {
-				require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-				require_once(ABSPATH . "wp-admin" . '/includes/file.php');
-				require_once(ABSPATH . "wp-admin" . '/includes/media.php');
-
-				$att = !empty($_FILES[$field['name']]['name'])
-					 ? media_handle_upload($field['name'], $post_id)
-					 : $_POST[$field['name'] . '-id'] == -1 ? '' : get_post_meta($post_id, $field['name']);
-
-				$value = is_wp_error($att) ? '' : $att;
-			}
-
 			if (isset($actions['save_before'])) {
 				$value = call_user_func($actions['save_before'], $post_id, $field['name'], $value);
 			}
@@ -403,54 +391,21 @@ function mpcf_build_email_input($args) { ?>
 }
 
 
-/*
-function mpcf_build_file_input($args) { ?>
-	<div class="mpcf-file-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-
-			<input 
-				type="file"
-				class="mpcf-file-picker"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : ''); ?>
-				<?php echo (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : ''); ?>
-				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>>
-
-<?php 		if (isset($args['value']) && !empty($args['value'])) { ?>
-				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php echo basename(wp_get_attachment_url($args['value'])); ?></label>
-				<input type="button" class="mpcf-remove-file mpcf-button" value="<?php _e('Remove file', 'mpcf'); ?>" />
-<?php 		} else { ?>
-				<label class="mpcf-button" for="<?php echo $args['name']; ?>"><?php _e('Upload file', 'mpcf'); ?></label>
-<?php 		} ?>
-
-			<input type="hidden"
-					class="mpcf-file-id"
-					name="<?php echo $args['name']; ?>-id"
-					id="<?php echo $args['name']; ?>-id"
-					value="<?php echo $args['value']; ?>" />
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-*/
-
 function mpcf_build_file_input($args) {
 	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
 	$clearclass	= !empty($args['value']) ? '' : 'hidden';
-	$id = 'mpcf-changemedia-' . $args['name'];
+	$id = uniqid('mpcf-changemedia-' . $args['name']);
 
 	$file = get_attached_file($args['value']);
 	$size = filesize($file);
 	$sizes = array('b', 'KB', 'MB', 'GB');
-	$s = floor(log($size) / log(1024));
-	$filesize = sprintf('%d ' . $sizes[$s], $size / pow(1024, floor($s)));
+
+	if ($size !== false) {
+		$s = floor(log($size) / log(1024));
+		$filesize = sprintf('%d ' . $sizes[$s], $size / pow(1024, floor($s)));
+	} else {
+		$filesize = __('0b', 'dbuh');
+	}
 
 //	$accept = (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : '');
 //	$size = (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : '');
@@ -526,7 +481,7 @@ function mpcf_build_media_selector($args) {
 	$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : 'hidden';
 	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
 	$clearclass	= !empty($args['value']) ? '' : 'hidden';
-	$id = 'mpcf-changemedia-' . $args['name']; ?>
+	$id = uniqid('mpcf-changemedia-' . $args['name']); ?>
 
 	<div class="mpcf-image-selector mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 
