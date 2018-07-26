@@ -65,6 +65,7 @@ function mpcf_setup_theme_admin_menu() {
 
 	add_options_page(__('MP Custom Fields', 'mpcf'), __('MP Custom Fields', 'mpcf'), 'manage_options', 'mpcf-options', 'mpcf_options');
 
+	wp_enqueue_media();
 	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/admin.js', __FILE__), array('jquery', 'jquery-ui-sortable', 'wp-color-picker'));
 //	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/admin.min.js', __FILE__), array('jquery', 'jquery-ui-sortable', 'wp-color-picker'));
 
