@@ -406,7 +406,7 @@ class addDragDrop {
 	}
 
 	addElements(newElems) {
-		if (!newElemens || newElems.length === 0) return;
+		if (!newElems || newElems.length === 0) return;
 		
 		var obj = this;
 
