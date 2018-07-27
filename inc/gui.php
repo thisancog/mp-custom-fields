@@ -621,8 +621,7 @@ function mpcf_build_repeater($args) {
 
 			<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
 				data-fields="<?php echo esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-				data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>">
-			</ol>
+				data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"></ol>
 
 			<div class="mpcf-loading-container mpcf-loading-active"></div>
 

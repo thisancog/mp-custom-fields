@@ -157,6 +157,7 @@ var repeaterField = function() {
 
 			while ((el = el.parentElement) && !el.classList.contains('mpcf-repeater-row'));
 			el.parentElement.removeChild(el);
+
 			reorder();
 		}
 
@@ -187,6 +188,8 @@ var repeaterField = function() {
 					}
 				});
 			});
+
+			rowsWrapper.classList.toggle('empty', rowsWrapper.childElementCount === 0);
 		}
 	});
 }
@@ -381,7 +384,7 @@ function clearimg(elem) {
 
 class addDragDrop {
 	constructor (target, args = {}) {
-		if (!target) return false;
+		if (!target || target.length === 0) return false;
 
 		this.self = this;
 		this.elems = [];
@@ -403,6 +406,8 @@ class addDragDrop {
 	}
 
 	addElements(newElems) {
+		if (target.length === 0) return;
+		
 		var obj = this;
 
 		if (newElems.length)
