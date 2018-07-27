@@ -384,9 +384,6 @@ function clearimg(elem) {
 
 class addDragDrop {
 	constructor (target, args = {}) {
-		if (!target || target.length === 0) return false;
-
-		this.self = this;
 		this.elems = [];
 		this.dragSource = null;
 		this.isDragging = false;
