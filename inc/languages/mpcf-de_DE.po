@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-06-01 14:00+0200\n"
-"PO-Revision-Date: 2018-06-01 14:00+0200\n"
+"POT-Creation-Date: 2018-07-28 19:29+0200\n"
+"PO-Revision-Date: 2018-07-28 19:30+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,23 +17,35 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:261
+#: inc/gui.php:262
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:413
-msgid "Remove file"
-msgstr "Datei entfernen"
+#: inc/gui.php:277
+msgid " (default)"
+msgstr " (Standard)"
 
-#: inc/gui.php:415 mp-custom-fields.php:53
-msgid "Upload file"
-msgstr "Datei hochladen"
+#: inc/gui.php:399 inc/gui.php:486
+msgid "Change"
+msgstr "&Auml;ndern"
 
-#: inc/gui.php:438
+#: inc/gui.php:399 inc/gui.php:486 inc/gui.php:633
+msgid "Add"
+msgstr "Hinzuf&uuml;gen"
+
+#: inc/gui.php:411
+msgid "0b"
+msgstr "0b"
+
+#: inc/gui.php:436 inc/gui.php:508 mp-custom-fields.php:58
+msgid "Remove"
+msgstr "Entfernen"
+
+#: inc/gui.php:458
 msgid "Search for address or place…"
 msgstr "Suche nach Adresse oder Ort…"
 
-#: inc/gui.php:444
+#: inc/gui.php:464
 #, php-format
 msgid ""
 "No map showing up? Generate a free Google Maps API key and enter it <a href="
@@ -42,29 +54,17 @@ msgstr ""
 "Wird keine Karte angezeigt? Erstelle einen kostenlosen Google Maps API "
 "Schl&uuml;ssel und gib ihn <a href=\"%s\" target=\"_blank\">hier</a> ein."
 
-#: inc/gui.php:466
-msgid "Change"
-msgstr "&Auml;ndern"
-
-#: inc/gui.php:466 inc/gui.php:614
-msgid "Add"
-msgstr "Hinzuf&uuml;gen"
-
-#: inc/gui.php:488 mp-custom-fields.php:54
-msgid "Remove"
-msgstr "Entfernen"
-
-#: inc/gui.php:514
+#: inc/gui.php:534
 #, php-format
 msgid "format: yyyy-mm (e.g. %s)"
 msgstr "Format: JJJJ-MM (bspw. %s)"
 
-#: inc/gui.php:674
+#: inc/gui.php:698
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
 
-#: inc/gui.php:698
+#: inc/gui.php:722
 #, php-format
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
@@ -79,10 +79,132 @@ msgstr "Format: JJJJ-MM-TT (bspw. %s)"
 msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
 msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
 
-#: inc/mpcf-options.php:19
+#: inc/mpcf-admin.php:17 inc/mpcf-options.php:19
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 "Du hast nicht die notwendigen Berechtigungen, um diese Seite anzuzeigen."
+
+#: inc/mpcf-admin.php:48 inc/mpcf-admin.php:200
+msgid "Meta boxes"
+msgstr "Metaboxen"
+
+#: inc/mpcf-admin.php:70 inc/mpcf-options.php:55
+msgid "Options were saved."
+msgstr "Einstellungen wurden gespeichert."
+
+#: inc/mpcf-admin.php:90 mp-custom-fields.php:55
+#, php-format
+msgid "Panel: %s"
+msgstr "Panel: %s"
+
+#: inc/mpcf-admin.php:97 inc/mpcf-admin.php:128 inc/mpcf-admin.php:335
+msgid "Title"
+msgstr "Titel"
+
+#: inc/mpcf-admin.php:104
+msgid "Icon"
+msgstr "Symbol"
+
+#: inc/mpcf-admin.php:105
+#, php-format
+msgid ""
+"Include a dashicon as the icon for this panel by referencing its name as "
+"given %sin this list%s."
+msgstr ""
+"F&uuml;ge diesem Panel ein Symbol hinzu, indem du den Namen eines Dashicon "
+"angibst, wie sie %sin dieser Liste aufgef&uuml;hrt sind%s."
+
+#: inc/mpcf-admin.php:111 inc/mpcf-admin.php:338
+msgid "Fields"
+msgstr "Felder"
+
+#: inc/mpcf-admin.php:122
+msgid "General"
+msgstr "Allgemein"
+
+#: inc/mpcf-admin.php:134 inc/mpcf-admin.php:336
+msgid "Post type"
+msgstr "Artikeltyp"
+
+#: inc/mpcf-admin.php:142
+msgid "Context"
+msgstr "Kontext"
+
+#: inc/mpcf-admin.php:144
+msgid "advanced"
+msgstr "fortgeschritten"
+
+#: inc/mpcf-admin.php:145
+msgid "normal"
+msgstr "normal"
+
+#: inc/mpcf-admin.php:146
+msgid "side"
+msgstr "seitlich"
+
+#: inc/mpcf-admin.php:149
+msgid "The place on the screen where the box should be displayed."
+msgstr "Der Ort, an dem die Metabox angezeigt werden soll."
+
+#: inc/mpcf-admin.php:154
+msgid "Priority"
+msgstr "Priorit&auml;t"
+
+#: inc/mpcf-admin.php:156
+msgid "high"
+msgstr "hoch"
+
+#: inc/mpcf-admin.php:157
+msgid "low"
+msgstr "niedrig"
+
+#: inc/mpcf-admin.php:160
+msgid "The priority within the context where the box should be displayed."
+msgstr ""
+"Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt wird."
+
+#: inc/mpcf-admin.php:169 mp-custom-fields.php:54
+#, php-format
+msgid "Edit meta box: %s"
+msgstr "Metabox bearbeiten: %s"
+
+#: inc/mpcf-admin.php:180
+msgid "Add panel"
+msgstr "Panel hinzuf&uuml;gen"
+
+#: inc/mpcf-admin.php:181 inc/mpcf-options.php:66
+msgid "Save"
+msgstr "Speichern"
+
+#: inc/mpcf-admin.php:199
+msgid "Meta box"
+msgstr "Metabox"
+
+#: inc/mpcf-admin.php:244
+#, php-format
+msgid "without %s"
+msgstr "ohne %s"
+
+#: inc/mpcf-admin.php:252
+#, php-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: inc/mpcf-admin.php:287
+msgid "No meta boxes found."
+msgstr "Keine Metabox gefunden."
+
+#: inc/mpcf-admin.php:300
+msgid "Edit this metabox"
+msgstr "Diese Metabox bearbeiten"
+
+#: inc/mpcf-admin.php:304 inc/mpcf-admin.php:353
+msgid "Delete"
+msgstr "L&ouml;schen"
+
+#: inc/mpcf-admin.php:337
+msgid "Panels"
+msgstr "Panele"
 
 #: inc/mpcf-options.php:37
 msgid "Interfaces"
@@ -106,38 +228,56 @@ msgstr ""
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
-#: inc/mpcf-options.php:55
-msgid "Options were saved."
-msgstr "Einstellungen wurden gespeichert."
-
-#: inc/mpcf-options.php:66
-msgid "Save"
-msgstr "Speichern"
-
-#: inc/register.php:27
+#: inc/mpcf-register-metaboxes.php:28
 #, php-format
 msgid "%s Options"
 msgstr "%s Einstellungen"
 
-#: mp-custom-fields.php:49
+#: mp-custom-fields.php:51
 msgid "Add media"
 msgstr "Medium hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:50
+#: mp-custom-fields.php:52
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:51
+#: mp-custom-fields.php:53
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:52
+#: mp-custom-fields.php:56
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:65
-msgid "MP Custom Fields"
-msgstr "MP Custom Fields"
+#: mp-custom-fields.php:57
+msgid "Upload file"
+msgstr "Datei hochladen"
+
+#: mp-custom-fields.php:70
+msgid "Custom Fields"
+msgstr "Custom Fields"
+
+#: mp-custom-fields.php:71
+msgid "Options"
+msgstr "Einstellungen"
+
+#~ msgid "advanced (default)"
+#~ msgstr "fortgeschritten (Standard)"
+
+#~ msgid "high (default)"
+#~ msgstr "hoch (Standard)"
+
+#~ msgid "Edit meta box: "
+#~ msgstr "Edit meta box: "
+
+#~ msgid "Edit meta box"
+#~ msgstr "Metabox bearbeiten"
+
+#~ msgid "Remove file"
+#~ msgstr "Datei entfernen"
+
+#~ msgid "MP Custom Fields"
+#~ msgstr "MP Custom Fields"
 
 #~ msgid "An error uploading the file for \"%s\" occurred: %s"
 #~ msgstr ""
@@ -202,9 +342,6 @@ msgstr "MP Custom Fields"
 #~ msgid "Runtime"
 #~ msgstr "Laufzeit"
 
-#~ msgid "Options"
-#~ msgstr "Einstellungen"
-
 #~ msgid "An error occurred. The server sent out this message:"
 #~ msgstr ""
 #~ "Es ist ein Fehler aufgetreten. Der Server hat diese Nachricht gesendet:"
@@ -232,9 +369,6 @@ msgstr "MP Custom Fields"
 
 #~ msgid "Venue"
 #~ msgstr "Ort"
-
-#~ msgid "Title"
-#~ msgstr "Titel"
 
 #~ msgid "URL"
 #~ msgstr "URL"
@@ -727,9 +861,6 @@ msgstr "MP Custom Fields"
 #~ msgid "Sponsorship:"
 #~ msgstr "Sponsoring:"
 
-#~ msgid "General"
-#~ msgstr "Allgemein"
-
 #~ msgid "Highlight color:"
 #~ msgstr "Highlight-Farbe:"
 
@@ -890,9 +1021,6 @@ msgstr "MP Custom Fields"
 
 #~ msgid "Login to comment"
 #~ msgstr "Einloggen um zu kommentieren"
-
-#~ msgid "Post type"
-#~ msgstr "Artikeltyp"
 
 #~ msgid "Show sidebar"
 #~ msgstr "Sidebar anzeigen"

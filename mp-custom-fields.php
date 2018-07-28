@@ -46,28 +46,35 @@ function mpcf_deactivate() {
 }
 
 function mpcf_admin_init() {
+	$dependencies = array('jquery', 'jquery-ui-sortable');
 	$language = array (
 		'addMedia' 			=> __('Add media', 'mpcf'),
 		'changeMedia' 		=> __('Change media', 'mpcf'),
 		'chooseMedia' 		=> __('Choose media', 'mpcf'),
+		'editBoxHeading'	=> __('Edit meta box: %s', 'mpcf'),
+		'editBoxPanel'		=> __('Panel: %s', 'mpcf'),
 		'filesSelected' 	=> __('files selected', 'mpcf'),
 		'fileUpload'		=> __('Upload file', 'mpcf'),
 		'remove'	 		=> __('Remove', 'mpcf'),
 	);
 	wp_localize_script('mpcf-admin-script', 'localizedmpcf', $language);
-	wp_register_script('mpcf-admin-script', plugins_url('inc/admin.js', __FILE__), array('jquery', 'jquery-ui-sortable'));
-//	wp_register_script('mpcf-admin-script', plugins_url('inc/admin.min.js', __FILE__), array('jquery', 'jquery-ui-sortable'));
+	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
+//	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);
 }
+
 
 function mpcf_setup_theme_admin_menu() {
 	$o = get_option('mpcf_options');
 	$mapskey = (isset($o['googlemapskey']) ? $o['googlemapskey'] : false);
 
-	add_options_page(__('MP Custom Fields', 'mpcf'), __('MP Custom Fields', 'mpcf'), 'manage_options', 'mpcf-options', 'mpcf_options');
+	add_menu_page(__('Custom Fields', 'mpcf'), __('Custom Fields', 'mpcf'), 'manage_options', 'mpcf', 'mpcf_admin', '', 80);
+	add_submenu_page('mpcf', __('Options', 'mpcf'), __('Options', 'mpcf'), 'manage_options', 'mpcf-options', 'mpcf_options');
+
+	$dependencies = array('jquery', 'jquery-ui-sortable', 'wp-color-picker');
 
 	wp_enqueue_media();
-	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/admin.js', __FILE__), array('jquery', 'jquery-ui-sortable', 'wp-color-picker'));
-//	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/admin.min.js', __FILE__), array('jquery', 'jquery-ui-sortable', 'wp-color-picker'));
+	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
+//	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);
 
 	if ($mapskey) {
 		wp_enqueue_script('mpcf-google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $mapskey . '&libraries=places&callback=initGoogleMap');

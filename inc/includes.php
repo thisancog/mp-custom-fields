@@ -1,8 +1,9 @@
 <?php
 
 require_once('modules.php');
+require_once('mpcf-admin.php');
 require_once('mpcf-options.php');
-require_once('register.php');
+require_once('mpcf-register-metaboxes.php');
 require_once('gui.php');
 
 
@@ -27,6 +28,8 @@ function mpcf_beautify_string($string) {
 	$string = str_replace(' ', '-', $string);
 	return preg_replace('/[-]+/i', '-', $string);
 }
+
+
 
 
 

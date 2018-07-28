@@ -76,7 +76,9 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 
 		$field = mpcf_sanitize_args($field);
 
-		$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
+		if (!isset($field['value']) || empty($field['value']))
+			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
+
 		if ($field['type'] !== 'repeater')
 			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
@@ -263,14 +265,15 @@ function mpcf_required_hint() { ?>
 }
 
 
-
 function mpcf_build_buttongroup($args) { ?>
 	<div class="mpcf-buttongroup mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
 		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
 		<div class="mpcf-field">
 			<div class="mpcf-buttongroup-wrapper">
 <?php 		foreach ($args['options'] as $name => $title) {
-				$id = $args['name'] . '-' . $name; ?>
+				$id = $args['name'] . '-' . $name;
+				if (isset($args['default']) && $args['default'] === $name)
+					$title .= __(' (default)', 'mpcf'); ?>
 
 			<div class="mpcf-buttongroup-option">
 				<input

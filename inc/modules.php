@@ -1,5 +1,10 @@
 <?php
 
+
+/*****************************************************
+	Register modules
+ *****************************************************/
+
 function mpcf_register_modules() {
 	$o = get_option('mpcf_options');
 	$modules = array();
@@ -26,6 +31,22 @@ function mpcf_register_modules() {
 	$o['modules'] = $modules;
 	update_option('mpcf_options', $o);
 }
+
+
+
+/*********************************************************
+	Get list of all registered modules and their options
+ *********************************************************/
+
+function mpcf_get_all_registered_fields() {
+	$fields = array();
+
+	return $fields;
+}
+
+
+
+
 
 /*****************************************************
 	Base field module
