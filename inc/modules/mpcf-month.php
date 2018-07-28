@@ -1,16 +1,15 @@
 <?php
 
 if (!defined('ABSPATH')) exit;
-if (!class_exists('MPCFDateTimeField')) :
+if (!class_exists('MPCFMonthField')) :
 
 /*****************************************************
 	URL field
  *****************************************************/
 
-class MPCFDateTimeField extends MPCFModule {
-	public $name = 'datetime';
-	public $label = 'Date-time field';
-	
+class MPCFMonthField extends MPCFModule {
+	public $name = 'month';
+	public $label = 'Month';
 
 	function __construct() {
 		parent::__construct();
@@ -27,24 +26,28 @@ class MPCFDateTimeField extends MPCFModule {
 		$this->parameters = array(
 			'max',
 			'min',
-			'placeholder',
-			'required'
+			'required',
+			'step'
 		);
 	}
 
 	function build_field($args = array()) {
 		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$min = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
-		$max = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
+		$step     = (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : '');
+		$min 	 = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
+		$max 	 = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
 
-		<input type="datetime-local" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>" <?php echo $required . $min . $max; ?>>
+		<input  type="month"
+				name="<?php echo $args['name']; ?>"
+				id="<?php echo $args['name']; ?>"
+				value="<?php echo $args['value']; ?>"
+				<?php $required . $step . $min . $max; ?>>>
 
-		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-ddThh:mm (e.g. %s)', 'mpcf'), current_time('Y-m-d\TH:i')); ?></div>
-
+		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm (e.g. %s)', 'mpcf'), current_time('Y-m')); ?></div>
 <?php
 	}
 }
+
 
 endif;
 

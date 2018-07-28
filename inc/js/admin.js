@@ -97,7 +97,7 @@ var checkHTML5Support = function() {
  **************************************************************/
 
 var repeaterField = function() {
-	var repeaters = document.querySelectorAll('.mpcf-repeater');
+	var repeaters = document.querySelectorAll('.mpcf-repeater-input');
 	[].forEach.call(repeaters, function(repeater) {
 		var rowsWrapper = repeater.querySelector('.mpcf-repeater-wrapper'),
 			baseName = rowsWrapper.dataset.basename,
@@ -168,24 +168,21 @@ var repeaterField = function() {
 			var rows = rowsWrapper.querySelectorAll('.mpcf-repeater-row');
 
 			[].forEach.call(rows, function(row, rowIndex) {
-				var inputs = row.querySelectorAll('[name], [id], [for]'),
-					fieldIndex = 0;
+				var fields = row.querySelectorAll('.mpcf-field-option');
 
-				[].forEach.call(inputs, function(input) {
-					let type = input.getAttribute('type');
-					if (type === 'button' || type === 'submit') return;
+				[].forEach.call(fields, function(field, fieldIndex) {
+					var inputs = row.querySelectorAll('[name], [id], [for]');
 
-					let newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'];
+					[].forEach.call(inputs, function(input) {
+						let type = input.getAttribute('type'),
+							newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'],
+							newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']';
 
-					if (input.hasAttribute('id'))	input.setAttribute('id', newID);
-					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
-
-					if (input.hasAttribute('name'))	{
-						let newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']';
-
-						input.setAttribute('name', newName);
-						fieldIndex++;
-					}
+						if (type === 'button' || type === 'submit') return;
+						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
+						if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+						if (input.hasAttribute('name'))	input.setAttribute('name', newName);
+					});
 				});
 			});
 

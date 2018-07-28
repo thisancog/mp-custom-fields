@@ -296,7 +296,7 @@ class MPCF_Table extends WP_List_Table {
 
 		$requested = esc_attr($_REQUEST['page']);
 		$id = $item['id'];
-		$editlink = sprintf('?page=%&saction=editmetabox&box=%s', $requested, $id);
+		$editlink = sprintf('?page=%s&action=editmetabox&box=%s', $requested, $id);
 		$title = '<strong><a href="' . $editlink . '" title="' . __('Edit this metabox', 'mpcf') . '">' . $item['title'] . '</a></strong>';
 
 		$actions = array(

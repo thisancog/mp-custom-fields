@@ -74,79 +74,53 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	foreach ($fields as $field) {
 		if (!isset($field['type'])) continue;
 
+		$type = $field['type'];
 		$field = mpcf_sanitize_args($field);
 
 		if (!isset($field['value']) || empty($field['value']))
 			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 
-		if ($field['type'] !== 'repeater')
+		if ($type !== 'repeater')
 			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
 
-		switch ($field['type']) {
-			case 'buttongroup':	mpcf_build_buttongroup($field); break;
-			case 'checkbox':	mpcf_build_checkbox($field); break;
-			case 'color':		mpcf_build_color_input($field); break;
-			case 'editor':		mpcf_build_editor($field); break;
-			case 'email':		mpcf_build_email_input($field); break;
-			case 'file':		mpcf_build_file_input($field); break;
-			case 'hidden':		mpcf_build_hidden_input($field); break;
-			case 'map':			mpcf_build_map($field); break;
-			case 'media':		mpcf_build_media_selector($field); break;
-			case 'month':		mpcf_build_month_input($field); break;
-			case 'number':		mpcf_build_number_input($field); break;
-			case 'radio':		mpcf_build_radio_input($field); break;
-			case 'range':		mpcf_build_range_input($field); break;
-			case 'repeater':	$hasRequireds = mpcf_build_repeater($field); break;
-			case 'select':		mpcf_build_select_input($field); break;
-			case 'time':		mpcf_build_time_input($field); break;
-			case 'week':		mpcf_build_week_input($field); break;
 
-		/*			
-			case 'truefalse':	mpcf_build_truefalse($field); break;
-		*/
+		if (isset($o['modules'][$type])) {
+			$classname = $o['modules'][$type]['name'];
+			$module = new $classname();
 
+			$isRequired = isset($field['required']) && $field['required'] ? ' mpcf-required' : '';
+			$hasHTML5   = isset($module->html5) && $module->html5 ? ' mpcf-nohtml5' : '';
+			$html5Test  = isset($module->html5) && $module->html5 ? ' data-invalid-test="Not-a-valid-value"' : '';
+			$wrapperClasses = isset($module->wrapperClasses) ? $module->wrapperClasses : ''; ?>
 
-			default: 
-				$type = $field['type'];
+			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
 
-				if (isset($o['modules'][$type])) {
-					$classname = $o['modules'][$type]['name'];
-					$class = new $classname();
-
-					$isRequired = isset($field['required']) && $field['required'] ? ' mpcf-required' : '';
-					$hasHTML5  = isset($class->html5) && $class->html5 ? ' mpcf-nohtml5' : '';
-					$html5Test = isset($class->html5) && $class->html5 ? ' data-invalid-test="Not-a-valid-value"' : '' ?>
-
-					<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
-
-			<?php		if (isset($field['label']) && !empty($field['label'])) { ?>
-							<div class="mpcf-label">
-							<label for="<?php echo $field['name']; ?>"><?php echo $field['label']; ?></label>
-						</div>
-			<?php 		} ?>
+<?php		if (isset($field['title']) && !empty($field['title'])) { ?>
+				<div class="mpcf-title"><label for="<?php echo $field['name']; ?>"><?php echo $field['title']; ?></label></div>
+<?php 		} ?>
 						
-						<div class="mpcf-field">
-			
-			<?php			$class->build_field($field);
-							mpcf_build_description($field['description']); ?>
+				<div class="mpcf-field <?php echo $wrapperClasses; ?>">
+<?php				$result = $module->build_field($field);
+					$hasRequireds = $hasRequireds || $result;
 
-						</div>
-					</div>
-<?php			}
+					if (!empty($field['description']) && $field['description'] !== false) ?>
+						<div class="mpcf-description"><?php echo $field['description']; ?></div>
+				</div>
+			</div>
+<?php	}
 
-				break;
-		}
-
-		if ($hasRequireds) $required = true;
+		if ($hasRequireds)
+			$required = true;
 	}
 
 	if ($required && $echoRequired) {
 		mpcf_required_hint();
 	}
 }
+
 
 
 /*****************************************************
@@ -156,8 +130,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 function mpcf_sanitize_args($args) {
 	isset($args['default'])		|| $args['default'] = '';
 	isset($args['description'])	|| $args['description'] = '';
-	isset($args['label'])		|| $args['label'] = '';
-	isset($args['label2'])		|| $args['label2'] = '';
+	isset($args['title'])		|| $args['title'] = '';
 	isset($args['name'])		|| $args['name'] = '';
 	isset($args['required'])	|| $args['required'] = false;
 
@@ -190,24 +163,63 @@ function mpcf_save_meta_boxes($post_id) {
 			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 			$actions = isset($field['actions']) ? $field['actions'] : array();
 
-			if (!isset($_POST[$field['name']]) && $field['type'] === 'checkbox')
-				update_post_meta($post_id, $field['name'], false);
-
 			if (isset($actions['save_before'])) {
 				$value = call_user_func($actions['save_before'], $post_id, $field['name'], $value);
 			}
 
+			$value = mpcf_before_save($field['type'], $post_id, $field['name'], $value);
 			update_post_meta($post_id, $field['name'], $value);
 
 			if (isset($actions['save_after'])) {
 				call_user_func($actions['save_after'], $post_id, $field['name'], $value);
 			}
+
+			mpcf_after_save($field['type'], $post_id, $field['name'], $value);
 		}
 	}
 
 
 	if (isset($_POST['activetab']))	
 		update_post_meta($post_id, 'activetab', $_POST['activetab']);
+}
+
+
+
+/*****************************************************
+	Fire 'before_save' function of module
+ *****************************************************/
+
+function mpcf_before_save($type, $post_id, $name, $value) {
+	$o = get_option('mpcf_options');
+
+	if (isset($o['modules'][$type])) {
+		$classname = $o['modules'][$type]['name'];
+		$module = new $classname();
+		if (method_exists($module, 'save_before')) {
+			$result = $module->save_before($post_id, $name, $value);
+			if ($result !== null)
+				$value = $result;
+		}
+	}
+
+	return $value;
+}
+
+
+/*****************************************************
+	Fire 'after_save' function of module
+ *****************************************************/
+
+function mpcf_after_save($type, $post_id, $name, $value) {
+	$o = get_option('mpcf_options');
+
+	if (isset($o['modules'][$type])) {
+		$classname = $o['modules'][$type]['name'];
+		$module = new $classname();
+
+		if (method_exists($module, 'save_before'))
+			$module->save_before($post_id, $name, $value);
+	}
 }
 
 
@@ -249,91 +261,14 @@ function mpcf_ajax_get_component() {
 	Build graphical user interface component wise
  *****************************************************/
 
-function mpcf_build_description($desc = false) {
-	if (!empty($desc) && $desc !== false) { ?>
-		<div class="mpcf-description"><?php echo $desc; ?></div>
-<?php 	
-	}
-}
 
 function mpcf_required_hint() { ?>
 	<div class="mpcf-required-hint mpcf-field-option">
-		<div class="mpcf-label"></div>
+		<div class="mpcf-title"></div>
 		<div class="mpcf-field"><?php _e('* required fields', 'mpcf'); ?></div>
 	</div>
 <?php
 }
-
-
-function mpcf_build_buttongroup($args) { ?>
-	<div class="mpcf-buttongroup mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<div class="mpcf-buttongroup-wrapper">
-<?php 		foreach ($args['options'] as $name => $title) {
-				$id = $args['name'] . '-' . $name;
-				if (isset($args['default']) && $args['default'] === $name)
-					$title .= __(' (default)', 'mpcf'); ?>
-
-			<div class="mpcf-buttongroup-option">
-				<input
-					type="radio"
-					name="<?php echo $args['name']; ?>"
-					id="<?php echo $id; ?>"
-					value="<?php echo $name; ?>"
-					<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
-				<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
-			</div>
-
-<?php		} ?>
-			</div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-
-
-function mpcf_build_checkbox($args) { ?>
-	<div class="mpcf-checkbox mpcf-field-option">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="checkbox"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="checked"
-				<?php echo ($args['value'] === 'checked' ? ' checked' : ''); ?>>
-			<label for="<?php echo $args['name']; ?>"><?php echo $args['label2']; ?></label>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_color_input($args) { ?>
-	<div class="mpcf-color-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input 
-				type="text"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
 
 function mpcf_update_edit_form() {
 	echo ' enctype="multipart/form-data"';
@@ -341,390 +276,11 @@ function mpcf_update_edit_form() {
 
 
 
-function mpcf_build_editor($args) {
-	$id = str_replace('-', '', $args['name']);
-	$editorargs = array(
-		'dfw'				=> isset($args['dfw']) ? $args['dfw'] : false,
-		'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
-		'editor_class'		=> isset($args['class']) ? $args['class'] : '',
-		'editor_css'		=> isset($args['css']) ? $args['css'] : null,
-		'editor_height'		=> isset($args['height']) ? $args['height'] : null,
-		'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
-		'quicktags'			=> isset($args['quicktags']) ? $args['quicktags'] : true,
-		'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
-		'textarea_rows'		=> isset($args['rows']) ? $args['rows'] : 10,
-		'textarea_name'		=> $args['name'],
-		'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : true,
-		'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
-	); ?>
 
-	<div class="mpcf-editor mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<?php wp_editor(mpcf_mknice($args['value']), $id, $editorargs); ?>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
 
-<?php
-}
 
 
 
-function mpcf_build_email_input($args) { ?>
-	<div class="mpcf-email-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input 
-				type="email"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : ''); ?>
-				<?php echo (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : ''); ?>
-				<?php echo (isset($args['minlength']) && !empty($args['minlength']) ? ' minlength="' . $args['minlength'] . '"' : ''); ?>
-				<?php echo (isset($args['maxlength']) && !empty($args['maxlength']) ? ' maxlength="' . $args['maxlength'] . '"' : ''); ?>>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_file_input($args) {
-	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
-	$clearclass	= !empty($args['value']) ? '' : 'hidden';
-	$id = uniqid('mpcf-changemedia-' . $args['name']);
-
-	$file = get_attached_file($args['value']);
-	$size = filesize($file);
-	$sizes = array('b', 'KB', 'MB', 'GB');
-
-	if ($size !== false) {
-		$s = floor(log($size) / log(1024));
-		$filesize = sprintf('%d ' . $sizes[$s], $size / pow(1024, floor($s)));
-	} else {
-		$filesize = __('0b', 'dbuh');
-	}
-
-//	$accept = (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : '');
-//	$size = (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : '');
-//	$required = ($args['required'] ? ' required' : '');
-
-	$multiple = isset($args['multiple']) && !empty($args['multiple']) ? 'true' : 'false'; ?>
-
-	<div class="mpcf-file-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-
-<?php 	if (isset($args['label']) && !empty($args['label'])) { ?>
-
-		<div class="mpcf-label"><label for="<?php echo $id; ?>"><?php echo $args['label']; ?></label></div>
-
-<?php 	} ?>
-
-		<div class="mpcf-field mpcf-mediapicker mpcf-filepicker" data-multiple="<?php echo $multiple; ?>">
-			<div class="mpcf-preview-content mpcf-preview-content-file">
-				<span class="filename"><?php echo basename($file); ?></span>
-				<span class="filesize"><?php echo $filesize; ?></span>
-			</div>
-			<div class="mpcf-content-buttons">
-				<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
-				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
-				<input type="button" class="mpcf-changefile mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
-			</div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-
-function mpcf_build_hidden_input($args) { ?>
-	<input type="hidden" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
-<?php
-}
-
-
-function mpcf_build_map($args) { ?>
-	<div class="mpcf-map-input mpcf-field-option mpcf-inactive<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input type="hidden" class="mpcf-mapcoords" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
-			<input type="text" class="mpcf-mapsearch" placeholder="<?php _e('Search for address or place…', 'mpcf'); ?>">
-			<div
-				 class="mpcf-map"
-				 <?php echo (isset($args['center']) && !empty($args['center']) ? ' center="' . json_encode($args['center']) . '"' : ''); ?>
-				 <?php echo (isset($args['zoom']) && !empty($args['zoom']) ? ' zoom="' . $args['zoom'] . '"' : ''); ?>
-				 <?php echo (isset($args['height']) && !empty($args['height']) ? ' style="height: ' . $args['height'] . ';"' : ''); ?>>
-				 <div class="mpcf-nomap"><span><?php echo sprintf(__('No map showing up? Generate a free Google Maps API key and enter it <a href="%s" target="_blank">here</a>.', 'mpcf'), menu_page_url('mpcf-options', false)); ?></span></div>
-			</div>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_media_selector($args) {
-	$type	= !empty($args['value']) ? get_post_mime_type($args['value']) : '';
-	$media	= (strpos($type, 'image') > -1)
-			? wp_get_attachment_image_src($args['value'], 'small')
-			: wp_get_attachment_url($args['value']);
-
-	$image		= (strpos($type, 'image') > -1) ? $media[0] : '';
-	$video		= (strpos($type, 'video') > -1) ? $media : '';
-
-	$vidclass	= (strpos($type, 'video') > -1) ? '' : 'hidden';
-	$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : 'hidden';
-	$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
-	$clearclass	= !empty($args['value']) ? '' : 'hidden';
-	$id = uniqid('mpcf-changemedia-' . $args['name']); ?>
-
-	<div class="mpcf-image-selector mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-
-<?php 	if (isset($args['label']) && !empty($args['label'])) { ?>
-
-		<div class="mpcf-label"><label for="<?php echo $id; ?>"><?php echo $args['label']; ?></label></div>
-
-<?php 	} ?>
-
-		<div class="mpcf-field mpcf-mediapicker">
-			<div class="mpcf-preview-content dashicons-format-image dashicons-before">
-				<img src="<?php echo $image; ?>" class="mpcf-imagepreview <?php echo $imgclass; ?>">
-				<video class="mpcf-videopreview <?php echo $vidclass; ?>" autoplay loop muted>
-					<source src="<?php echo $video; ?>">
-				</video>
-			</div>
-			<div class="mpcf-content-buttons">
-				<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
-				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
-				<input type="button" class="mpcf-clearmedia mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
-			</div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-
-
-function mpcf_build_month_input($args) { ?>
-	<div class="mpcf-month-input mpcf-field-option mpcf-nohtml5<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-month">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="month"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm (e.g. %s)', 'mpcf'), current_time('Y-m')); ?></div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_number_input($args) { ?>
-	<div class="mpcf-number-input mpcf-field-option <?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input 
-				type="number"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				pattern="[0-9]+"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : ''); ?>
-				<?php echo (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_radio_input($args) { ?>
-	<div class="mpcf-radio-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<fieldset name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>">
-<?php 		foreach ($args['options'] as $name => $title) {
-				$id = $args['name'] . '-' . $name; ?>
-
-			<div class="mpcf-radio-option">
-				<input
-					type="radio"
-					name="<?php echo $args['name']; ?>"
-					id="<?php echo $id; ?>"
-					value="<?php echo $name; ?>"
-					<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
-				<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
-			</div>
-
-<?php		} ?>
-			</fieldset>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_range_input($args) { ?>
-	<div class="mpcf-range-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-range">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input 
-				type="range"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-
-function mpcf_build_repeater($args) {
-	if (is_array($args['value']) && is_string($args['value'][0]))
-		$args['value'] = unserialize($args['value'][0]); ?>
-	
-	<div class="mpcf-repeater mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-
-			<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
-				data-fields="<?php echo esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-				data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"></ol>
-
-			<div class="mpcf-loading-container mpcf-loading-active"></div>
-
-			<div class="mpcf-repeater-controls">
-				<input type="button" class="mpcf-repeater-add-row mpcf-button" value="<?php _e('Add', 'mpcf'); ?>" />
-			</div>
-
-<?php 		mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-<?php
-
-	$required = false;
-	foreach ($args['fields'] as $field => $data) {
-		if (isset($data['required']) && $data['required'] === true) {
-			$required = true;
-		}
-	}
-
-	return $required;
-}
-
-
-function mpcf_build_select_input($args) {
-	$args['value'] = isset($args['multiple']) && !empty($args['multiple']) ? unserialize(($args['value'])) : $args['value']; ?>
-
-	<div class="mpcf-select-input mpcf-field-option<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<select
-				name="<?php echo $args['name']; ?><?php echo (isset($args['multiple']) && !empty($args['multiple']) ? '[]' : ''); ?>"
-				id="<?php echo $args['name']; ?>"
-				<?php echo (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : ''); ?>
-				<?php echo (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : ''); ?>
-				<?php echo (isset($args['required']) && !empty($args['required']) ? ' required' : ''); ?>>
-
-<?php 		if ($args['required']) { ?>
-				<option value="" disabled<?php echo (empty($args['value']) ? ' selected' : ''); ?>>-----</option>
-<?php 		}
-
- 			foreach ($args['options'] as $name => $title) {
-				$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value'])); ?>
-				<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $title; ?></option>
-<?php		} ?>
-			</select>
-
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-function mpcf_build_time_input($args) { ?>
-	<div class="mpcf-time-input mpcf-field-option mpcf-nohtml5<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-time">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="time"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				pattern="[0-9]{2}:[0-9]{2}"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: hh:mm:ss (e.g. %s)', 'mpcf'), current_time('H:i:s')); ?></div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
-
-
-
-function mpcf_build_week_input($args) { ?>
-	<div class="mpcf-week-input mpcf-field-option mpcf-nohtml5<?php echo ($args['required'] ? ' mpcf-required' : ''); ?>" data-invalid-test="not-a-week">
-		<div class="mpcf-label"><label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label></div>
-		<div class="mpcf-field">
-			<input
-				type="week"
-				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo ($args['required'] ? ' required' : ''); ?>
-				<?php echo (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : ''); ?>
-				<?php echo (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : ''); ?>
-				<?php echo (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>>
-
-			<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-Www (e.g. %s)', 'mpcf'), current_time('Y-\WW')); ?></div>
-			<?php mpcf_build_description($args['description']) ?>
-		</div>
-	</div>
-
-<?php
-}
 
 
 ?>

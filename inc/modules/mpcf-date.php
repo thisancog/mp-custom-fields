@@ -1,15 +1,15 @@
 <?php
 
 if (!defined('ABSPATH')) exit;
-if (!class_exists('MPCFDateTimeField')) :
+if (!class_exists('MPCFDateField')) :
 
 /*****************************************************
 	URL field
  *****************************************************/
 
-class MPCFDateTimeField extends MPCFModule {
-	public $name = 'datetime';
-	public $label = 'Date-time field';
+class MPCFDateField extends MPCFModule {
+	public $name = 'date';
+	public $label = 'Date field';
 	
 
 	function __construct() {
@@ -34,14 +34,14 @@ class MPCFDateTimeField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
+		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '');
 		$min = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
 		$max = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
 
-		<input type="datetime-local" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>" <?php echo $required . $min . $max; ?>>
+		<input type="date" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
+			value="<?php echo $args['value']; ?>" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" <?php echo $required . $min . $max; ?>>
 
-		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-ddThh:mm (e.g. %s)', 'mpcf'), current_time('Y-m-d\TH:i')); ?></div>
-
+		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-dd (e.g. %s)', 'mpcf'), current_time('Y-m-d')); ?></div>
 <?php
 	}
 }

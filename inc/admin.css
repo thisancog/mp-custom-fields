@@ -166,13 +166,13 @@
 
 .mpcf-required {}
 
-.mpcf-label {
+.mpcf-title {
 	width: 18%;
 	min-width: 80px;
 	margin-right: 20px;
 }
 
-.mpcf-required .mpcf-label label:after {
+.mpcf-required .mpcf-title label:after {
 	content: ' *';
 	color: #F00;
 }
@@ -461,12 +461,12 @@ body.no-js .mpcf-file-picker + label {
 	display: none;
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-wrapper {
+.mpcf-buttongroup-input .mpcf-buttongroup-wrapper {
 	display: flex;
 	align-items: center;
 }
 
-.mpcf-buttongroup input {
+.mpcf-buttongroup-input input {
 	position: absolute;
 	z-index: -1;
 	width: 0.1px;
@@ -475,11 +475,11 @@ body.no-js .mpcf-file-picker + label {
 	overflow: hidden;
 }
 
-.mpcf-buttongroup input:before {
+.mpcf-buttongroup-input input:before {
 	content: none;
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-option label {
+.mpcf-buttongroup-input .mpcf-buttongroup-option label {
 	display: block;
 	padding: 5px 8px;
 	border: 1px solid #DDD;
@@ -488,34 +488,34 @@ body.no-js .mpcf-file-picker + label {
 	user-select: none;
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-option + .mpcf-buttongroup-option label {
+.mpcf-buttongroup-input .mpcf-buttongroup-option + .mpcf-buttongroup-option label {
 	border-left: 0;
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-option:first-child label {
+.mpcf-buttongroup-input .mpcf-buttongroup-option:first-child label {
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-option:last-child label {
+.mpcf-buttongroup-input .mpcf-buttongroup-option:last-child label {
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup input:checked + label,
-.mpcf-buttongroup input:focus + label {
+.mpcf-buttongroup-input input:checked + label,
+.mpcf-buttongroup-input input:focus + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
 	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799;
 }
 
-.mpcf-buttongroup input:focus + label {
+.mpcf-buttongroup-input input:focus + label {
 	border-color: #5B9DD9;
 	box-shadow: 0 0 2px rgba(30,140,190,.8);
 }
 
-.mpcf-buttongroup .mpcf-buttongroup-option label img {
+.mpcf-buttongroup-input .mpcf-buttongroup-option label img {
 	height: 18px;
 	width: auto;
 }
