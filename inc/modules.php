@@ -100,9 +100,9 @@ function mpcf_get_all_registered_modules_options() {
 		}
 	}
 
-	echo "<pre>";
-	var_dump($allOptions['textarea']);
-	echo "</pre>";
+	usort($allOptions, function($a, $b) {
+		return strcmp($a['title'], $b['title']);
+	});
 
 	return $allOptions;
 }
