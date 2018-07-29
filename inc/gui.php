@@ -227,26 +227,46 @@ function mpcf_after_save($type, $post_id, $name, $value) {
 	Build graphical user interface with AJAX
  *****************************************************/
 
-add_action('wp_ajax_mpcf_get_component', 'mpcf_ajax_get_component');
-function mpcf_ajax_get_component() {
+function mpcf_ajax_get_repeater_row() {
 	$fields = json_decode(stripcslashes($_POST['fields']), true);
+
 	$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div><div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div></div>';
 
 	ob_start();
 	if (isset($_POST['values'])) {
-
 		$values = json_decode(stripcslashes($_POST['values']), true);
 
 		foreach ($values as $i => $row) { ?>
 			<li class="mpcf-repeater-row">
-				<?php mpcf_build_gui_from_fields($fields, $row, false); ?>
-				<?php echo $buttons; ?>
+<?php 			mpcf_build_gui_from_fields($fields, $row, false);
+				echo $buttons; ?>
 			</li>
 <?php	}
+
 	} else {
 		mpcf_build_gui_from_fields($fields, $values, false);
 		echo $buttons;
 	}
+
+	$components = ob_get_contents();
+	ob_end_clean();
+	echo $components;
+
+	wp_die();
+}
+
+
+function mpcf_ajax_get_conditional_fields() {
+	$fields = json_decode(stripcslashes($_POST['fields']), true);
+	$values = array();
+
+	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
+	//	$values = json_decode(stripcslashes($_POST['values']), true);
+		$values = $_POST['values'];
+	}
+
+	ob_start();
+	mpcf_build_gui_from_fields($fields, $values, false);
 
 	$components = ob_get_contents();
 	ob_end_clean();

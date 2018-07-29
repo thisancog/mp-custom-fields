@@ -9,7 +9,6 @@ if (!class_exists('MPCFMapField')) :
 
 class MPCFMapField extends MPCFModule {
 	public $name = 'map';
-	public $label = 'Map';
 
 	function __construct() {
 		parent::__construct();
@@ -28,6 +27,10 @@ class MPCFMapField extends MPCFModule {
 			'height',
 			'zoom'
 		);
+	}
+
+	function label() {
+		return __('Map', 'mpcf');
 	}
 
 	function build_field($args = array()) {

@@ -9,7 +9,6 @@ if (!class_exists('MPCFPasswordField')) :
 
 class MPCFPasswordField extends MPCFModule {
 	public $name = 'password';
-	public $label = 'Password field';
 
 	function __construct() {
 		parent::__construct();
@@ -28,6 +27,10 @@ class MPCFPasswordField extends MPCFModule {
 			'minlength',
 			'required'
 		);
+	}
+
+	function label() {
+		return __('Password', 'mpcf');
 	}
 
 	function build_field($args = array()) {

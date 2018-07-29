@@ -9,7 +9,6 @@ if (!class_exists('MPCFEditorField')) :
 
 class MPCFEditorField extends MPCFModule {
 	public $name = 'editor';
-	public $label = 'Editor';
 
 	function __construct() {
 		parent::__construct();
@@ -36,6 +35,10 @@ class MPCFEditorField extends MPCFModule {
 			'rows',
 			'tinymce'
 		);
+	}
+
+	function label() {
+		return __('Editor', 'mpcf');
 	}
 
 	function build_field($args = array()) {

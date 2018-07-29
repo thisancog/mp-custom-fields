@@ -19,10 +19,17 @@ function mpcf_register_modules() {
 			$vars = get_class_vars($class);
 
 			if (isset($vars['name']) && !isset($modules[$vars['name']])) {
+				$label = isset($vars['label']) ? $vars['label'] : null;
+
+				if (method_exists($class, 'label')) {
+					$instance = new $class();
+					$label = $instance->label();
+				}
+
 				$modules[$vars['name']] = array(
 					'name'		=> $class,
 					'field'		=> $vars['name'],
-					'label'		=> isset($vars['label']) ? $vars['label'] : null
+					'label'		=> $label
 				);
 			}
 		}
@@ -38,10 +45,66 @@ function mpcf_register_modules() {
 	Get list of all registered modules and their options
  *********************************************************/
 
-function mpcf_get_all_registered_fields() {
-	$fields = array();
+function mpcf_get_all_registered_modules() {
+	$o = get_option('mpcf_options');
+	return $o['modules'];
+}
 
-	return $fields;
+
+
+/*********************************************************
+	Compile list of all options of all registered modules
+ *********************************************************/
+
+function mpcf_get_all_registered_modules_options() {
+	$allOptions = array();
+	$modules = mpcf_get_all_registered_modules();
+
+	foreach ($modules as $module) {
+		$classname = $module['name'];
+		$classFieldName = $module['field'];
+		$classPrettyName = $module['label'];
+		$class = new $classname();
+
+		if (!isset($class->parameters)) {
+			continue;
+		}
+
+		$parameters = $class->parameters;
+		$options = array(
+			'name'	=> array(
+				'type'		=> 'text',
+				'title'		=> __('Name', 'mpcf'),
+				'required'	=> true
+			),
+			'title' => array(
+				'type'		=> 'text',
+				'title'		=> __('Title', 'mpcf')
+			)
+		);
+
+		foreach ($parameters as $name => $data) {
+			if (is_array($data)) {
+				$optionSet = array();
+				foreach ($data as $dataTitle => $dataValue) {
+					$optionSet[$dataTitle] = $dataValue;
+				}
+
+				$options[$name] = $optionSet;
+			}
+		}
+
+		if (!empty($options)) {
+			$allOptions[$classFieldName]['title'] = $classPrettyName;
+			$allOptions[$classFieldName]['fields'] = $options;
+		}
+	}
+
+	echo "<pre>";
+	var_dump($allOptions['textarea']);
+	echo "</pre>";
+
+	return $allOptions;
 }
 
 

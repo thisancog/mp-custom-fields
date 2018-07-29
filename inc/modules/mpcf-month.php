@@ -9,7 +9,6 @@ if (!class_exists('MPCFMonthField')) :
 
 class MPCFMonthField extends MPCFModule {
 	public $name = 'month';
-	public $label = 'Month';
 
 	function __construct() {
 		parent::__construct();
@@ -29,6 +28,10 @@ class MPCFMonthField extends MPCFModule {
 			'required',
 			'step'
 		);
+	}
+
+	function label() {
+		return __('Month', 'mpcf');
 	}
 
 	function build_field($args = array()) {

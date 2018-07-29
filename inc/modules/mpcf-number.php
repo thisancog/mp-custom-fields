@@ -9,7 +9,6 @@ if (!class_exists('MPCFNumberField')) :
 
 class MPCFNumberField extends MPCFModule {
 	public $name = 'number';
-	public $label = 'Number';
 
 	function __construct() {
 		parent::__construct();
@@ -30,6 +29,10 @@ class MPCFNumberField extends MPCFModule {
 			'required',
 			'step'
 		);
+	}
+
+	function label() {
+		return __('Number', 'mpcf');
 	}
 
 	function build_field($args = array()) {

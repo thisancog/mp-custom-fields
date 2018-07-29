@@ -9,7 +9,6 @@ if (!class_exists('MPCFTimeField')) :
 
 class MPCFTimeField extends MPCFModule {
 	public $name = 'time';
-	public $label = 'Time';
 
 	function __construct() {
 		parent::__construct();
@@ -29,6 +28,10 @@ class MPCFTimeField extends MPCFModule {
 			'required',
 			'step'
 		);
+	}
+
+	function label() {
+		return __('Time', 'mpcf');
 	}
 
 	function build_field($args = array()) {

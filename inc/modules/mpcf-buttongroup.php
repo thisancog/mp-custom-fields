@@ -9,7 +9,6 @@ if (!class_exists('MPCFButtonGroupField')) :
 
 class MPCFButtonGroupField extends MPCFModule {
 	public $name = 'buttongroup';
-	public $label = 'Button group';
 
 	function __construct() {
 		parent::__construct();
@@ -24,8 +23,12 @@ class MPCFButtonGroupField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'options'
+			'options'		=> array('title' => __('Options', 'mpcf'), 'type'  => 'repeater', 'fields' => array())
 		);
+	}
+
+	function label() {
+		return __('Button group', 'mpcf');
 	}
 
 	function build_field($args = array()) {

@@ -9,7 +9,6 @@ if (!class_exists('MPCFDateTimeField')) :
 
 class MPCFDateTimeField extends MPCFModule {
 	public $name = 'datetime';
-	public $label = 'Date-time field';
 	
 
 	function __construct() {
@@ -30,6 +29,10 @@ class MPCFDateTimeField extends MPCFModule {
 			'placeholder',
 			'required'
 		);
+	}
+
+	function label() {
+		return __('Date and time', 'mpcf');
 	}
 
 	function build_field($args = array()) {

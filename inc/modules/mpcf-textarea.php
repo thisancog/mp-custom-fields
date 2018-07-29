@@ -9,7 +9,6 @@ if (!class_exists('MPCFTextareaField')) :
 
 class MPCFTextareaField extends MPCFModule {
 	public $name = 'textarea';
-	public $label = 'Textarea';
 
 	function __construct() {
 		parent::__construct();
@@ -24,10 +23,14 @@ class MPCFTextareaField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'placeholder',
-			'required',
-			'rows'
+			'placeholder'	=> array('title' => __('Placeholder', 'mpcf'), 'type' => 'text', 'description' => ''),
+			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => ''),
+			'rows'			=> array('title' => __('Rows', 'mpcf'), 'type' => 'number', 'description' => __('number of rows', 'mpcf'))
 		);
+	}
+
+	function label() {
+		return __('Text area', 'mpcf');
 	}
 
 	function build_field($args = array()) {

@@ -9,7 +9,6 @@ if (!class_exists('MPCFMediaSelector')) :
 
 class MPCFMediaSelector extends MPCFModule {
 	public $name = 'media';
-	public $label = 'Media selector';
 
 	function __construct() {
 		parent::__construct();
@@ -28,6 +27,10 @@ class MPCFMediaSelector extends MPCFModule {
 		);
 	}
 
+	function label() {
+		return __('Media selector', 'mpcf');
+	}
+
 	function build_field($args = array()) {
 		$type	= !empty($args['value']) ? get_post_mime_type($args['value']) : '';
 		$media	= (strpos($type, 'image') > -1)
@@ -43,16 +46,18 @@ class MPCFMediaSelector extends MPCFModule {
 		$clearclass	= !empty($args['value']) ? '' : 'hidden';
 		$id = uniqid('mpcf-changemedia-' . $args['name']); ?>
 
-		<div class="mpcf-preview-content dashicons-format-image dashicons-before">
-			<img src="<?php echo $image; ?>" class="mpcf-imagepreview <?php echo $imgclass; ?>">
-			<video class="mpcf-videopreview <?php echo $vidclass; ?>" autoplay loop muted>
-				<source src="<?php echo $video; ?>">
-			</video>
-		</div>
-		<div class="mpcf-content-buttons">
-			<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
-			<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
-			<input type="button" class="mpcf-clearmedia mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
+		<div class="mpcf-mediapicker">
+			<div class="mpcf-preview-content dashicons-format-image dashicons-before">
+				<img src="<?php echo $image; ?>" class="mpcf-imagepreview <?php echo $imgclass; ?>">
+				<video class="mpcf-videopreview <?php echo $vidclass; ?>" autoplay loop muted>
+					<source src="<?php echo $video; ?>">
+				</video>
+			</div>
+			<div class="mpcf-content-buttons">
+				<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
+				<input type="button" class="mpcf-clearmedia mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
+			</div>
 		</div>
 <?php
 	}

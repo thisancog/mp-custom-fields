@@ -9,7 +9,6 @@ if (!class_exists('MPCFEmailField')) :
 
 class MPCFEmailField extends MPCFModule {
 	public $name = 'email';
-	public $label = 'Email field';
 
 	function __construct() {
 		parent::__construct();
@@ -30,6 +29,10 @@ class MPCFEmailField extends MPCFModule {
 			'placeholder',
 			'required'
 		);
+	}
+
+	function label() {
+		return __('Email', 'mpcf');
 	}
 
 	function build_field($args = array()) {

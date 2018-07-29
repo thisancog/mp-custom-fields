@@ -157,11 +157,19 @@
 	General fields
  ******************************/
 
-.mpcf-field-option {
+.mpcf-field-option,
+.mpcf-conditional-choice {
 	display: flex;
+	align-items: baseline;	
 	margin-bottom: 15px;
 	width: 100%;
 	max-width: 800px;
+}
+
+.mpcf-field-option.mpcf-textarea-input,
+.mpcf-field-option.mpcf-media-input,
+.mpcf-field-option.mpcf-repeater-input {
+	align-items: flex-start;
 }
 
 .mpcf-required {}
@@ -614,5 +622,15 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
 	padding-left: 0;
+}
+
+
+
+.mpcf-conditional-wrapper {
+	padding-top: 32px;
+}
+
+.mpcf-conditional-wrapper:not(:empty) {
+	border-top: 1px solid #DDD;
 }
 

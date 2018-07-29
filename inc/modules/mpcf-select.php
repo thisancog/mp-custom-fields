@@ -9,7 +9,6 @@ if (!class_exists('MPCFSelectField')) :
 
 class MPCFSelectField extends MPCFModule {
 	public $name = 'select';
-	public $label = 'Select';
 
 	function __construct() {
 		parent::__construct();
@@ -29,6 +28,10 @@ class MPCFSelectField extends MPCFModule {
 			'required',
 			'size'
 		);
+	}
+
+	function label() {
+		return __('Select', 'mpcf');
 	}
 
 	function build_field($args = array()) {

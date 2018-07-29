@@ -9,7 +9,6 @@ if (!class_exists('MPCFRangeField')) :
 
 class MPCFRangeField extends MPCFModule {
 	public $name = 'range';
-	public $label = 'Range';
 
 	function __construct() {
 		parent::__construct();
@@ -29,6 +28,10 @@ class MPCFRangeField extends MPCFModule {
 			'required',
 			'step'
 		);
+	}
+
+	function label() {
+		return __('Range', 'mpcf');
 	}
 
 	function build_field($args = array()) {

@@ -79,6 +79,8 @@ function mpcf_admin_edit_box($id) {
 		$type = get_post_type_object($type)->labels->singular_name;
 	});
 
+	$allModulesOptions = mpcf_get_all_registered_modules_options();
+
 	$panels = $box['panels'];
 	$panelsList = array();
 	$i = 0;
@@ -94,22 +96,30 @@ function mpcf_admin_edit_box($id) {
 					'name'		=> 'panels[' . $i . '][name]',
 					'value'		=> $box['panels'][$i]['name'],
 					'type'		=> 'text',
-					'label'		=> __('Title', 'mpcf'),
+					'title'		=> __('Title', 'mpcf'),
 					'required'	=> true
 				),
 				array(
 					'name'		=> 'panels[' . $i . '][icon]',
 					'value'		=> $box['panels'][$i]['icon'],
 					'type'		=> 'text',
-					'label'		=> __('Icon', 'mpcf'),
-					'description'	=> sprintf(__('Include a dashicon as the icon for this panel by referencing its name as given %sin this list%s.', 'mpcf'), '<a href="https://developer.wordpress.org/resource/dashicons/#welcome-write-blog" target="_blank">', '</a>')
+					'title'		=> __('Icon', 'mpcf'),
+					'description'	=> sprintf(__('Include a dashicon as the icon for this panel by referencing its name as given %sin this list%s.', 'mpcf'), '<a href="https://developer.wordpress.org/resource/dashicons/#welcome-write-blog" target="_blank">', '</a>'),
+					'list'		=> mpcf_get_all_dashicons()
 				),
 				array(
 					'name'		=> 'panels[' . $i . '][fields]',
 					'value'		=> $box['panels'][$i]['fields'],
 					'type'		=> 'repeater',
-					'label'		=> __('Fields', 'mpcf'),
-					'fields'	=> mpcf_get_all_registered_fields()
+					'title'		=> __('Fields', 'mpcf'),
+					'fields'	=> array(
+						array(
+							'type'		=> 'conditional',
+							'name'		=> 'type',
+							'label'		=> __('Field', 'mpcf'),
+							'options'	=> $allModulesOptions
+						)
+					)
 				)
 			)
 		);
@@ -125,13 +135,13 @@ function mpcf_admin_edit_box($id) {
 				array(
 					'name'			=> 'title',
 					'type'			=> 'text',
-					'label'			=> __('Title', 'mpcf'),
+					'title'			=> __('Title', 'mpcf'),
 					'required'		=> true
 				),
 				array(
 					'name'			=> 'post_type',
 					'type'			=> 'select',
-					'label'			=> __('Post type', 'mpcf'),
+					'title'			=> __('Post type', 'mpcf'),
 					'options'		=> $posttypes,
 					'default'		=> 'post',
 					'required'		=> true
@@ -139,7 +149,7 @@ function mpcf_admin_edit_box($id) {
 				array(
 					'name'			=> 'context',
 					'type'			=> 'buttongroup',
-					'label'			=> __('Context', 'mpcf'),
+					'title'			=> __('Context', 'mpcf'),
 					'options'		=> array(
 						'advanced'	=> __('advanced', 'mpcf'),
 						'normal'	=> __('normal', 'mpcf'),
@@ -151,7 +161,7 @@ function mpcf_admin_edit_box($id) {
 				array(
 					'name'			=> 'priority',
 					'type'			=> 'buttongroup',
-					'label'			=> __('Priority', 'mpcf'),
+					'title'			=> __('Priority', 'mpcf'),
 					'options'		=> array(
 						'high'		=> __('high', 'mpcf'),
 						'low'		=> __('low', 'mpcf')
@@ -173,7 +183,7 @@ function mpcf_admin_edit_box($id) {
 <?php	} ?>
 
 	<?php mpcf_build_gui_as_panels($gui, $box); ?>
-	<pre><?php var_dump($box); ?></pre>
+	<pre><?php var_dump($box['panels'][0]); ?></pre>
 
 	<div class="mpcf-options-inputs">
 		<input type="hidden" name="update_settings" id="update_settings" value="Y" />

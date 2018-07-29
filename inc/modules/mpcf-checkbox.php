@@ -9,7 +9,6 @@ if (!class_exists('MPCFCheckbox')) :
 
 class MPCFCheckbox extends MPCFModule {
 	public $name = 'checkbox';
-	public $label = 'Checkbox';
 
 	function __construct() {
 		parent::__construct();
@@ -26,6 +25,10 @@ class MPCFCheckbox extends MPCFModule {
 		$this->parameters = array(
 			'label'
 		);
+	}
+
+	function label() {
+		return __('Checkbox', 'mpcf');
 	}
 
 	function save_before($post_id, $fieldName, $value) {

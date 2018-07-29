@@ -9,7 +9,6 @@ if (!class_exists('MPCFColorField')) :
 
 class MPCFColorField extends MPCFModule {
 	public $name = 'color';
-	public $label = 'Color picker';
 
 	function __construct() {
 		parent::__construct();
@@ -26,6 +25,10 @@ class MPCFColorField extends MPCFModule {
 		$this->parameters = array(
 			'required'
 		);
+	}
+
+	function label() {
+		return __('Color picker', 'mpcf');
 	}
 
 	function build_field($args = array()) {

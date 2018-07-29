@@ -9,7 +9,6 @@ if (!class_exists('MPCFRepeaterField')) :
 
 class MPCFRepeaterField extends MPCFModule {
 	public $name = 'repeater';
-	public $label = 'Repeater';
 
 	function __construct() {
 		parent::__construct();
@@ -26,6 +25,10 @@ class MPCFRepeaterField extends MPCFModule {
 		$this->parameters = array(
 			'fields'
 		);
+	}
+
+	function label() {
+		return __('Repeater', 'mpcf');
 	}
 
 	function build_field($args = array()) {

@@ -9,7 +9,6 @@ if (!class_exists('MPCFHiddenField')) :
 
 class MPCFHiddenField extends MPCFModule {
 	public $name = 'hidden';
-	public $label = 'Hidden field';
 
 	function __construct() {
 		parent::__construct();
@@ -24,6 +23,10 @@ class MPCFHiddenField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array();
+	}
+
+	function label() {
+		return __('Hidden field', 'mpcf');
 	}
 
 	function build_field($args = array()) { ?>

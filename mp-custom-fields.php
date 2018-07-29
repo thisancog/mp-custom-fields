@@ -20,6 +20,8 @@ add_action('init', 'mpcf_init');
 add_action('plugins_loaded', 'mpcf_load_textdomain');
 add_action('post_edit_form_tag', 'mpcf_update_edit_form');
 add_action('save_post', 'mpcf_save_meta_boxes', 10, 2);
+add_action('wp_ajax_mpcf_get_repeater_row', 'mpcf_ajax_get_repeater_row');
+add_action('wp_ajax_mpcf_get_conditional_fields', 'mpcf_ajax_get_conditional_fields');
 
 register_deactivation_hook(__FILE__, 'mpcf_deactivate');
 

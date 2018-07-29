@@ -9,7 +9,6 @@ if (!class_exists('MPCFRadioField')) :
 
 class MPCFRadioField extends MPCFModule {
 	public $name = 'radio';
-	public $label = 'Radio';
 
 	function __construct() {
 		parent::__construct();
@@ -24,9 +23,13 @@ class MPCFRadioField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'options',
-			'required'
+			'options'		=> array('title' => __('Options', 'mpcf'), 'type'  => 'repeater', 'fields' => array()),
+			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => '')
 		);
+	}
+
+	function label() {
+		return __('Radio button', 'mpcf');
 	}
 
 	function build_field($args = array()) {

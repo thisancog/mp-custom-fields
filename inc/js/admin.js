@@ -1,4 +1,3 @@
-
 $ = jQuery;
 
 window.addEventListener('load', function() {
@@ -6,6 +5,7 @@ window.addEventListener('load', function() {
 	goToInvalids();
 	checkHTML5Support();
 	repeaterField();
+	conditionalField();
 });
 
 
@@ -112,7 +112,7 @@ var repeaterField = function() {
 
 		// populate repeater
 
-		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields, 'values': values }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
 			rowsWrapper.innerHTML = response;
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
@@ -128,7 +128,7 @@ var repeaterField = function() {
 
 		// prefetch blank row
 
-		jQuery.post(ajaxurl, { 'action': 'mpcf_get_component', 'fields': fields }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
 			rowHTML = response;
 		});
 
@@ -192,6 +192,76 @@ var repeaterField = function() {
 }
 
 
+
+
+/**************************************************************
+	Conditional fields
+ **************************************************************/
+
+var conditionalField = function() {
+	var fields = document.querySelectorAll('.mpcf-conditional-input');
+	if (!fields) return;
+
+	[].forEach.call(fields, function(field) {
+		var select = field.querySelector('.mpcf-conditional-choice select'),
+			loader = field.querySelector('.mpcf-loading-container'),
+			wrapper = field.querySelector('.mpcf-conditional-wrapper'),
+			baseName = select.dataset.basename,
+			options = JSON.parse(select.dataset.options),
+			values = JSON.parse(select.dataset.values);
+
+	//	select.removeAttribute('data-values');
+
+		var switchContent = function(values = false) {
+			var request = {
+					'action': 'mpcf_get_conditional_fields',
+					'fields': JSON.stringify(options[select.value].fields),
+					'values': values
+				};
+
+			wrapper.innerHTML = '';
+			loader.classList.add('mpcf-loading-active');
+
+			$.post(ajaxurl, request, function(response) {
+				wrapper.innerHTML = response;
+				rename();
+
+				loader.classList.remove('mpcf-loading-active');
+				registerMediaPicker();
+				focusInvalids(wrapper);
+			});
+		}
+
+		var rename = function() {
+			var fields = wrapper.querySelectorAll('.mpcf-field-option');
+
+			[].forEach.call(fields, function(field, fieldIndex) {
+				var inputs = field.querySelectorAll('[name], [id], [for]');
+
+				[].forEach.call(inputs, function(input) {
+
+					let type = input.getAttribute('type'),
+						fieldName = options[select.value].fields[fieldIndex].name,
+						newID   = baseName + '-' + fieldName,
+						newName = baseName + '[' + fieldName +  ']';
+
+					if (type === 'button' || type === 'submit') return;
+					if (input.hasAttribute('id'))	input.setAttribute('id', newID);
+					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+					if (input.hasAttribute('name'))	input.setAttribute('name', newName);
+				});
+			});
+		}
+
+		select.addEventListener('change', () => switchContent());
+
+		if (values !== '') {
+			delete values.option;
+			switchContent(values);
+		}
+
+	});
+}
 
 
 /**************************************************************

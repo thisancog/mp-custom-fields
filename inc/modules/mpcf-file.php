@@ -9,7 +9,6 @@ if (!class_exists('MPCFFilePicker')) :
 
 class MPCFFilePicker extends MPCFModule {
 	public $name = 'file';
-	public $label = 'File picker';
 
 	function __construct() {
 		parent::__construct();
@@ -26,6 +25,10 @@ class MPCFFilePicker extends MPCFModule {
 		$this->parameters = array(
 
 		);
+	}
+
+	function label() {
+		return __('File picker', 'mpcf');
 	}
 
 	function build_field($args = array()) {

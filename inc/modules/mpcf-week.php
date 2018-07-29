@@ -9,7 +9,6 @@ if (!class_exists('MPCFWeekField')) :
 
 class MPCFWeekField extends MPCFModule {
 	public $name = 'week';
-	public $label = 'Week';
 
 	function __construct() {
 		parent::__construct();
@@ -29,6 +28,10 @@ class MPCFWeekField extends MPCFModule {
 			'required',
 			'step'
 		);
+	}
+
+	function label() {
+		return __('Week', 'mpcf');
 	}
 
 	function build_field($args = array()) {
