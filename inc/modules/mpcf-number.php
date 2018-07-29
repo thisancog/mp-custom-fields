@@ -13,6 +13,11 @@ class MPCFNumberField extends MPCFModule {
 	function __construct() {
 		parent::__construct();
 
+		// Supply a category for the field selection menu
+		// possible values: date, text, options, number, misc
+		// default: misc
+		$this->category = 'number';
+
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check
 		$this->html5 = false;
@@ -23,11 +28,11 @@ class MPCFNumberField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'max',
-			'min',
-			'placeholder',
-			'required',
-			'step'
+			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => ''),
+			'placeholder'	=> array('title' => __('Placeholder', 'mpcf'), 'type' => 'text'),
+			'min'			=> array('title' => __('Minimum value', 'mpcf'), 'type' => 'number'),
+			'max'			=> array('title' => __('Maximum value', 'mpcf'), 'type' => 'number'),
+			'step'			=> array('title' => __('Step', 'mpcf'), 'type' => 'number', 'description' => __('size of steps between possible values', 'mpcf'), 'default' => 1)
 		);
 	}
 

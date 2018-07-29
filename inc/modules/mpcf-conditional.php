@@ -13,6 +13,11 @@ class MPCFConditionalField extends MPCFModule {
 	function __construct() {
 		parent::__construct();
 
+		// Supply a category for the field selection menu
+		// possible values: date, text, options, number, misc
+		// default: misc
+		$this->category = 'options';
+
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check
 		$this->html5 = false;
@@ -32,10 +37,13 @@ class MPCFConditionalField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$value   = isset($args['value']) ? unserialize($args['value']) : array();
+		$value   = isset($args['value']) ? $args['value'] : array();
+		if (unserialize($value))
+			$value = unserialize($value);
+
 		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$noSelection = !isset($args['value']['type']) ? ' selected' : ''; ?>
+		$noSelection = !isset($value['type']) ? ' selected' : ''; ?>
 
 		<div class="mpcf-conditional-choice">
 <?php	if (!empty($label)) { ?>
@@ -51,8 +59,16 @@ class MPCFConditionalField extends MPCFModule {
 				<option value="-1" disabled<?php echo $noSelection; ?>>------</option>
 
 <?php 		foreach ($options as $name => $values) {
-				$selected = isset($value['type']) && $value['type'] == $name; ?>
-				<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $values['title']; ?></option>
+				$disabled = false;
+				
+				if (is_array($values['title']))	extract($values['title']);
+ 				else 							$title = $values['title'];
+
+ 				var_dump($disabled);
+
+				$selected = isset($value['type']) && $value['type'] == $name;
+				$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
+				<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
 <?php		} ?>
 			</select>
 		</div>

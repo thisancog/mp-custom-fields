@@ -96,9 +96,13 @@ var checkHTML5Support = function() {
 	Repeater field
  **************************************************************/
 
-var repeaterField = function() {
-	var repeaters = document.querySelectorAll('.mpcf-repeater-input');
+var repeaterField = function(parent = null) {
+	parent = parent || document;
+
+	var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
 	[].forEach.call(repeaters, function(repeater) {
+		if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
+
 		var rowsWrapper = repeater.querySelector('.mpcf-repeater-wrapper'),
 			baseName = rowsWrapper.dataset.basename,
 			loader = repeater.querySelector('.mpcf-loading-container'),
@@ -109,6 +113,8 @@ var repeaterField = function() {
 			rowHTML = null,
 			dragDropHandler = null;
 
+
+		repeater.dataset.registered = 1;
 
 		// populate repeater
 
@@ -123,6 +129,7 @@ var repeaterField = function() {
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
+			conditionalField(rowsWrapper);
 			focusInvalids(rowsWrapper);
 		});
 
@@ -198,11 +205,15 @@ var repeaterField = function() {
 	Conditional fields
  **************************************************************/
 
-var conditionalField = function() {
-	var fields = document.querySelectorAll('.mpcf-conditional-input');
+var conditionalField = function(parent = null) {
+	parent = parent || document;
+
+	var fields = parent.querySelectorAll('.mpcf-conditional-input');
 	if (!fields) return;
 
 	[].forEach.call(fields, function(field) {
+		if (field.dataset.registered && field.dataset.registered == 1) return;
+
 		var select = field.querySelector('.mpcf-conditional-choice select'),
 			loader = field.querySelector('.mpcf-loading-container'),
 			wrapper = field.querySelector('.mpcf-conditional-wrapper'),
@@ -210,7 +221,7 @@ var conditionalField = function() {
 			options = JSON.parse(select.dataset.options),
 			values = JSON.parse(select.dataset.values);
 
-	//	select.removeAttribute('data-values');
+		field.dataset.registered = 1;
 
 		var switchContent = function(values = false) {
 			var request = {
@@ -228,6 +239,7 @@ var conditionalField = function() {
 
 				loader.classList.remove('mpcf-loading-active');
 				registerMediaPicker();
+				repeaterField(wrapper);
 				focusInvalids(wrapper);
 			});
 		}
@@ -239,7 +251,6 @@ var conditionalField = function() {
 				var inputs = field.querySelectorAll('[name], [id], [for]');
 
 				[].forEach.call(inputs, function(input) {
-
 					let type = input.getAttribute('type'),
 						fieldName = options[select.value].fields[fieldIndex].name,
 						newID   = baseName + '-' + fieldName,

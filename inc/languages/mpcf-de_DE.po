@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-07-29 14:09+0200\n"
-"PO-Revision-Date: 2018-07-29 14:10+0200\n"
+"POT-Creation-Date: 2018-07-29 15:16+0200\n"
+"PO-Revision-Date: 2018-07-29 15:46+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:288
+#: inc/gui.php:289
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
@@ -43,9 +43,21 @@ msgstr "Button-Gruppe"
 msgid " (default)"
 msgstr " (Standard)"
 
+#: inc/modules/mpcf-checkbox.php:26
+msgid "Label"
+msgstr "Beschriftung"
+
 #: inc/modules/mpcf-checkbox.php:31
 msgid "Checkbox"
 msgstr ""
+
+#: inc/modules/mpcf-color.php:26 inc/modules/mpcf-date.php:27
+#: inc/modules/mpcf-datetime.php:27 inc/modules/mpcf-month.php:26
+#: inc/modules/mpcf-number.php:26 inc/modules/mpcf-password.php:26
+#: inc/modules/mpcf-radio.php:27 inc/modules/mpcf-range.php:26
+#: inc/modules/mpcf-textarea.php:27
+msgid "Required"
+msgstr "Pflichtangabe"
 
 #: inc/modules/mpcf-color.php:31
 msgid "Color picker"
@@ -54,6 +66,23 @@ msgstr "Farbauswahl"
 #: inc/modules/mpcf-conditional.php:31
 msgid "Conditional field"
 msgstr ""
+
+#: inc/modules/mpcf-date.php:28 inc/modules/mpcf-datetime.php:28
+#: inc/modules/mpcf-number.php:27 inc/modules/mpcf-textarea.php:26
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: inc/modules/mpcf-date.php:29 inc/modules/mpcf-datetime.php:29
+#: inc/modules/mpcf-month.php:27 inc/modules/mpcf-number.php:28
+#: inc/modules/mpcf-range.php:27
+msgid "Minimum value"
+msgstr "Mindestwert"
+
+#: inc/modules/mpcf-date.php:30 inc/modules/mpcf-datetime.php:30
+#: inc/modules/mpcf-month.php:28 inc/modules/mpcf-number.php:29
+#: inc/modules/mpcf-range.php:28
+msgid "Maximum value"
+msgstr "H&ouml;chstwet"
 
 #: inc/modules/mpcf-date.php:35
 msgid "Date"
@@ -128,6 +157,16 @@ msgstr ""
 msgid "Media selector"
 msgstr "Medienauswahl"
 
+#: inc/modules/mpcf-month.php:29 inc/modules/mpcf-number.php:30
+#: inc/modules/mpcf-range.php:29
+msgid "Step"
+msgstr "Schrittgr&ouml;&szlig;e"
+
+#: inc/modules/mpcf-month.php:29 inc/modules/mpcf-number.php:30
+#: inc/modules/mpcf-range.php:29
+msgid "size of steps between possible values"
+msgstr "Gr&ouml;&szlig;e der Schritte zwischen den m&ouml;glichen Werten"
+
 #: inc/modules/mpcf-month.php:34
 msgid "Month"
 msgstr "Monat"
@@ -141,13 +180,17 @@ msgstr "Format: JJJJ-MM (bspw. %s)"
 msgid "Number"
 msgstr "Zahl"
 
+#: inc/modules/mpcf-password.php:27
+msgid "Minimum length"
+msgstr "Mindestl&auml;nge"
+
+#: inc/modules/mpcf-password.php:28
+msgid "Maximum length"
+msgstr "H&ouml;chstl&auml;nge"
+
 #: inc/modules/mpcf-password.php:33
 msgid "Password"
 msgstr "Passwort"
-
-#: inc/modules/mpcf-radio.php:27 inc/modules/mpcf-textarea.php:27
-msgid "Required"
-msgstr "Pflichtangabe"
 
 #: inc/modules/mpcf-radio.php:32
 msgid "Radio button"
@@ -169,10 +212,6 @@ msgstr "Auswahl"
 msgid "Text field"
 msgstr "Text"
 
-#: inc/modules/mpcf-textarea.php:26
-msgid "Placeholder"
-msgstr "Platzhalter"
-
 #: inc/modules/mpcf-textarea.php:28
 msgid "Rows"
 msgstr "Zeilen"
@@ -183,7 +222,7 @@ msgstr "Anzahl der Zeilen"
 
 #: inc/modules/mpcf-textarea.php:33
 msgid "Text area"
-msgstr ""
+msgstr "Mehrzeiliger Text"
 
 #: inc/modules/mpcf-time.php:34
 msgid "Time"
@@ -193,6 +232,22 @@ msgstr "Zeit"
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
+
+#: inc/modules/mpcf-truefalse.php:26
+msgid "Default"
+msgstr "Standardwert"
+
+#: inc/modules/mpcf-truefalse.php:31
+msgid "True/false button"
+msgstr "Ja/nein-Button"
+
+#: inc/modules/mpcf-truefalse.php:36
+msgid "yes"
+msgstr "ja"
+
+#: inc/modules/mpcf-truefalse.php:36
+msgid "no"
+msgstr "nein"
 
 #: inc/modules/mpcf-week.php:34
 msgid "Week"
@@ -797,9 +852,6 @@ msgstr "Custom Fields"
 #~ msgid "Horizontal spacing"
 #~ msgstr "Horizontaler Abstand"
 
-#~ msgid "none"
-#~ msgstr "keiner"
-
 #~ msgid "small"
 #~ msgstr "klein"
 
@@ -905,9 +957,6 @@ msgstr "Custom Fields"
 
 #~ msgid "Clear"
 #~ msgstr "Zurücksetzen"
-
-#~ msgid "Default"
-#~ msgstr "Standard"
 
 #~ msgid "Info"
 #~ msgstr "Info"

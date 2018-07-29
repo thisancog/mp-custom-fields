@@ -8,10 +8,15 @@ if (!class_exists('MPCFWeekField')) :
  *****************************************************/
 
 class MPCFWeekField extends MPCFModule {
-	public $name = 'week';
+	public $name = 'week';	
 
 	function __construct() {
 		parent::__construct();
+
+		// Supply a category for the field selection menu
+		// possible values: date, text, options, number, misc
+		// default: misc
+		$this->category = 'date';
 
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check

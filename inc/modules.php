@@ -58,7 +58,10 @@ function mpcf_get_all_registered_modules() {
 
 function mpcf_get_all_registered_modules_options() {
 	$allOptions = array();
+//	$allOptions = array('text' => array(), 'date' => array(), 'options' => array(), 'number' => array(), 'misc' => array());
 	$modules = mpcf_get_all_registered_modules();
+
+//	$categoryTitles = array('date' => __('Date and time', 'mpcf'), 'text' => __('Text', 'mpcf'), 'options' => __('Options', 'mpcf'), 'number' => __('Numbers', 'mpcf'), 'misc' => __('Miscellaneous', 'mpcf'));
 
 	foreach ($modules as $module) {
 		$classname = $module['name'];
@@ -83,6 +86,8 @@ function mpcf_get_all_registered_modules_options() {
 			)
 		);
 
+	//	$category = isset($class->category) ? $class->category : 'misc';
+
 		foreach ($parameters as $name => $data) {
 			if (is_array($data)) {
 				$optionSet = array();
@@ -95,13 +100,27 @@ function mpcf_get_all_registered_modules_options() {
 		}
 
 		if (!empty($options)) {
+		//	$allOptions[$category][$classFieldName]['title'] = $classPrettyName;
+		//	$allOptions[$category][$classFieldName]['fields'] = $options;
 			$allOptions[$classFieldName]['title'] = $classPrettyName;
 			$allOptions[$classFieldName]['fields'] = $options;
 		}
 	}
 
+	// $result = array();
+	// foreach ($allOptions as $category => $data) {
+	// 	$result['header-' . $category]['title'] = array('title' => $categoryTitles[$category], 'disabled' => true);
+
+	// 	usort($data, function($a, $b) {
+	// 		return strcmp($a['title'], $b['title']);
+	// 	});
+
+	// 	$result = array_merge($result, $data);
+	// }
+	// return $result;
+
 	usort($allOptions, function($a, $b) {
-		return strcmp($a['title'], $b['title']);
+	 	return strcmp($a['title'], $b['title']);
 	});
 
 	return $allOptions;

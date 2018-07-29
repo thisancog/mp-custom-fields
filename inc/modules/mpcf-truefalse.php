@@ -1,14 +1,14 @@
 <?php
 
 if (!defined('ABSPATH')) exit;
-if (!class_exists('MPCFButtonGroupField')) :
+if (!class_exists('MPCFTrueFalseField')) :
 
 /*****************************************************
 	URL field
  *****************************************************/
 
-class MPCFButtonGroupField extends MPCFModule {
-	public $name = 'buttongroup';
+class MPCFTrueFalseField extends MPCFModule {
+	public $name = 'truefalse';
 
 	function __construct() {
 		parent::__construct();
@@ -23,35 +23,38 @@ class MPCFButtonGroupField extends MPCFModule {
 		$this->html5 = false;
 
 		// include additional classes for the wrapper of this field
-		$this->wrapperClasses = '';
+		$this->wrapperClasses = 'mpcf-buttongroup-input';
 
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'options'		=> array('title' => __('Options', 'mpcf'), 'type'  => 'repeater', 'fields' => array())
+			'default'	=> array('title' => __('Default', 'mpcf'), 'type'  => 'truefalse')
 		);
 	}
 
 	function label() {
-		return __('Button group', 'mpcf');
+		return __('True/false button', 'mpcf');
+	}
+
+	function save_before($post_id, $name, $value) {
+		return ($value === 'true');
 	}
 
 	function build_field($args = array()) {
-		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$default = isset($args['default']) && !empty($args['default']) ? $args['default'] : false; ?>
+		$options = array('true' => __('yes', 'mpcf'), 'false' => __('no', 'mpcf')); ?>
 
-		<div class="mpcf-buttongroup-wrapper">
+		<div class="mpcf-truefalse-wrapper mpcf-buttongroup-wrapper">
 <?php 		foreach ($options as $name => $title) {
 				$id = $args['name'] . '-' . $name;
-				if ($default && $default === $name)
-					$title .= __(' (default)', 'mpcf'); ?>
+				$checked = ($name === 'true'  &&  $args['value']) ||
+						   ($name === 'false' && !$args['value']); ?>
 
-				<div class="mpcf-buttongroup-option">
+				<div class="mpcf-truefalse-option mpcf-buttongroup-option">
 					<input  type="radio"
 							name="<?php echo $args['name']; ?>"
 							id="<?php echo $id; ?>"
 							value="<?php echo $name; ?>"
-							<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
+							<?php echo ($checked ? ' checked' : ''); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>
 

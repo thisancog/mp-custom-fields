@@ -106,8 +106,9 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 <?php				$result = $module->build_field($field);
 					$hasRequireds = $hasRequireds || $result;
 
-					if (!empty($field['description']) && $field['description'] !== false) ?>
+					if (!empty($field['description']) && $field['description'] !== false) { ?>
 						<div class="mpcf-description"><?php echo $field['description']; ?></div>
+<?php 				} ?>
 				</div>
 			</div>
 <?php	}

@@ -13,6 +13,11 @@ class MPCFMapField extends MPCFModule {
 	function __construct() {
 		parent::__construct();
 
+		// Supply a category for the field selection menu
+		// possible values: date, text, options, number, misc
+		// default: misc
+		$this->category = 'misc';
+
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check
 		$this->html5 = false;

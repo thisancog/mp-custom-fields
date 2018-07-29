@@ -13,6 +13,11 @@ class MPCFSelectField extends MPCFModule {
 	function __construct() {
 		parent::__construct();
 
+		// Supply a category for the field selection menu
+		// possible values: date, text, options, number, misc
+		// default: misc
+		$this->category = 'options';
+
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check
 		$this->html5 = false;
@@ -51,8 +56,12 @@ class MPCFSelectField extends MPCFModule {
 <?php 	}
 
  		foreach ($options as $name => $title) {
-			$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value'])); ?>
-			<option value="<?php echo $name; ?>" <?php echo $selected ? ' selected' : ''; ?>><?php echo $title; ?></option>
+ 			if (is_array($title))
+ 				extract($title);
+
+			$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value']));
+			$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
+			<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
 <?php	} ?>
 		</select>
 

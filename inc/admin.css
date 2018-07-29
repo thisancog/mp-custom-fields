@@ -326,20 +326,24 @@
 	Specific fields
  ******************************/
 
-.mpcf-text-input {}
-
-.mpcf-textarea {}
-
 .mpcf-textarea textarea {
 	resize: vertical;
 	min-height: 75px;
 }
 
+.mpcf-editor {
+	padding-top: 10px;
+}
+
+
+/******************************
+	Media picker
+ ******************************/
+
 .mpcf-mediapicker {
 	display: flex;
 	flex-wrap: wrap;
 }
-
 
 .mpcf-mediapicker .mpcf-description {
 	width: 100%;
@@ -416,13 +420,10 @@
 	width: 100px;
 }
 
-.mpcf-filepicker .mpcf-content-buttons {
-	width: auto;
-}
 
-.mpcf-editor {
-	padding-top: 10px;
-}
+/******************************
+	Map
+ ******************************/
 
 .mpcf-map {
 	width: 100%;
@@ -440,6 +441,11 @@
 	box-sizing: border-box;
 	font-style: oblique;
 }
+
+
+/******************************
+	File picker
+ ******************************/
 
 .mpcf-file-input .mpcf-field {
 	margin-top: 4px;
@@ -468,6 +474,16 @@
 body.no-js .mpcf-file-picker + label {
 	display: none;
 }
+
+.mpcf-filepicker .mpcf-content-buttons {
+	width: auto;
+}
+
+
+
+/******************************
+	Button group
+ ******************************/
 
 .mpcf-buttongroup-input .mpcf-buttongroup-wrapper {
 	display: flex;
@@ -526,6 +542,38 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-buttongroup-input .mpcf-buttongroup-option label img {
 	height: 18px;
 	width: auto;
+}
+
+
+
+/******************************
+	True/false button
+ ******************************/
+
+.mpcf-buttongroup-input .mpcf-truefalse-option:first-child input:checked + label,
+.mpcf-buttongroup-input .mpcf-truefalse-option:first-child input:focus + label {
+	border-color: #46B450 #42A94A #42A94A;
+	background-color: #46B450;
+	color: #FFF;
+	text-shadow: 0 -1px 1px #42A94A, 1px 0 1px #42A94A, 0 1px 1px #42A94A, -1px 0 1px #42A94A;
+}
+
+.mpcf-buttongroup-input .mpcf-truefalse-option:last-child input:checked + label,
+.mpcf-buttongroup-input .mpcf-truefalse-option:last-child input:focus + label {
+	border-color: #DC3232 #AA0000 #AA0000;
+	background-color: #DC3232;
+	color: #FFF;
+	text-shadow: 0 -1px 1px #AA0000, 1px 0 1px #AA0000, 0 1px 1px #AA0000, -1px 0 1px #AA0000;
+}
+
+
+
+/******************************
+	Repeater
+ ******************************/
+
+.mpcf-repeater-input > .mpcf-field {
+	margin-left: -37px;
 }
 
 .mpcf-repeater-wrapper {
@@ -625,6 +673,10 @@ body.no-js .mpcf-file-picker + label {
 }
 
 
+
+/******************************
+	Conditional
+ ******************************/
 
 .mpcf-conditional-wrapper {
 	padding-top: 32px;
