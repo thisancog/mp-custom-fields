@@ -47,7 +47,7 @@ class MPCFNumberField extends MPCFModule {
 				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
 				pattern="[0-9]+"
-				<?php $placeholder . $required . $step . $min . $max; ?>>>
+				<?php $placeholder . $required . $step . $min . $max; ?>>
 
 <?php
 	}
