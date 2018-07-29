@@ -70,7 +70,7 @@ function mpcf_setup_theme_admin_menu() {
 	$mapskey = (isset($o['googlemapskey']) ? $o['googlemapskey'] : false);
 
 	add_menu_page(__('Custom Fields', 'mpcf'), __('Custom Fields', 'mpcf'), 'manage_options', 'mpcf', 'mpcf_admin', '', 80);
-	add_submenu_page('mpcf', __('Options', 'mpcf'), __('Options', 'mpcf'), 'manage_options', 'mpcf-options', 'mpcf_options');
+	add_submenu_page('mpcf', __('Settings', 'mpcf'), __('Settings', 'mpcf'), 'manage_options', 'mpcf-settings', 'mpcf_settings');
 
 	$dependencies = array('jquery', 'jquery-ui-sortable', 'wp-color-picker');
 

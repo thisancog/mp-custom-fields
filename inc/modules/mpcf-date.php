@@ -29,10 +29,26 @@ class MPCFDateField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => ''),
-			'placeholder'	=> array('title' => __('Placeholder', 'mpcf'), 'type' => 'date'),
-			'min'			=> array('title' => __('Minimum value', 'mpcf'), 'type' => 'date'),
-			'max'			=> array('title' => __('Maximum value', 'mpcf'), 'type' => 'date')
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
+				'name'	=> 'placeholder',
+				'title' => __('Placeholder', 'mpcf'),
+				'type'	=> $this->name,
+			),
+			array(
+				'name'	=> 'min',
+				'title' => __('Minimum value', 'mpcf'),
+				'type'	=> $this->name
+			),
+			array(
+				'name'	=> 'max',
+				'title' => __('Maximum value', 'mpcf'),
+				'type'	=> $this->name
+			)
 		);
 	}
 

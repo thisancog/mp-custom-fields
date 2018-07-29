@@ -28,7 +28,11 @@ class MPCFColorField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => '')
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse'
+			)
 		);
 	}
 

@@ -87,6 +87,14 @@ function mpcf_admin_edit_box($id) {
 
 	for ($i = 0; $i < count($panels); $i++) {
 		$panel = $panels[$i];
+		$panelFields = $panel['fields'];
+
+		array_walk($panelFields, function(&$field) {
+			$field = array(
+				'type'		=> $field['type'],
+				'options'	=> $field
+			);
+		});
 
 		$newPanel = array(
 			'name'		=> sprintf(__('Panel: %s', 'mpcf'), $panel['name']),
@@ -109,7 +117,7 @@ function mpcf_admin_edit_box($id) {
 				),
 				array(
 					'name'		=> 'panels[' . $i . '][fields]',
-					'value'		=> $box['panels'][$i]['fields'],
+					'value'		=> $panelFields,
 					'type'		=> 'repeater',
 					'title'		=> __('Fields', 'mpcf'),
 					'fields'	=> array(
@@ -183,7 +191,7 @@ function mpcf_admin_edit_box($id) {
 <?php	} ?>
 
 	<?php mpcf_build_gui_as_panels($gui, $box); ?>
-	<pre><?php var_dump($box['panels'][0]); ?></pre>
+	<pre><?php // var_dump($box['panels'][0]); ?></pre>
 
 	<div class="mpcf-options-inputs">
 		<input type="hidden" name="update_settings" id="update_settings" value="Y" />

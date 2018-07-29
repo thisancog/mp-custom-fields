@@ -2,7 +2,7 @@
 
 require_once('modules.php');
 require_once('mpcf-admin.php');
-require_once('mpcf-options.php');
+require_once('mpcf-settings.php');
 require_once('mpcf-register-metaboxes.php');
 require_once('gui.php');
 

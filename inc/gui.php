@@ -77,15 +77,18 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$type = $field['type'];
 		$field = mpcf_sanitize_args($field);
 
-		if (!isset($field['value']) || empty($field['value']))
-			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
+		if (!isset($field['value']) || empty($field['value'])) {
+			if ($type !== 'conditional')
+				$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
+			else
+				$field['value'] = isset($values) ? $values : $field['default'];
+		}
 
-		if ($type !== 'repeater')
+		if ($type !== 'repeater' && $type !== 'conditional')
 			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
-
 
 		if (isset($o['modules'][$type])) {
 			$classname = $o['modules'][$type]['name'];

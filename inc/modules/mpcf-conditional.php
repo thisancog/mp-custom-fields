@@ -27,9 +27,7 @@ class MPCFConditionalField extends MPCFModule {
 
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
-		$this->parameters = array(
-			'options'
-		);
+		$this->parameters = array();
 	}
 
 	function label() {
@@ -58,13 +56,11 @@ class MPCFConditionalField extends MPCFModule {
 
 				<option value="-1" disabled<?php echo $noSelection; ?>>------</option>
 
-<?php 		foreach ($options as $name => $values) {
+<?php 		foreach ($options as $name => $params) {
 				$disabled = false;
-				
-				if (is_array($values['title']))	extract($values['title']);
- 				else 							$title = $values['title'];
 
- 				var_dump($disabled);
+				if (is_array($params['title']))	extract($params['title']);
+ 				else 							$title = $params['title'];
 
 				$selected = isset($value['type']) && $value['type'] == $name;
 				$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>

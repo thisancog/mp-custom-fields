@@ -28,7 +28,11 @@ class MPCFCheckbox extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'label'		=> array('title' => __('Label', 'mpcf'), 'type' => 'text')
+			array(
+				'name'	=> 'label',
+				'title' => __('Label', 'mpcf'),
+				'type'	=> 'text'
+			)
 		);
 	}
 

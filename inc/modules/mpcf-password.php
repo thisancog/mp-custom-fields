@@ -28,9 +28,21 @@ class MPCFPasswordField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse'),
-			'minlength'		=> array('title' => __('Minimum length', 'mpcf'), 'type' => 'number'),
-			'maxlength'		=> array('title' => __('Maximum length', 'mpcf'), 'type' => 'number'),
+			array(
+				'name'	=> 'required',
+				'title'	=> __('Required', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
+				'name'	=> 'minlength',
+				'title' => __('Minimum length', 'mpcf'),
+				'type'	=> 'number'
+			),
+			array(
+				'name'	=> 'maxlength',
+				'title' => __('Maximum length', 'mpcf'),
+				'type'	=> 'number'
+			)
 		);
 	}
 

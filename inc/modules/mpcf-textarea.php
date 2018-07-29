@@ -28,9 +28,24 @@ class MPCFTextareaField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'placeholder'	=> array('title' => __('Placeholder', 'mpcf'), 'type' => 'text', 'description' => ''),
-			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => ''),
-			'rows'			=> array('title' => __('Rows', 'mpcf'), 'type' => 'number', 'description' => __('number of rows', 'mpcf'))
+			array(
+				'name'	=> 'placeholder',
+				'title' => __('Placeholder', 'mpcf'),
+				'type'	=> 'text',
+				'description' => ''
+			),
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type' => 'truefalse',
+				'description' => ''
+			),
+			array(
+				'name'	=> 'rows',
+				'title' => __('Rows', 'mpcf'),
+				'type' => 'number',
+				'description' => __('number of rows', 'mpcf')
+			)
 		);
 	}
 

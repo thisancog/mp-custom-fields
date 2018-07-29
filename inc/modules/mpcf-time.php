@@ -50,7 +50,7 @@ class MPCFTimeField extends MPCFModule {
 				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
 				pattern="[0-9]{2}:[0-9]{2}"
-				<?php $required . $step . $min . $max; ?>>>
+				<?php $required . $step . $min . $max; ?>>
 
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: hh:mm:ss (e.g. %s)', 'mpcf'), current_time('H:i:s')); ?></div>
 <?php

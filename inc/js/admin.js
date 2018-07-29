@@ -75,8 +75,10 @@ var focusInvalids = function(elem) {
 	Check if browser supports HTML5 input types
  **************************************************************/
 
-var checkHTML5Support = function() {
-	var elems = document.querySelectorAll('.mpcf-nohtml5');
+var checkHTML5Support = function(parent = false) {
+	parent = parent || document;
+	var elems = parent.querySelectorAll('.mpcf-nohtml5');
+
 	[].forEach.call(elems, function(elem) {
 		var input = document.createElement('input'),
 			type = elem.querySelector('input').getAttribute('type'),
@@ -130,6 +132,7 @@ var repeaterField = function(parent = null) {
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
 			conditionalField(rowsWrapper);
+			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
 		});
 
@@ -152,6 +155,8 @@ var repeaterField = function(parent = null) {
 
 			reorder();
 			registerMediaPicker();
+			conditionalField(newRow);
+			checkHTML5Support(newRow);
 			focusInvalids(newRow);
 		});
 
@@ -222,6 +227,11 @@ var conditionalField = function(parent = null) {
 			values = JSON.parse(select.dataset.values);
 
 		field.dataset.registered = 1;
+		select.removeAttribute('data-options');
+		select.removeAttribute('data-values');
+
+		if (values.options)
+			values = values.options;
 
 		var switchContent = function(values = false) {
 			var request = {
@@ -240,6 +250,7 @@ var conditionalField = function(parent = null) {
 				loader.classList.remove('mpcf-loading-active');
 				registerMediaPicker();
 				repeaterField(wrapper);
+				checkHTML5Support(wrapper);
 				focusInvalids(wrapper);
 			});
 		}

@@ -75,12 +75,14 @@ function mpcf_get_all_registered_modules_options() {
 
 		$parameters = $class->parameters;
 		$options = array(
-			'name'	=> array(
+			array(
+				'name'		=> 'name',
 				'type'		=> 'text',
 				'title'		=> __('Name', 'mpcf'),
 				'required'	=> true
 			),
-			'title' => array(
+			array(
+				'name'		=> 'title',
 				'type'		=> 'text',
 				'title'		=> __('Title', 'mpcf')
 			)
@@ -95,13 +97,14 @@ function mpcf_get_all_registered_modules_options() {
 					$optionSet[$dataTitle] = $dataValue;
 				}
 
-				$options[$name] = $optionSet;
+				$options[] = $optionSet;
 			}
 		}
 
 		if (!empty($options)) {
 		//	$allOptions[$category][$classFieldName]['title'] = $classPrettyName;
 		//	$allOptions[$category][$classFieldName]['fields'] = $options;
+
 			$allOptions[$classFieldName]['title'] = $classPrettyName;
 			$allOptions[$classFieldName]['fields'] = $options;
 		}
@@ -119,7 +122,7 @@ function mpcf_get_all_registered_modules_options() {
 	// }
 	// return $result;
 
-	usort($allOptions, function($a, $b) {
+	uasort($allOptions, function($a, $b) {
 	 	return strcmp($a['title'], $b['title']);
 	});
 

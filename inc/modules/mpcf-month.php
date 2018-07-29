@@ -28,10 +28,33 @@ class MPCFMonthField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'required'		=> array('title' => __('Required', 'mpcf'), 'type' => 'truefalse', 'description' => ''),
-			'min'			=> array('title' => __('Minimum value', 'mpcf'), 'type' => 'number'),
-			'max'			=> array('title' => __('Maximum value', 'mpcf'), 'type' => 'number'),
-			'step'			=> array('title' => __('Step', 'mpcf'), 'type' => 'number', 'description' => __('size of steps between possible values', 'mpcf'), 'default' => 1)
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
+				'name'	=> 'placeholder',
+				'title' => __('Placeholder', 'mpcf'),
+				'type'	=> $this->name,
+			),
+			array(
+				'name'	=> 'min',
+				'title' => __('Minimum value', 'mpcf'),
+				'type'	=> $this->name
+			),
+			array(
+				'name'	=> 'max',
+				'title' => __('Maximum value', 'mpcf'),
+				'type'	=> $this->name
+			),
+			array(
+				'name'	=> 'step',
+				'title' => __('Step', 'mpcf'),
+				'type'	=> 'number',
+				'description' => __('size of steps between possible values', 'mpcf'),
+				'default' => 1
+			)
 		);
 	}
 
@@ -49,7 +72,7 @@ class MPCFMonthField extends MPCFModule {
 				name="<?php echo $args['name']; ?>"
 				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				<?php $required . $step . $min . $max; ?>>>
+				<?php $required . $step . $min . $max; ?>>
 
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm (e.g. %s)', 'mpcf'), current_time('Y-m')); ?></div>
 <?php

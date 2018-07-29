@@ -27,9 +27,7 @@ class MPCFFilePicker extends MPCFModule {
 
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
-		$this->parameters = array(
-
-		);
+		$this->parameters = array();
 	}
 
 	function label() {

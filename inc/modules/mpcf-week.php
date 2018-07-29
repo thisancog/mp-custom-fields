@@ -49,7 +49,7 @@ class MPCFWeekField extends MPCFModule {
 				name="<?php echo $args['name']; ?>"
 				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				<?php $required . $step . $min . $max; ?>>>
+				<?php $required . $step . $min . $max; ?>>
 
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-Www (e.g. %s)', 'mpcf'), current_time('Y-\WW')); ?></div>
 <?php

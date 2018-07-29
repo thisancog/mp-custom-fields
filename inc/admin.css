@@ -582,6 +582,10 @@ body.no-js .mpcf-file-picker + label {
 	counter-reset: section;
 }
 
+.mpcf-repeater-wrapper .mpcf-repeater-wrapper {
+	counter-reset: subsection
+}
+
 .mpcf-repeater-wrapper li {
 	position: relative;
 	left: 0;
@@ -598,6 +602,11 @@ body.no-js .mpcf-file-picker + label {
 	left: 16px;
 	counter-increment: section;
 	z-index: 2;
+}
+
+.mpcf-repeater-wrapper .mpcf-repeater-wrapper li:before {
+	content: counter(subsection) ". ";
+	counter-increment: subsection;
 }
 
 .mpcf-repeater-wrapper li:nth-child(2n) {

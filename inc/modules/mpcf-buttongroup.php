@@ -28,7 +28,25 @@ class MPCFButtonGroupField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'options'		=> array('title' => __('Options', 'mpcf'), 'type'  => 'repeater', 'fields' => array())
+			array(
+				'name'	=> 'options',
+				'title' => __('Choices', 'mpcf'),
+				'type'	=> 'repeater',
+				'fields' => array(
+					array(
+						'name'	=> 'name',
+						'title'	=> __('Name', 'mpcf'),
+						'type'	=> 'text',
+						'required'	=> true
+					),
+					array(
+						'name'	=> 'title',
+						'title'	=> __('Title', 'mpcf'),
+						'type'	=> 'text',
+						'required'	=> true
+					)
+				)
+			)
 		);
 	}
 
