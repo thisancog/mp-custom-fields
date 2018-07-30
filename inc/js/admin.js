@@ -183,7 +183,7 @@ var repeaterField = function(parent = null) {
 				var fields = row.querySelectorAll('.mpcf-field-option');
 
 				[].forEach.call(fields, function(field, fieldIndex) {
-					var inputs = row.querySelectorAll('[name], [id], [for]');
+					var inputs = field.querySelectorAll('[name], [id], [for]');
 
 					[].forEach.call(inputs, function(input) {
 						let type = input.getAttribute('type'),
