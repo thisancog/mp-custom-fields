@@ -677,9 +677,6 @@ body.no-js .mpcf-file-picker + label {
 	padding-left: 38px;
 }
 
-.mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
-	padding-left: 0;
-}
 
 
 
