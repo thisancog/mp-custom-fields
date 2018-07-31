@@ -31,7 +31,8 @@ class MPCFMonthField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'placeholder',
@@ -62,17 +63,11 @@ class MPCFMonthField extends MPCFModule {
 		return __('Month', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$step     = (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : '');
-		$min 	 = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
-		$max 	 = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
-
+	function build_field($args = array()) { ?>
 		<input  type="month"
 				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				<?php $required . $step . $min . $max; ?>>
+				<?php echo mpcf_list_input_params($this); ?>>
 
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm (e.g. %s)', 'mpcf'), current_time('Y-m')); ?></div>
 <?php

@@ -50,7 +50,8 @@ class MPCFRadioField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			)
 		);
 	}
@@ -61,9 +62,9 @@ class MPCFRadioField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : ''; ?>
+		$params = mpcf_list_input_params($this, 'required'); ?> ?>
 
-		<fieldset name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo $required; ?>>
+		<fieldset name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo $params; ?>>
 <?php 		foreach ($options as $name => $title) {
 				$id = $args['name'] . '-' . $name; ?>
 

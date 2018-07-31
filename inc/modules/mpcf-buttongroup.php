@@ -46,6 +46,11 @@ class MPCFButtonGroupField extends MPCFModule {
 						'required'	=> true
 					)
 				)
+			),
+			array(
+				'name'	=> 'default',
+				'title'	=> __('Default', 'mpcf'),
+				'type'	=> 'text'
 			)
 		);
 	}
@@ -56,7 +61,7 @@ class MPCFButtonGroupField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$default = isset($args['default']) && !empty($args['default']) ? $args['default'] : false; ?>
+		$default = mpcf_get_input_param($this, 'default'); ?>
 
 		<div class="mpcf-buttongroup-wrapper">
 <?php 		foreach ($options as $name => $title) {
@@ -67,8 +72,8 @@ class MPCFButtonGroupField extends MPCFModule {
 				<div class="mpcf-buttongroup-option">
 					<input  type="radio"
 							name="<?php echo $args['name']; ?>"
-							id="<?php echo $id; ?>"
 							value="<?php echo $name; ?>"
+							<?php echo mpcf_list_input_params($this, false); ?>
 							<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>

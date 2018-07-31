@@ -31,7 +31,8 @@ class MPCFPasswordField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title'	=> __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'minlength',
@@ -50,14 +51,8 @@ class MPCFPasswordField extends MPCFModule {
 		return __('Password', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$minlength = (isset($args['minlength']) && !empty($args['minlength']) ? ' minlength="' . $args['minlength'] . '"' : '');
-		$maxlength = (isset($args['maxlength']) && !empty($args['maxlength']) ? ' maxlength="' . $args['maxlength'] . '"' : ''); ?>
-
-		<input type="password" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>"
-			<?php echo $required . $minlength . $maxlength; ?>>
+	function build_field($args = array()) { ?>
+		<input type="password" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }

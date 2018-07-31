@@ -31,7 +31,8 @@ class MPCFNumberField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'placeholder',
@@ -62,19 +63,12 @@ class MPCFNumberField extends MPCFModule {
 		return __('Number', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$placeholder = isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '';
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$step     = (isset($args['step']) && !empty($args['step']) ? ' step="' . $args['step'] . '"' : '');
-		$min 	 = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
-		$max 	 = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
-
+	function build_field($args = array()) { ?>
 		<input  type="number"
 				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
 				pattern="[0-9]+"
-				<?php $placeholder . $required . $step . $min . $max; ?>>
+				<?php echo mpcf_list_input_params($this); ?>>
 
 <?php
 	}

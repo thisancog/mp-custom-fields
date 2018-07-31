@@ -43,21 +43,22 @@ class MPCFMediaSelector extends MPCFModule {
 		$image		= (strpos($type, 'image') > -1) ? $media[0] : '';
 		$video		= (strpos($type, 'video') > -1) ? $media : '';
 
-		$vidclass	= (strpos($type, 'video') > -1) ? '' : 'hidden';
-		$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : 'hidden';
+		$vidclass	= (strpos($type, 'video') > -1) ? '' : ' hidden';
+		$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : ' hidden';
 		$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
 		$clearclass	= !empty($args['value']) ? '' : 'hidden';
+		$class		= mpcf_input_class($this, 'mpcf-media-id');
 		$id = uniqid('mpcf-changemedia-' . $args['name']); ?>
 
 		<div class="mpcf-mediapicker">
 			<div class="mpcf-preview-content dashicons-format-image dashicons-before">
-				<img src="<?php echo $image; ?>" class="mpcf-imagepreview <?php echo $imgclass; ?>">
-				<video class="mpcf-videopreview <?php echo $vidclass; ?>" autoplay loop muted>
+				<img src="<?php echo $image; ?>" class="mpcf-imagepreview<?php echo $imgclass; ?>">
+				<video class="mpcf-videopreview<?php echo $vidclass; ?>" autoplay loop muted>
 					<source src="<?php echo $video; ?>">
 				</video>
 			</div>
 			<div class="mpcf-content-buttons">
-				<input type="hidden" class="mpcf-media-id" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+				<input type="hidden"<?php echo $class; ?> name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
 				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
 				<input type="button" class="mpcf-clearmedia mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
 			</div>

@@ -38,7 +38,8 @@ class MPCFTextareaField extends MPCFModule {
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
 				'type' => 'truefalse',
-				'description' => ''
+				'description' => '',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'rows',
@@ -53,13 +54,8 @@ class MPCFTextareaField extends MPCFModule {
 		return __('Text area', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '');
-		$rows = isset($args['rows']) && !empty($args['rows']) ? ' rows="' . $args['rows'] . '"' : ''; ?>
-		
-		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" <?php echo $required . $placeholder . $rows; ?>><?php echo $args['value']; ?></textarea>
-
+	function build_field($args = array()) { ?>
+		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo mpcf_list_input_params($this); ?>><?php echo $args['value']; ?></textarea>
 <?php
 	}
 }

@@ -28,17 +28,51 @@ class MPCFEditorField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'addparagraphs',
-			'dfw',
-			'dragdrop',
-			'class',
-			'css',
-			'height',
-			'mediabuttons',
-			'quicktags',
-			'minimaleditor',
-			'rows',
-			'tinymce'
+			array(
+				'name'	=> 'addparagraphs',
+				'title' => __('Add paragraphs', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> true,
+				'description' => __('whether to automatically add paragraphs', 'mpcf')
+			),
+			array(
+				'name'	=> 'dragdrop',
+				'title' => __('Drag & Drop upload', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> true,
+				'description' => __('whether to enable drag & drop upload', 'mpcf')
+			),
+			array(
+				'name'	=> 'css',
+				'title' => __('Custom CSS', 'mpcf'),
+				'type'	=> 'textarea',
+				'description' => __('include custom CSS without &lt;style&gt; tags', 'mpcf')
+			),
+			array(
+				'name'	=> 'height',
+				'title' => __('Height', 'mpcf'),
+				'type'	=> 'number',
+				'description' => __('Set editor height in pixels. Takes precedence over rows option.', 'mpcf')
+			),
+			array(
+				'name'	=> 'mediabuttons',
+				'title' => __('Media buttons', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> true,
+				'description' => __('whether to display media buttons', 'mpcf')
+			),
+			array(
+				'name'	=> 'minimaleditor',
+				'title' => __('Minimal editor', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> false
+			),
+			array(
+				'name'	=> 'rows',
+				'title' => __('Rows', 'mpcf'),
+				'type'	=> 'number',
+				'description' => __('Set editor height in rows. Will be overruled if height option is set.', 'mpcf')
+			)
 		);
 	}
 
@@ -48,18 +82,16 @@ class MPCFEditorField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$id = str_replace('-', '', $args['name']);
+
 		$editorargs = array(
-			'dfw'				=> isset($args['dfw']) ? $args['dfw'] : false,
 			'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
-			'editor_class'		=> isset($args['class']) ? $args['class'] : '',
-			'editor_css'		=> isset($args['css']) ? $args['css'] : null,
+			'editor_class'		=> mpcf_get_input_class($this),
+			'editor_css'		=> isset($args['css']) ? '<style>' . $args['css'] . '</style>' : null,
 			'editor_height'		=> isset($args['height']) ? $args['height'] : null,
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
-			'quicktags'			=> isset($args['quicktags']) ? $args['quicktags'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
 			'textarea_rows'		=> isset($args['rows']) ? $args['rows'] : 10,
 			'textarea_name'		=> $args['name'],
-			'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : true,
 			'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
 		);
 

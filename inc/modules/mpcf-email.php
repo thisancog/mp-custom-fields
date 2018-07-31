@@ -28,11 +28,32 @@ class MPCFEmailField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'maxlength',
-			'minlength',
-			'multiple',
-			'placeholder',
-			'required'
+			array(
+				'name'	=> 'minlength',
+				'title' => __('Minimum length', 'mpcf'),
+				'type'	=> 'number'
+			),
+			array(
+				'name'	=> 'maxlength',
+				'title' => __('Maximum length', 'mpcf'),
+				'type'	=> 'number'
+			),
+			array(
+				'name'	=> 'multiple',
+				'title' => __('Multiple', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
+				'name'	=> 'placeholder',
+				'title' => __('Placeholder', 'mpcf'),
+				'type'	=> $this->name,
+			),
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> false
+			),
 		);
 	}
 
@@ -40,18 +61,11 @@ class MPCFEmailField extends MPCFModule {
 		return __('Email', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$multiple = (isset($args['multiple']) && !empty($args['multiple']) ? ' multiple' : '');
-		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '');
-		$minlength = (isset($args['minlength']) && !empty($args['minlength']) ? ' minlength="' . $args['minlength'] . '"' : '');
-		$maxlength = (isset($args['maxlength']) && !empty($args['maxlength']) ? ' maxlength="' . $args['maxlength'] . '"' : ''); ?>
-
+	function build_field($args = array()) { ?>
 		<input  type="email"
 				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				<?php echo $required . $multiple . $placeholder . $minlength . $maxlength; ?>>
+				<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }

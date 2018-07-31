@@ -32,7 +32,8 @@ class MPCFDateTimeField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'placeholder',
@@ -56,16 +57,9 @@ class MPCFDateTimeField extends MPCFModule {
 		return __('Date and time', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$min = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
-		$max = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
-
-		<input type="datetime-local" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>" <?php echo $required . $min . $max; ?>>
-
+	function build_field($args = array()) { ?>
+		<input type="datetime-local" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-ddThh:mm (e.g. %s)', 'mpcf'), current_time('Y-m-d\TH:i')); ?></div>
-
 <?php
 	}
 }

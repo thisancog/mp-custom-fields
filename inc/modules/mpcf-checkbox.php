@@ -49,9 +49,8 @@ class MPCFCheckbox extends MPCFModule {
 
 		<input  type="checkbox"
 				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
 				value="checked"
-				<?php echo ($args['value'] === 'checked' ? ' checked' : ''); ?>>
+				<?php echo mpcf_list_input_params($this, false) . ($args['value'] === 'checked' ? ' checked' : ''); ?>>
 			<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
 <?php
 	}

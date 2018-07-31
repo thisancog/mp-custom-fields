@@ -28,9 +28,21 @@ class MPCFMapField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'center',
-			'height',
-			'zoom'
+			array(
+				'name'	=> 'center',
+				'title' => __('Center coordinates', 'mpcf'),
+				'type'	=> 'text'
+			),
+			array(
+				'name'	=> 'height',
+				'title' => __('Height (in px)', 'mpcf'),
+				'type'	=> 'number'
+			),
+			array(
+				'name'	=> 'zoom',
+				'title' => __('Zoom factor', 'mpcf'),
+				'type'	=> 'number'
+			),
 		);
 	}
 
@@ -41,9 +53,10 @@ class MPCFMapField extends MPCFModule {
 	function build_field($args = array()) {
 		$center = isset($args['center']) && !empty($args['center']) ? ' center="' . json_encode($args['center']) . '"' : '';
 		$height = isset($args['height']) && !empty($args['height']) ? ' style="height: ' . $args['height'] . ';"' : '';
-		$zoom = isset($args['zoom']) && !empty($args['zoom']) ? ' zoom="' . $args['zoom'] . '"' : ''; ?>
+		$zoom = isset($args['zoom']) && !empty($args['zoom']) ? ' zoom="' . $args['zoom'] . '"' : '';
+		$class 	= mpcf_input_class($this, 'mpcf-mapcoords'); ?>
 
-		<input type="hidden" class="mpcf-mapcoords" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+		<input type="hidden"<?php echo $class; ?>" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php mpcf_input_id($this); ?>>
 		<input type="text" class="mpcf-mapsearch" placeholder="<?php _e('Search for address or place…', 'mpcf'); ?>">
 
 		<div class="mpcf-map"<?php echo $center . $zoom . $height; ?>>

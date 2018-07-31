@@ -28,10 +28,41 @@ class MPCFSelectField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			'multiple',
-			'options',
-			'required',
-			'size'
+			array(
+				'name'	=> 'multiple',
+				'title' => __('Multiple', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
+				'name'	=> 'options',
+				'title' => __('Choices', 'mpcf'),
+				'type'	=> 'repeater',
+				'fields' => array(
+					array(
+						'name'	=> 'name',
+						'title'	=> __('Name', 'mpcf'),
+						'type'	=> 'text',
+						'required'	=> true
+					),
+					array(
+						'name'	=> 'title',
+						'title'	=> __('Title', 'mpcf'),
+						'type'	=> 'text',
+						'required'	=> true
+					)
+				)
+			),
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> false
+			),
+			array(
+				'name'	=> 'size',
+				'title' => __('Size', 'mpcf'),
+				'type'	=> 'number'
+			),
 		);
 	}
 
@@ -42,14 +73,13 @@ class MPCFSelectField extends MPCFModule {
 	function build_field($args = array()) {
 		$multiple = isset($args['mutiple']) && !empty($args['mutiple']) ? ' ' . $args['mutiple'] : '';
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$size     = isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : '';
-		$args['value'] = !empty($multiple) ? unserialize(($args['value'])) : $args['value']; ?>
+		$args['value'] = !empty($multiple) ? unserialize(($args['value'])) : $args['value'];
+		$params = mpcf_list_input_params($this, array('required', 'size')); ?>
 
 		<select
 			name="<?php echo $args['name']; ?><?php echo (!empty($multiple) ? '[]' : ''); ?>"
 			id="<?php echo $args['name']; ?>"
-			<?php echo $multiple . $size . $required; ?>>
+			<?php echo $params . $multiple; ?>>
 
 <?php 	if (!empty($required)) { ?>
 			<option value="" disabled<?php echo (empty($args['value']) ? ' selected' : ''); ?>>-----</option>

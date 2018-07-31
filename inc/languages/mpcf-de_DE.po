@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-07-30 11:26+0200\n"
-"PO-Revision-Date: 2018-07-30 11:27+0200\n"
+"POT-Creation-Date: 2018-07-31 16:16+0200\n"
+"PO-Revision-Date: 2018-07-31 16:17+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,22 +17,27 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:292
+#: inc/gui.php:294
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
 #: inc/modules.php:81 inc/modules/mpcf-buttongroup.php:38
-#: inc/modules/mpcf-radio.php:38
+#: inc/modules/mpcf-radio.php:38 inc/modules/mpcf-select.php:43
 msgid "Name"
 msgstr "Name"
 
 #: inc/modules.php:87 inc/modules/mpcf-buttongroup.php:44
-#: inc/modules/mpcf-radio.php:44 inc/mpcf-admin.php:120 inc/mpcf-admin.php:159
-#: inc/mpcf-admin.php:366
+#: inc/modules/mpcf-radio.php:44 inc/modules/mpcf-select.php:49
+#: inc/mpcf-admin.php:120 inc/mpcf-admin.php:159 inc/mpcf-admin.php:366
 msgid "Title"
 msgstr "Titel"
 
+#: inc/modules.php:163
+msgid "Base Class"
+msgstr "Grundmodul"
+
 #: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-radio.php:33
+#: inc/modules/mpcf-select.php:38
 msgid "Choices"
 msgstr "Optionen"
 
@@ -53,10 +58,12 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/modules/mpcf-color.php:33 inc/modules/mpcf-date.php:34
-#: inc/modules/mpcf-datetime.php:34 inc/modules/mpcf-month.php:33
-#: inc/modules/mpcf-number.php:33 inc/modules/mpcf-password.php:33
-#: inc/modules/mpcf-radio.php:52 inc/modules/mpcf-range.php:33
-#: inc/modules/mpcf-textarea.php:39
+#: inc/modules/mpcf-datetime.php:34 inc/modules/mpcf-email.php:53
+#: inc/modules/mpcf-month.php:33 inc/modules/mpcf-number.php:33
+#: inc/modules/mpcf-password.php:33 inc/modules/mpcf-radio.php:52
+#: inc/modules/mpcf-range.php:33 inc/modules/mpcf-select.php:57
+#: inc/modules/mpcf-text.php:54 inc/modules/mpcf-textarea.php:39
+#: inc/modules/mpcf-time.php:33 inc/modules/mpcf-week.php:33
 msgid "Required"
 msgstr "Pflichtangabe"
 
@@ -69,20 +76,24 @@ msgid "Conditional field"
 msgstr ""
 
 #: inc/modules/mpcf-date.php:39 inc/modules/mpcf-datetime.php:39
-#: inc/modules/mpcf-month.php:38 inc/modules/mpcf-number.php:38
-#: inc/modules/mpcf-textarea.php:33
+#: inc/modules/mpcf-email.php:48 inc/modules/mpcf-month.php:38
+#: inc/modules/mpcf-number.php:38 inc/modules/mpcf-text.php:49
+#: inc/modules/mpcf-textarea.php:33 inc/modules/mpcf-time.php:38
+#: inc/modules/mpcf-week.php:38
 msgid "Placeholder"
 msgstr "Platzhalter"
 
 #: inc/modules/mpcf-date.php:44 inc/modules/mpcf-datetime.php:44
 #: inc/modules/mpcf-month.php:43 inc/modules/mpcf-number.php:43
-#: inc/modules/mpcf-range.php:38
+#: inc/modules/mpcf-range.php:38 inc/modules/mpcf-time.php:43
+#: inc/modules/mpcf-week.php:43
 msgid "Minimum value"
 msgstr "Mindestwert"
 
 #: inc/modules/mpcf-date.php:49 inc/modules/mpcf-datetime.php:49
 #: inc/modules/mpcf-month.php:48 inc/modules/mpcf-number.php:48
-#: inc/modules/mpcf-range.php:43
+#: inc/modules/mpcf-range.php:43 inc/modules/mpcf-time.php:48
+#: inc/modules/mpcf-week.php:48
 msgid "Maximum value"
 msgstr "H&ouml;chstwert"
 
@@ -90,7 +101,7 @@ msgstr "H&ouml;chstwert"
 msgid "Date"
 msgstr "Datum"
 
-#: inc/modules/mpcf-date.php:68
+#: inc/modules/mpcf-date.php:62
 #, php-format
 msgid "format: yyyy-mm-dd (e.g. %s)"
 msgstr "Format: JJJJ-MM-TT (bspw. %s)"
@@ -99,16 +110,86 @@ msgstr "Format: JJJJ-MM-TT (bspw. %s)"
 msgid "Date and time"
 msgstr "Datum und Zeit"
 
-#: inc/modules/mpcf-datetime.php:67
+#: inc/modules/mpcf-datetime.php:61
 #, php-format
 msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
 msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
 
-#: inc/modules/mpcf-editor.php:46
+#: inc/modules/mpcf-editor.php:33
+msgid "Add paragraphs"
+msgstr "Abs&auml;tze hinzuf&uuml;gen"
+
+#: inc/modules/mpcf-editor.php:36
+msgid "whether to automatically add paragraphs"
+msgstr "ob automatisch Abs&auml;tze hinzuf&uuml;gt werden sollen"
+
+#: inc/modules/mpcf-editor.php:40
+msgid "Drag & Drop upload"
+msgstr "Drag-und-Drop-Upload"
+
+#: inc/modules/mpcf-editor.php:43
+msgid "whether to enable drag & drop upload"
+msgstr "ob Drag-und-Drop-Upload aktiviert werden soll"
+
+#: inc/modules/mpcf-editor.php:47
+msgid "Custom CSS"
+msgstr "Eigenes CSS"
+
+#: inc/modules/mpcf-editor.php:49
+msgid "include custom CSS without &lt;style&gt; tags"
+msgstr "f&uuml;ge eigenes CSS ohne die &lt;style&gt;-Tags ein"
+
+#: inc/modules/mpcf-editor.php:53
+msgid "Height"
+msgstr "H&ouml;he"
+
+#: inc/modules/mpcf-editor.php:55
+msgid "Set editor height in pixels. Takes precedence over rows option."
+msgstr ""
+"Gib die H&ouml;he in Pixeln an. Wird vorgezogen, falls die Zeilen-Option "
+"angegeben ist."
+
+#: inc/modules/mpcf-editor.php:59
+msgid "Media buttons"
+msgstr "Medienbuttons"
+
+#: inc/modules/mpcf-editor.php:62
+msgid "whether to display media buttons"
+msgstr "ob Medienbuttons angezeigt werden sollen"
+
+#: inc/modules/mpcf-editor.php:66
+msgid "Minimal editor"
+msgstr ""
+
+#: inc/modules/mpcf-editor.php:72 inc/modules/mpcf-textarea.php:45
+msgid "Rows"
+msgstr "Zeilen"
+
+#: inc/modules/mpcf-editor.php:74
+msgid "Set editor height in rows. Will be overruled if height option is set."
+msgstr ""
+"Gib die H&ouml;he in Zeilen an. Wird ignoriert, falls die H&ouml;hen-Option "
+"angegeben ist."
+
+#: inc/modules/mpcf-editor.php:80
 msgid "Editor"
 msgstr ""
 
-#: inc/modules/mpcf-email.php:40
+#: inc/modules/mpcf-email.php:33 inc/modules/mpcf-password.php:38
+#: inc/modules/mpcf-text.php:39
+msgid "Minimum length"
+msgstr "Mindestl&auml;nge"
+
+#: inc/modules/mpcf-email.php:38 inc/modules/mpcf-password.php:43
+#: inc/modules/mpcf-text.php:44
+msgid "Maximum length"
+msgstr "H&ouml;chstl&auml;nge"
+
+#: inc/modules/mpcf-email.php:43 inc/modules/mpcf-select.php:33
+msgid "Multiple"
+msgstr ""
+
+#: inc/modules/mpcf-email.php:60
 msgid "Email"
 msgstr "Email"
 
@@ -125,11 +206,11 @@ msgstr "&Auml;ndern"
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
-#: inc/modules/mpcf-file.php:50
+#: inc/modules/mpcf-file.php:51
 msgid "0b"
 msgstr "0b"
 
-#: inc/modules/mpcf-file.php:66 inc/modules/mpcf-media.php:62
+#: inc/modules/mpcf-file.php:67 inc/modules/mpcf-media.php:63
 #: mp-custom-fields.php:60
 msgid "Remove"
 msgstr "Entfernen"
@@ -138,15 +219,27 @@ msgstr "Entfernen"
 msgid "Hidden field"
 msgstr "Verstecktes Feld"
 
+#: inc/modules/mpcf-map.php:33
+msgid "Center coordinates"
+msgstr "Koordinaten des Mittelpunkts"
+
 #: inc/modules/mpcf-map.php:38
+msgid "Height (in px)"
+msgstr "Gr&ouml;&szlig;e (in px)"
+
+#: inc/modules/mpcf-map.php:43
+msgid "Zoom factor"
+msgstr "Zoom-Faktor"
+
+#: inc/modules/mpcf-map.php:50
 msgid "Map"
 msgstr "Karte"
 
-#: inc/modules/mpcf-map.php:47
+#: inc/modules/mpcf-map.php:60
 msgid "Search for address or place…"
 msgstr "Suche nach Adresse oder Ort…"
 
-#: inc/modules/mpcf-map.php:51
+#: inc/modules/mpcf-map.php:64
 #, php-format
 msgid ""
 "No map showing up? Generate a free Google Maps API key and enter it <a href="
@@ -160,12 +253,14 @@ msgid "Media selector"
 msgstr "Medienauswahl"
 
 #: inc/modules/mpcf-month.php:53 inc/modules/mpcf-number.php:53
-#: inc/modules/mpcf-range.php:48
+#: inc/modules/mpcf-range.php:48 inc/modules/mpcf-time.php:53
+#: inc/modules/mpcf-week.php:53
 msgid "Step"
 msgstr "Schrittgr&ouml;&szlig;e"
 
 #: inc/modules/mpcf-month.php:55 inc/modules/mpcf-number.php:55
-#: inc/modules/mpcf-range.php:50
+#: inc/modules/mpcf-range.php:50 inc/modules/mpcf-time.php:55
+#: inc/modules/mpcf-week.php:55
 msgid "size of steps between possible values"
 msgstr "Gr&ouml;&szlig;e der Schritte zwischen den m&ouml;glichen Werten"
 
@@ -173,7 +268,7 @@ msgstr "Gr&ouml;&szlig;e der Schritte zwischen den m&ouml;glichen Werten"
 msgid "Month"
 msgstr "Monat"
 
-#: inc/modules/mpcf-month.php:77
+#: inc/modules/mpcf-month.php:71
 #, php-format
 msgid "format: yyyy-mm (e.g. %s)"
 msgstr "Format: JJJJ-MM (bspw. %s)"
@@ -181,14 +276,6 @@ msgstr "Format: JJJJ-MM (bspw. %s)"
 #: inc/modules/mpcf-number.php:62
 msgid "Number"
 msgstr "Zahl"
-
-#: inc/modules/mpcf-password.php:38
-msgid "Minimum length"
-msgstr "Mindestl&auml;nge"
-
-#: inc/modules/mpcf-password.php:43
-msgid "Maximum length"
-msgstr "H&ouml;chstl&auml;nge"
 
 #: inc/modules/mpcf-password.php:50
 msgid "Password"
@@ -206,17 +293,27 @@ msgstr "Bereich"
 msgid "Repeater"
 msgstr ""
 
-#: inc/modules/mpcf-select.php:39
+#: inc/modules/mpcf-select.php:62
+msgid "Size"
+msgstr "Gr&ouml;&szlig;e"
+
+#: inc/modules/mpcf-select.php:69
 msgid "Select"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-text.php:40
+#: inc/modules/mpcf-text.php:33
+msgid "Suggestion list"
+msgstr "Vorschlagliste"
+
+#: inc/modules/mpcf-text.php:35
+msgid "Add possible suggestions to choose from as a comma seperated list"
+msgstr ""
+"F&uuml;ge m&ouml;gliche Vorschl&auml;ge, aus denen gew&auml;hlt werden kann, "
+"als kommagetrennte Liste hinzu."
+
+#: inc/modules/mpcf-text.php:61
 msgid "Text field"
 msgstr "Text"
-
-#: inc/modules/mpcf-textarea.php:45
-msgid "Rows"
-msgstr "Zeilen"
 
 #: inc/modules/mpcf-textarea.php:47
 msgid "number of rows"
@@ -226,11 +323,11 @@ msgstr "Anzahl der Zeilen"
 msgid "Text area"
 msgstr "Mehrzeiliger Text"
 
-#: inc/modules/mpcf-time.php:39
+#: inc/modules/mpcf-time.php:62
 msgid "Time"
 msgstr "Zeit"
 
-#: inc/modules/mpcf-time.php:55
+#: inc/modules/mpcf-time.php:72
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
@@ -251,11 +348,11 @@ msgstr "ja"
 msgid "no"
 msgstr "nein"
 
-#: inc/modules/mpcf-week.php:39
+#: inc/modules/mpcf-week.php:62
 msgid "Week"
 msgstr "Woche"
 
-#: inc/modules/mpcf-week.php:54
+#: inc/modules/mpcf-week.php:72
 #, php-format
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
@@ -445,6 +542,20 @@ msgstr "Dateien ausgew&auml;hlt"
 #: mp-custom-fields.php:59
 msgid "Upload file"
 msgstr "Datei hochladen"
+
+#~ msgid ""
+#~ "Set editor height in pixels. Takes precedence over &quot;rows&quot; "
+#~ "option."
+#~ msgstr ""
+#~ "Gib die H&ouml;he in Pixeln an. Wird vorgezogen, falls die Option &quot;"
+#~ "Zeilen&quot; angegeben ist."
+
+#~ msgid ""
+#~ "Set editor height in rows. Will be overruled if &quot;height&quot; option "
+#~ "is set."
+#~ msgstr ""
+#~ "Gib die H&ouml;he in Zeilen an. Wird ignoriert, falls die Option &quot;"
+#~ "H&ouml;he&quot; angegeben ist."
 
 #~ msgid "Options"
 #~ msgstr "Einstellungen"

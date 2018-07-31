@@ -32,7 +32,8 @@ class MPCFDateField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			),
 			array(
 				'name'	=> 'placeholder',
@@ -56,15 +57,9 @@ class MPCFDateField extends MPCFModule {
 		return __('Date', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : '';
-		$placeholder = (isset($args['placeholder']) && !empty($args['placeholder']) ? ' placeholder="' . $args['placeholder'] . '"' : '');
-		$min = (isset($args['min']) && !empty($args['min']) ? ' min="' . $args['min'] . '"' : '');
-		$max = (isset($args['max']) && !empty($args['max']) ? ' max="' . $args['max'] . '"' : ''); ?>
-
-		<input type="date" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" <?php echo $required . $min . $max; ?>>
-
+	function build_field($args = array()) { ?>
+		<input type="date" name="<?php echo $args['name']; ?>"
+			value="<?php echo $args['value']; ?>" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"<?php echo mpcf_list_input_params($this); ?>>
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm-dd (e.g. %s)', 'mpcf'), current_time('Y-m-d')); ?></div>
 <?php
 	}

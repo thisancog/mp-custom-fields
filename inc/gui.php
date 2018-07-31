@@ -106,7 +106,8 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 <?php 		} ?>
 						
 				<div class="mpcf-field <?php echo $wrapperClasses; ?>">
-<?php				$result = $module->build_field($field);
+<?php				$module->args = $field;
+					$result = $module->build_field($field);
 					$hasRequireds = $hasRequireds || $result;
 
 					if (!empty($field['description']) && $field['description'] !== false) { ?>
@@ -137,6 +138,7 @@ function mpcf_sanitize_args($args) {
 	isset($args['title'])		|| $args['title'] = '';
 	isset($args['name'])		|| $args['name'] = '';
 	isset($args['required'])	|| $args['required'] = false;
+	isset($args['inputClass'])	|| $args['inputClass'] = '';
 
 	return $args;
 }

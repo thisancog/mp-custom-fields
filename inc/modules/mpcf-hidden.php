@@ -35,7 +35,7 @@ class MPCFHiddenField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input type="hidden" name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+		<input type="hidden" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this, false); ?>>
 <?php
 	}
 }

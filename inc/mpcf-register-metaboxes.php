@@ -15,6 +15,7 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 		'title'			=> '',
 		'context'		=> 'normal',
 		'priority'		=> 'default',
+		'multilingual'	=> false,
 		'fields'		=> array(),
 		'panels'		=> array()
 	);

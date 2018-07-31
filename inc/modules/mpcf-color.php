@@ -31,7 +31,8 @@ class MPCFColorField extends MPCFModule {
 			array(
 				'name'	=> 'required',
 				'title' => __('Required', 'mpcf'),
-				'type'	=> 'truefalse'
+				'type'	=> 'truefalse',
+				'default'	=> false
 			)
 		);
 	}
@@ -40,14 +41,11 @@ class MPCFColorField extends MPCFModule {
 		return __('Color picker', 'mpcf');
 	}
 
-	function build_field($args = array()) {
-		$required = isset($args['required']) && $args['required'] === true ? ' required' : ''; ?>
-
+	function build_field($args = array()) { ?>
 		<input  type="text"
 				name="<?php echo $args['name']; ?>"
-				id="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				<?php echo $required; ?>>
+				<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }

@@ -45,7 +45,8 @@ class MPCFTrueFalseField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$options = array('true' => __('yes', 'mpcf'), 'false' => __('no', 'mpcf')); ?>
+		$options = array('true' => __('yes', 'mpcf'), 'false' => __('no', 'mpcf'));
+		$class 	 = mpcf_input_class($this); ?>
 
 		<div class="mpcf-truefalse-wrapper mpcf-buttongroup-wrapper">
 <?php 		foreach ($options as $name => $title) {
@@ -58,7 +59,7 @@ class MPCFTrueFalseField extends MPCFModule {
 							name="<?php echo $args['name']; ?>"
 							id="<?php echo $id; ?>"
 							value="<?php echo $name; ?>"
-							<?php echo ($checked ? ' checked' : ''); ?>>
+							<?php echo $class . ($checked ? ' checked' : ''); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>
 
