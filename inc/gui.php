@@ -1,7 +1,7 @@
 <?php
 
 /*****************************************************
-	Build graphical user interface
+	Build graphical user interface for posts
  *****************************************************/
 
 function mpcf_meta_box_init($post, $metabox) {
@@ -24,6 +24,69 @@ function mpcf_meta_box_init($post, $metabox) {
 <?php 
 }
 
+
+
+/*****************************************************
+	Build graphical user interface for admin pages
+ *****************************************************/
+
+function mpcf_build_admin_gui($panels, $optionName) {
+	if (isset($_POST['update_settings'])) {
+		$values = array();
+
+		foreach ($panels as $panel) {
+			foreach ($panel['fields'] as $field) {
+				$name = $field['name'];
+				$type = $field['type'];
+				$actions = isset($field['actions']) ? $field['actions'] : array();
+
+				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+				if (isset($actions['save_before']))
+					$value = call_user_func($actions['save_before'], null, $name, $value);
+
+				$value = mpcf_before_save($type, null, $name, $value);
+				$values[$name] = $value;
+				
+				if (isset($actions['save_after']))
+					call_user_func($actions['save_after'], null, $name, $value);
+
+				mpcf_after_save($type, null, $name, $value);
+			}
+		}
+
+		update_option($optionName, $values);
+	}
+
+	$values = get_option($optionName);
+	$message = '';
+
+	if (isset($_POST['update_settings']))
+		$message = __('Options were saved.', 'mpcf'); ?>
+
+	<div class="mpcf-options">
+		<form method="post" action="">
+
+<?php	if (!empty($message)) { ?>
+			<div id="message" class="mpcf-message updated fade"><p><strong><?php echo $message; ?></strong></p></div>
+<?php	}
+
+			mpcf_build_gui_as_panels($panels, $values); ?>
+
+			<div class="mpcf-options-inputs">
+				<input type="hidden" name="update_settings" id="update_settings" value="Y" />
+				<input type="submit" value="<?php _e('Save', 'mpcf'); ?>" id="submit" class="mpcf-submit-button button button-primary button-large" />
+			</div>
+
+		</form>
+	</div>
+<?php
+}
+
+
+
+/*****************************************************
+	Build graphical user interface component wise
+ *****************************************************/
 
 function mpcf_build_gui_as_panels($panels, $values) { 
 	$activetab = isset($values['activetab']) ? $values['activetab'][0] : 0; ?>
