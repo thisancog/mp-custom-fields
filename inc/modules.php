@@ -37,6 +37,7 @@ function mpcf_register_modules() {
 
 	$o['modules'] = $modules;
 	update_option('mpcf_options', $o);
+	mpcf_create_i18n_file();
 }
 
 
@@ -175,11 +176,18 @@ class MPCFModule {
 	Field helper functions
  ******************************************/
 
+function mpcf_get_multingual_class() {
+	$o = get_option('mpcf_options');
+	return isset($o['multilingualclass']) && !empty($o['multilingualclass']) ? $o['multilingualclass'] : '';
+}
+
 function mpcf_get_input_class($field, $append = '') {
 	$classes	= 'mpcf-input-' . $field->name;
-	$fieldArgs	= $field->args;
-	$paramClass	= (isset($fieldArgs['inputClass']) && !empty($fieldArgs['inputClass']) ? ' ' . $fieldArgs['inputClass'] : '');
-	$translatable = $field->translatable ? ' mpcf-multilingual' : '';
+	$args	= $field->args;
+	$paramClass	= (isset($args['inputClass']) && !empty($args['inputClass']) ? ' ' . $args['inputClass'] : '');
+
+	$dontTranslate = isset($args['notranslate']) ? $args['notranslate'] : false;
+	$translatable = !$dontTranslate && $field->translatable ? ' ' . mpcf_get_multingual_class() : '';
 
 	return $classes . $paramClass . $translatable . (!empty($append) ? ' ' . $append : '');
 }

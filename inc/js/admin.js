@@ -6,6 +6,7 @@ window.addEventListener('load', function() {
 	checkHTML5Support();
 	repeaterField();
 	conditionalField();
+	addQTranslateX();
 });
 
 
@@ -652,10 +653,12 @@ class addDragDrop {
 	Add qtranslate-X after dynamically loaded fields
 **************************************************************/
 
-function addQTranslateX(wrapper) {
+function addQTranslateX(parent = null) {
 	if (typeof qTranslateX === 'undefined' || typeof qTranslateConfig === 'undefined') return;
 
-	var fields = wrapper.querySelectorAll('input', 'textarea');
+	parent = parent || document;
+
+	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
 		qTranslateConfig.qtx.addContentHook(field);
 	});

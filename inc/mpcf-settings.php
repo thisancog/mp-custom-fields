@@ -6,7 +6,8 @@
 
 function mpcf_default_settings() {
 	$options = array(
-		'googlemapskey'	=> '',
+		'googlemapskey'		=> '',
+		'multilingualclass'	=> 'mpcf-multilingual'
 	);
 
 	return $options;
@@ -14,60 +15,49 @@ function mpcf_default_settings() {
 
 
 function mpcf_settings() {
-	wp_enqueue_media();
 	if (!current_user_can('manage_options')) {
 		wp_die(__('You do not have sufficient permissions to access this page.', 'mpcf'));
 	}
 
-	if (isset($_POST["update_settings"])) {
-		$o = get_option('mpcf_options');
-
-		$options = array(
-			'googlemapskey'			=> $_POST['googlemapskey']
-		);
-
-		update_option('mpcf_options', $options);
-	}
-
-	$o = get_option('mpcf_options');
-	$message = '';
-
-	$googlemapskey		= (isset($o['googlemapskey']) ? $o['googlemapskey'] : '');
-	$gui = array(array(
-		'name'		=> __('Interfaces', 'mpcf'),
-		'icon'		=> 'dashicons-location-alt',
-		'fields'	=> array(
-			array(
-				'name'			=> 'googlemapskey',
-				'type'			=> 'text',
-				'label'			=> __('Google Maps API Key', 'mpcf'),
-				'description'	=> sprintf(__('Generate a free API key <a href="%s" target="_blank" rel="noopener">here</a> to use Google Maps for the map picker and enter it here.', 'mpcf'), 'https://developers.google.com/maps/documentation/javascript/get-api-key'),
+	$panels = array(
+		array(
+			'name'		=> __('General', 'mpcf'),
+			'icon'		=> 'dashicons-admin-settings',
+			'fields'	=> array(
+				array(
+					'name'			=> 'multilingualclass',
+					'type'			=> 'text',
+					'title'			=> __('Class for multilingual fields', 'mpcf'),
+					'description'	=> __('Specify a class to be added to fields to flag for plugins providing multilingual support.', 'mpcf'),
+					'default'		=> 'mpcf-multilingual',
+					'notranslate'	=> true
+				)
+			)
+		),
+		array(
+			'name'		=> __('Interfaces', 'mpcf'),
+			'icon'		=> 'dashicons-location-alt',
+			'fields'	=> array(
+				array(
+					'name'			=> 'googlemapskey',
+					'type'			=> 'text',
+					'title'			=> __('Google Maps API Key', 'mpcf'),
+					'description'	=> sprintf(__('Generate a free API key <a href="%s" target="_blank" rel="noopener">here</a> to use Google Maps for the map picker and enter it here.', 'mpcf'), 'https://developers.google.com/maps/documentation/javascript/get-api-key'),
+					'notranslate'	=> true
+				)
 			)
 		)
-	));
+	);
 
 	?>
 
-	<div class="mpcf-options"><form method="post" action="">
+	<div class="mpcf-options">
 		<h2><?php _e('MP Custom Fields Options', 'mpcf'); ?></h2>
+		<?php mpcf_build_admin_gui($panels, 'mpcf_options'); ?>
+	</div>
+<?php
 
-		<?php	if (isset($_POST['update_settings'])) {
-					$message = __('Options were saved.', 'mpcf');
-				}
-
-				if (!empty($message)) { ?>
-					<div id="message" class="mpcf-message updated fade"><p><strong><?php echo $message; ?></strong></p></div>
-	<?php		} ?>
-
-		<?php mpcf_build_gui_as_panels($gui, $o); ?>
-
-		<div class="mpcf-options-inputs">
-			<input type="hidden" name="update_settings" id="update_settings" value="Y" />
-			<input type="submit" value="<?php _e('Save', 'mpcf'); ?>" id="submit" class="mpcf-submit-button button button-primary button-large" />
-		</div>
-
-	</form></div>
-<?php	}
+}
 
 
 

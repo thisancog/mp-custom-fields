@@ -32,7 +32,7 @@ function mpcf_meta_box_init($post, $metabox) {
 
 function mpcf_build_admin_gui($panels, $optionName) {
 	if (isset($_POST['update_settings'])) {
-		$values = array();
+		$values = get_option($optionName);
 
 		foreach ($panels as $panel) {
 			foreach ($panel['fields'] as $field) {
@@ -60,11 +60,12 @@ function mpcf_build_admin_gui($panels, $optionName) {
 	$values = get_option($optionName);
 	$message = '';
 
-	if (isset($_POST['update_settings']))
-		$message = __('Options were saved.', 'mpcf'); ?>
+	if (isset($_POST['update_settings'])) {
+		$message = __('Options were saved.', 'mpcf');
+	} ?>
 
 	<div class="mpcf-options">
-		<form method="post" action="">
+		<form method="post" name="mpcf-options-<?php echo $optionName; ?>" id="mpcf-options-<?php echo $optionName; ?>" action="">
 
 <?php	if (!empty($message)) { ?>
 			<div id="message" class="mpcf-message updated fade"><p><strong><?php echo $message; ?></strong></p></div>
@@ -80,6 +81,8 @@ function mpcf_build_admin_gui($panels, $optionName) {
 		</form>
 	</div>
 <?php
+
+	mpcf_create_i18n_file($optionName);
 }
 
 
@@ -89,10 +92,10 @@ function mpcf_build_admin_gui($panels, $optionName) {
  *****************************************************/
 
 function mpcf_build_gui_as_panels($panels, $values) { 
-	$activetab = isset($values['activetab']) ? $values['activetab'][0] : 0; ?>
+	$activetab = isset($values['mpcf-activetab']) ? $values['mpcf-activetab'][0] : 0; ?>
 
 	<div class="mpcf-panels">
-		<input type="hidden" name="activetab" class="activetab" value="<?php echo $activetab; ?>" ?>
+		<input type="hidden" name="mpcf-activetab" class="activetab" value="<?php echo $activetab; ?>" ?>
 		<ul class="mpcf-panels-menu">
 
 <?php	for ($i = 0; $i < count($panels); $i++) { ?>
@@ -160,7 +163,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			$isRequired = isset($field['required']) && $field['required'] ? ' mpcf-required' : '';
 			$hasHTML5   = isset($module->html5) && $module->html5 ? ' mpcf-nohtml5' : '';
 			$html5Test  = isset($module->html5) && $module->html5 ? ' data-invalid-test="Not-a-valid-value"' : '';
-			$wrapperClasses = isset($module->wrapperClasses) ? $module->wrapperClasses : ''; ?>
+			$wrapperClasses = isset($module->wrapperClasses) && !empty($module->wrapperClasses) ? ' ' . $module->wrapperClasses : ''; ?>
 
 			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
 
@@ -168,7 +171,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 				<div class="mpcf-title"><label for="<?php echo $field['name']; ?>"><?php echo $field['title']; ?></label></div>
 <?php 		} ?>
 						
-				<div class="mpcf-field <?php echo $wrapperClasses; ?>">
+				<div class="mpcf-field<?php echo $wrapperClasses; ?>">
 <?php				$module->args = $field;
 					$result = $module->build_field($field);
 					$hasRequireds = $hasRequireds || $result;
@@ -347,9 +350,8 @@ function mpcf_ajax_get_conditional_fields() {
 
 
 /*****************************************************
-	Build graphical user interface component wise
+	Graphical user interface bits
  *****************************************************/
-
 
 function mpcf_required_hint() { ?>
 	<div class="mpcf-required-hint mpcf-field-option">
@@ -365,11 +367,54 @@ function mpcf_update_edit_form() {
 
 
 
+/*****************************************************
+	Create internationalisation file
+ *****************************************************/
 
+function mpcf_create_i18n_file($optionName = false) {
+	if (!defined('QTRANSLATE_FILE')) return;
 
+	$fileName = dirname(dirname(__FILE__)) . '/i18n-config.json';
 
+	if (!file_exists($fileName))
+		fopen($fileName, 'w') or die(sprintf(__("Can't create internationalisation file %s."), $fileName));
 
+	$obj = file_get_contents($fileName);
 
+	if (empty($obj)) {
+		$obj = new stdClass();
+		$obj->vendor = new stdClass();
+		$obj->vendor->{'plugins/mp-custom-fields'} = '1.0';
+
+		$obj->{'admin-config'} = new stdClass();
+		$obj->{'admin-config'}->options = new stdClass();
+		$obj->{'admin-config'}->options->pages = new stdClass();
+		$obj->{'admin-config'}->options->pages->{'options-general.php'} = '';
+		$obj->{'admin-config'}->options->pages->{'admin.php'} = '';
+		$obj->{'admin-config'}->options->forms = new stdClass();
+
+		$obj->{'admin-config'}->posts = new stdClass();
+		$obj->{'admin-config'}->posts->pages = new stdClass();
+		$obj->{'admin-config'}->posts->pages->{'post.php'} = '';
+		$obj->{'admin-config'}->posts->pages->{'post-new.php'} = '';
+		$obj->{'admin-config'}->posts->forms = new stdClass();
+		$obj->{'admin-config'}->posts->forms->post = new stdClass();
+		$obj->{'admin-config'}->posts->forms->post->fields = new stdClass();
+		$obj->{'admin-config'}->posts->forms->post->fields->jquery = '.' . mpcf_get_multingual_class();
+	} else {
+		$obj = json_decode($obj);
+	}
+
+	if ($optionName !== false) {
+		$formName = 'mpcf-options-'. $optionName;
+		$obj->{'admin-config'}->options->forms->{$formName} = new stdClass();
+		$obj->{'admin-config'}->options->forms->{$formName}->fields = new stdClass();
+		$obj->{'admin-config'}->options->forms->{$formName}->fields->jquery = '.' . mpcf_get_multingual_class();
+	}
+
+	$obj = json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	file_put_contents($fileName, $obj);
+}
 
 
 ?>
