@@ -130,9 +130,6 @@ function mpcf_get_all_registered_modules_options() {
 }
 
 
-
-
-
 /*****************************************************
 	Base field module
  *****************************************************/
@@ -151,6 +148,10 @@ class MPCFModule {
 		// a browser compatibility check
 		$this->html5 = false;
 
+		// If this field could hold translatable content.
+		// This will flag the input tag with a "mpcf-multilingual" class.
+		$this->translatable = false;
+
 		// include additional classes for the wrapper of this field
 		$this->wrapperClasses = '';
 
@@ -167,5 +168,93 @@ class MPCFModule {
 		
 	}
 }
+
+
+
+/******************************************
+	Field helper functions
+ ******************************************/
+
+function mpcf_get_input_class($field, $append = '') {
+	$classes	= 'mpcf-input-' . $field->name;
+	$fieldArgs	= $field->args;
+	$paramClass	= (isset($fieldArgs['inputClass']) && !empty($fieldArgs['inputClass']) ? ' ' . $fieldArgs['inputClass'] : '');
+	$translatable = $field->translatable ? ' mpcf-multilingual' : '';
+
+	return $classes . $paramClass . $translatable . (!empty($append) ? ' ' . $append : '');
+}
+
+function mpcf_input_class($field, $append = '') {
+	return ' class="' . mpcf_get_input_class($field, $append) . '"';
+}
+
+function mpcf_get_input_id($field) {
+	$id			= uniqid('mpcf-input-' . $field->name . '-');
+	$fieldArgs	= $field->args;
+	$paramId	= (isset($fieldArgs['inputId']) && !empty($fieldArgs['inputId']) ? ' ' . $fieldArgs['inputId'] : '');
+
+	return $id . $paramId;
+}
+
+function mpcf_input_id($field) {
+	return ' id="' . mpcf_get_input_id($field) . '"';
+}
+
+function mpcf_get_input_param($field, $param) {
+	$fieldArgs = $field->args;
+	return isset($fieldArgs[$param]) && !empty($fieldArgs[$param]) ? $fieldArgs[$param] : null;
+}
+
+function mpcf_input_param($field, $param) {
+	$paramName = is_string($param) ? $param : (is_array($param) ? $param['name'] : null);
+	if ($paramName === null) return;
+
+	$value = mpcf_get_input_param($field, $paramName);
+	if (mpcf_is_simple_param($param)) {
+		$output = $value ? ' ' . $paramName : '';
+	} else {
+		$output = $value ? ' ' . $paramName . '="' . $value . '"' : '';
+	}
+
+	return $output;
+}
+
+function mpcf_is_simple_param($param) {
+	if (is_array($param) && isset($param['simple']) && $param['simple'])
+		return true;
+
+	$paramName = is_string($param) ? $param : (is_array($param) ? $param['name'] : null);
+	if ($paramName === null)
+		return;
+
+	$simples = array(
+				'autofocus', 'checked', 'disabled',
+				'formnovalidate', 'multiple', 'novalidate',
+				'readonly', 'required'
+			);
+
+	return in_array($paramName, $simples);
+}
+
+function mpcf_list_input_params($field, $params = array()) {
+	$output = mpcf_input_class($field) . mpcf_input_id($field);
+	if ($params === false) return $output;
+
+	if (empty($params)) {
+		$params = array_map(function($param) {
+			return isset($param['name']) ? $param['name'] : '';
+		}, $field->parameters);
+	}
+
+	if (is_string($params))
+		$params = array($params);
+
+	foreach ($params as $param) {
+		$output .= mpcf_input_param($field, $param);
+	}
+
+	return $output;
+}
+
 
 ?>

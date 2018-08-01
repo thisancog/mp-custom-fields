@@ -22,6 +22,10 @@ class MPCFTextareaField extends MPCFModule {
 		// a browser compatibility check
 		$this->html5 = false;
 
+		// If this field could hold translatable content.
+		// This will flag the input tag with a "mpcf-multilingual" class.
+		$this->translatable = true;
+
 		// include additional classes for the wrapper of this field
 		$this->wrapperClasses = '';
 
