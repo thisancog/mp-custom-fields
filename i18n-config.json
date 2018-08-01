@@ -1,0 +1,33 @@
+{
+    "vendor": {
+        "plugins/mp-custom-fields": "1.0"
+    },
+    "admin-config": {
+        "options": {
+            "pages": {
+                "options-general.php": "",
+                "admin.php": ""
+            },
+            "forms": {
+                "mpcf-options-dbuh_options": {
+                    "fields": {
+                        "jquery": ".mpcf-multilingual"
+                    }
+                }
+            }
+        },
+        "posts": {
+            "pages": {
+                "post.php": "",
+                "post-new.php": ""
+            },
+            "forms": {
+                "post": {
+                    "fields": {
+                        "jquery": ".mpcf-multilingual"
+                    }
+                }
+            }
+        }
+    }
+}
