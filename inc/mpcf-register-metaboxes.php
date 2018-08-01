@@ -8,8 +8,6 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
 	$boxes = get_option('mpcf_meta_boxes', array());
-	if (false !== array_search($id, array_keys($boxes)))
-		return;
 
 	$defaults = array(
 		'post_type'		=> 'post',

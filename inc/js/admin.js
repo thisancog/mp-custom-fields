@@ -134,7 +134,7 @@ var repeaterField = function(parent = null) {
 			conditionalField(rowsWrapper);
 			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
-			addQTranslateX();
+			addQTranslateX(rowsWrapper);
 		});
 
 		// prefetch blank row
@@ -159,7 +159,7 @@ var repeaterField = function(parent = null) {
 			conditionalField(newRow);
 			checkHTML5Support(newRow);
 			focusInvalids(newRow);
-			addQTranslateX();
+			addQTranslateX(newRow);
 		});
 
 
@@ -254,7 +254,7 @@ var conditionalField = function(parent = null) {
 				repeaterField(wrapper);
 				checkHTML5Support(wrapper);
 				focusInvalids(wrapper);
-				addQTranslateX();
+				addQTranslateX(wrapper);
 			});
 		}
 
@@ -652,9 +652,13 @@ class addDragDrop {
 	Add qtranslate-X after dynamically loaded fields
 **************************************************************/
 
-function addQTranslateX() {
-	if (qTranslateX in window && qTranslateConfig in window)
-		new qTranslateX(qTranslateConfig.js);
+function addQTranslateX(wrapper) {
+	if (typeof qTranslateX === 'undefined' || typeof qTranslateConfig === 'undefined') return;
+
+	var fields = wrapper.querySelectorAll('input', 'textarea');
+	[].forEach.call(fields, function(field) {
+		qTranslateConfig.qtx.addContentHook(field);
+	});
 }
 
 
