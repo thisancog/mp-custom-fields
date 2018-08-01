@@ -1,3 +1,3 @@
 *.log
 .DS_Store
-i18-config.json
+i18n-config.json
