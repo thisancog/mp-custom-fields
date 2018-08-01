@@ -4,10 +4,12 @@
 	Register a new custom field box
  *****************************************************/
 
-function mpcf_add_custom_fields($type, $arguments = array()) {
+function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
 	$boxes = get_option('mpcf_meta_boxes', array());
+	if (false !== array_search($id, array_keys($boxes)))
+		return;
 
 	$defaults = array(
 		'post_type'		=> 'post',
@@ -29,16 +31,6 @@ function mpcf_add_custom_fields($type, $arguments = array()) {
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-
-// 	Find unique ID for this custom field box
-	$baseID = 'mpcf-' . mpcf_beautify_string($newbox['title']);
-	$id = $baseID;
-	$i = 0;
-
-	while (false !== array_search($id, array_column($boxes, 'id'))) {
-		$id = $baseID . ($i > 0 ? '-' . $i : '');
-		$i++;
-	}
 
 	$boxes[$id] = $newbox;
 
@@ -67,6 +59,10 @@ function mpcf_remove_custom_fields($boxID) {
 
 	update_option('mpcf_meta_boxes', $boxes);
 	return $removed;
+}
+
+function mpcf_remove_all_custom_fields() {
+	update_option('mpcf_meta_boxes', array());
 }
 
 

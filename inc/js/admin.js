@@ -134,6 +134,7 @@ var repeaterField = function(parent = null) {
 			conditionalField(rowsWrapper);
 			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
+			addQTranslateX();
 		});
 
 		// prefetch blank row
@@ -158,6 +159,7 @@ var repeaterField = function(parent = null) {
 			conditionalField(newRow);
 			checkHTML5Support(newRow);
 			focusInvalids(newRow);
+			addQTranslateX();
 		});
 
 
@@ -252,6 +254,7 @@ var conditionalField = function(parent = null) {
 				repeaterField(wrapper);
 				checkHTML5Support(wrapper);
 				focusInvalids(wrapper);
+				addQTranslateX();
 			});
 		}
 
@@ -379,8 +382,8 @@ var initGoogleMap = function() {
 	});
 }
 
-
 window.addEventListener('load', initGoogleMap);
+
 
 
 /**************************************************************
@@ -642,5 +645,16 @@ class addDragDrop {
 }
 
 
+
+
+
+/**************************************************************
+	Add qtranslate-X after dynamically loaded fields
+**************************************************************/
+
+function addQTranslateX() {
+	if (qTranslateX in window && qTranslateConfig in window)
+		new qTranslateX(qTranslateConfig.js);
+}
 
 
