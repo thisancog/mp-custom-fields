@@ -1,5 +1,3 @@
-
-
 # MP Custom Fields
 
 A Wordpress plugin to offer easy, performant, flexible and robust custom fields management with UI in mind.
@@ -63,6 +61,7 @@ There is no extensive documentation yet, however, most of the code should be eas
     mpcf_add_custom_fields($type,  $id, $box);
 
 … which produces this result:
+
 ![The meta box created by the above code](https://github.com/thisancog/mp-custom-fields/blob/master/docs/exampleScreenshot.png)
 
 ## Supported field types
