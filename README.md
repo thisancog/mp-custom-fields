@@ -9,7 +9,7 @@ This plugin offers a simple interface to register new custom fields from within 
 
 There is no extensive documentation yet, however, most of the code should be easily understandable anyway. A simple example to register a new meta box with several custom fields could look like this:
 
-    // an array of fields organised in panels
+    // fields are organised in panels
     $panelMedia = array(
 	    'name'		=> 'Media',
 		'icon'		=> 'dashicons-images-alt',
@@ -28,14 +28,13 @@ There is no extensive documentation yet, however, most of the code should be eas
 					'top'		=> 'top',
 					'bottom'	=> 'bottom'
 				),
-				'default'		=> 'none',
-				'description'	=>
-					'If and how to crop this image.'
+				'default'	=> 'none',
+				'description'	=> 'If and how to crop this image.'
 			),
 			array(
-				'name'	=> 'thumbcaption',
-				'title'	=> 'Caption',
-				'type'	=> 'text',
+				'name'		=> 'thumbcaption',
+				'title'		=> 'Caption',
+				'type'		=> 'text',
 				'placeholder'	=> 'Caption...'
 			)
 		)
@@ -45,7 +44,7 @@ There is no extensive documentation yet, however, most of the code should be eas
     $box = array(
 	    'context'	=> 'normal',
 	    'priority'	=> 'high',
-	    'title'		=> 'A meta box title',
+	    'title'	=> 'A meta box title',
 	    'panels'	=> array($panelmedia, $anotherPanel)
     );
 	
