@@ -37,7 +37,7 @@ function mpcf_load_textdomain() {
 function mpcf_init() {
 	$o = get_option('mpcf_options');
 	if (!isset($o) || empty($o))
-		update_option('mpcf_options', mpcf_default_options());
+		update_option('mpcf_options', mpcf_default_settings());
 	
 	mpcf_register_modules();
 }
