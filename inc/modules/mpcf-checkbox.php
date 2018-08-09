@@ -41,7 +41,7 @@ class MPCFCheckbox extends MPCFModule {
 	}
 
 	function save_before($post_id, $fieldName, $value) {
-		return isset($_POST[$fieldName]) ? $value : false;
+		return isset($_POST[$fieldName]) ? true : false;
 	}
 
 	function build_field($args = array()) {
@@ -50,7 +50,7 @@ class MPCFCheckbox extends MPCFModule {
 		<input  type="checkbox"
 				name="<?php echo $args['name']; ?>"
 				value="checked"
-				<?php echo mpcf_list_input_params($this, false) . ($args['value'] === 'checked' ? ' checked' : ''); ?>>
+				<?php echo mpcf_list_input_params($this, false) . ($args['value'] ? ' checked' : ''); ?>>
 			<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
 <?php
 	}

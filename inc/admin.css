@@ -335,6 +335,10 @@
 	padding-top: 10px;
 }
 
+.mpcf-radio-option + .mpcf-radio-option {
+	margin-top: 5px;
+}
+
 
 /******************************
 	Media picker

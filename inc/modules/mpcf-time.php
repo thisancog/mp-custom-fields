@@ -64,7 +64,7 @@ class MPCFTimeField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="week"
+		<input  type="time"
 				name="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
 				pattern="[0-9]{2}:[0-9]{2}"
