@@ -39,7 +39,11 @@ class MPCFConditionalField extends MPCFModule {
 
 		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$noSelection = !isset($value['type']) ? ' selected' : ''; ?>
+		$noSelection = !isset($value['type']) ? ' selected' : '';
+
+		foreach ($value as $prop => $val) {
+			$value[$prop] = mpcf_mknice($val); 
+		} ?>
 
 		<div class="mpcf-conditional-choice">
 <?php	if (!empty($label)) { ?>

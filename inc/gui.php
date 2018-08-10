@@ -330,8 +330,10 @@ function mpcf_ajax_get_conditional_fields() {
 	$values = array();
 
 	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
-	//	$values = json_decode(stripcslashes($_POST['values']), true);
 		$values = $_POST['values'];
+		foreach ($values as $prop => $value) {
+			$values[$prop] = stripcslashes($value);
+		}
 	}
 
 	ob_start();
