@@ -65,15 +65,15 @@ class MPCFButtonGroupField extends MPCFModule {
 
 		<div class="mpcf-buttongroup-wrapper">
 <?php 		foreach ($options as $name => $title) {
-				$id = $args['name'] . '-' . $name;
+				$id = uniqid('mpcf-input-buttongroup-' . $name . '-');
 				if ($default && $default === $name)
 					$title .= __(' (default)', 'mpcf'); ?>
 
 				<div class="mpcf-buttongroup-option">
 					<input  type="radio"
 							name="<?php echo $args['name']; ?>"
+							id="<?php echo $id; ?>"
 							value="<?php echo $name; ?>"
-							<?php echo mpcf_list_input_params($this, false); ?>
 							<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>
