@@ -144,10 +144,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field = mpcf_sanitize_args($field);
 
 		if (!isset($field['value']) || empty($field['value'])) {
-			if ($type !== 'conditional')
-				$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
-			else
-				$field['value'] = isset($values) ? $values : $field['default'];
+			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		}
 
 		if ($type !== 'repeater' && $type !== 'conditional')

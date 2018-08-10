@@ -692,6 +692,10 @@ body.no-js .mpcf-file-picker + label {
 	padding-top: 32px;
 }
 
+.mpcf-conditional-wrapper:empty {
+	display: none;
+}
+
 .mpcf-conditional-wrapper:not(:empty) {
 	border-top: 1px solid #DDD;
 }
