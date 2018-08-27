@@ -248,8 +248,8 @@ function mpcf_save_meta_boxes($post_id) {
 	}
 
 
-	if (isset($_POST['activetab']))	
-		update_post_meta($post_id, 'activetab', $_POST['activetab']);
+	if (isset($_POST['mpcf-activetab']))	
+		update_post_meta($post_id, 'mpcf-activetab', $_POST['mpcf-activetab']);
 }
 
 
@@ -299,6 +299,7 @@ function mpcf_after_save($type, $post_id, $name, $value) {
 function mpcf_ajax_get_repeater_row() {
 	$fields = json_decode(stripcslashes($_POST['fields']), true);
 
+	$values = array();
 	$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div><div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div></div>';
 
 	ob_start();
