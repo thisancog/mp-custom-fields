@@ -85,7 +85,8 @@ class MPCFEditorField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$id = str_replace('-', '', $args['name']);
+		$id = str_replace(array('-', '_'), '', strtolower($args['name']));
+		$rows = isset($args['rows']) ? $args['rows'] : 10;
 
 		$editorargs = array(
 			'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
@@ -94,11 +95,19 @@ class MPCFEditorField extends MPCFModule {
 			'editor_height'		=> isset($args['height']) ? $args['height'] : null,
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
-			'textarea_rows'		=> isset($args['rows']) ? $args['rows'] : 10,
-			'textarea_name'		=> $args['name'],
+			'textarea_rows'		=> $rows,
 			'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
 		);
 
+		/* ?>
+
+		<textarea 	class="<?php echo mpcf_get_input_class($this); ?>"
+					id="<?php echo $id; ?>"
+					name="<?php echo $args['name']; ?>"
+					data-settings="<?php echo esc_attr(json_encode($editorargs, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
+					rows=""><?php echo mpcf_mknice($args['value']); ?></textarea>
+
+<?php 	*/
 		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
 	}
 }

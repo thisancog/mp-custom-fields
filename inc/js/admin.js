@@ -4,6 +4,7 @@ window.addEventListener('load', function() {
 	panelSwitch();
 	goToInvalids();
 	checkHTML5Support();
+	registerEditors();
 	repeaterField();
 	conditionalField();
 	addQTranslateX();
@@ -132,6 +133,7 @@ var repeaterField = function(parent = null) {
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
+			registerEditors(rowsWrapper);
 			conditionalField(rowsWrapper);
 			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
@@ -157,6 +159,7 @@ var repeaterField = function(parent = null) {
 
 			reorder();
 			registerMediaPicker();
+			registerEditors(newRow);
 			conditionalField(newRow);
 			checkHTML5Support(newRow);
 			focusInvalids(newRow);
@@ -186,12 +189,20 @@ var repeaterField = function(parent = null) {
 				var fields = row.querySelectorAll('.mpcf-field-option');
 
 				[].forEach.call(fields, function(field, fieldIndex) {
-					var inputs = field.querySelectorAll('[name], [id], [for]');
+					var inputs = field.querySelectorAll('[name], [id], [for]'),
+						valids = ['input', 'button', 'label', 'textarea', 'select', 'datalist', 'keygen', 'fieldset', 'option'];
 
-					[].forEach.call(inputs, function(input) {
-						let type = input.getAttribute('type'),
+					inputs = [].filter.call(inputs, function(input) {
+						return valids.indexOf(input.tagName.toLowerCase()) > -1;
+					});
+
+					inputs.forEach(function(input) {
+						let type    = input.getAttribute('type'),
 							newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'],
 							newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']';
+
+						if (input.tagName.toLowerCase() === 'textarea')
+							newID = baseName + rowIndex + fieldsObj[fieldIndex]['name'];
 
 						if (type === 'button' || type === 'submit') return;
 						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
@@ -203,6 +214,25 @@ var repeaterField = function(parent = null) {
 
 			rowsWrapper.classList.toggle('empty', rowsWrapper.childElementCount === 0);
 		}
+	});
+}
+
+var registerEditors = function(parent) {
+	return;
+	parent = parent || document;
+
+	var editors = parent.querySelectorAll('.mpcf-input-editor'),
+		defaults = wp.editor.getDefaultSettings();
+
+	[].forEach.call(editors, function(editor) {
+		var id = editor.id,
+			settings = defaults,
+			data = JSON.parse(editor.dataset.settings);
+
+		settings.tinymce = tinyMCEPreInit.mceInit.content;
+		settings.tinymce.wpautop = data.wpautop;
+		settings.quicktags.buttons = tinyMCEPreInit.qtInit.content.buttons;
+		wp.editor.initialize(id, settings);
 	});
 }
 
