@@ -577,7 +577,7 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-repeater-input > .mpcf-field {
-	margin-left: -37px;
+	margin-left: 0px;
 }
 
 .mpcf-repeater-wrapper {
@@ -602,7 +602,7 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-repeater-wrapper li:before {
 	content: counter(section) ". ";
 	position: absolute;
-	top: 18px;
+	top: 24px;
 	left: 16px;
 	counter-increment: section;
 	z-index: 2;
@@ -679,6 +679,14 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-repeater-controls {
 	margin-top: 16px;
 	padding-left: 38px;
+}
+
+.mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
+	padding-left: 0;
+}
+
+.mpcf-repeater-controls:last-child {
+	margin-bottom: 16px;
 }
 
 
