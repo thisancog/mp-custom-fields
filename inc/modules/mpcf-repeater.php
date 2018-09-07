@@ -41,7 +41,9 @@ class MPCFRepeaterField extends MPCFModule {
 			$args['value'] = unserialize($args['value'][0]);
 
 		$required = false;
-
+		// echo "<pre>";
+		// var_dump($args['value']);
+		// echo "</pre>";
 		?>
 
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"

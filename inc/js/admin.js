@@ -108,7 +108,6 @@ var repeaterField = function(parent = null) {
 		if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
 		var rowsWrapper = repeater.querySelector('.mpcf-repeater-wrapper'),
-			baseName = rowsWrapper.dataset.basename,
 			loader = repeater.querySelector('.mpcf-loading-container'),
 			fields = rowsWrapper.dataset.fields,
 			fieldsObj = JSON.parse(fields),
@@ -116,7 +115,6 @@ var repeaterField = function(parent = null) {
 			addBtn = repeater.querySelector('.mpcf-repeater-add-row'),
 			rowHTML = null,
 			dragDropHandler = null;
-
 
 		repeater.dataset.registered = 1;
 
@@ -138,6 +136,7 @@ var repeaterField = function(parent = null) {
 			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
 			addQTranslateX(rowsWrapper);
+			repeaterField(rowsWrapper);
 		});
 
 		// prefetch blank row
@@ -164,6 +163,7 @@ var repeaterField = function(parent = null) {
 			checkHTML5Support(newRow);
 			focusInvalids(newRow);
 			addQTranslateX(newRow);
+			repeaterField(newRow);
 		});
 
 
@@ -197,14 +197,15 @@ var repeaterField = function(parent = null) {
 					});
 
 					inputs.forEach(function(input) {
-						let type    = input.getAttribute('type'),
-							newID   = baseName + '-' + rowIndex + '-'  + fieldsObj[fieldIndex]['name'],
-							newName = baseName + '[' + rowIndex + '][' + fieldsObj[fieldIndex]['name'] +  ']';
+						if (!input.dataset.name)
+							input.dataset.name = input.name || input.getAttribute('for'); 
 
-						if (input.tagName.toLowerCase() === 'textarea')
-							newID = baseName + rowIndex + fieldsObj[fieldIndex]['name'];
+						let type    = input.getAttribute('type'),
+							newID   = generateID(input),
+							newName = generateName(input);
 
 						if (type === 'button' || type === 'submit') return;
+
 						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 						if (input.hasAttribute('for'))	input.setAttribute('for', newID);
 						if (input.hasAttribute('name'))	input.setAttribute('name', newName);
@@ -236,6 +237,33 @@ var registerEditors = function(parent) {
 	});
 }
 
+
+
+var generateName = function(elem) {
+	var name = [elem.dataset.name];
+
+	while (elem.parentNode) {
+		elem = elem.parentNode;
+
+		if (elem.dataset && elem.dataset.basename)
+			name.unshift(elem.dataset.basename);
+
+		if (elem.classList && elem.classList.contains('mpcf-repeater-row')) {
+			var i = 0,
+				child = elem;
+
+			while ((child = child.previousSibling) != null) i++;
+			name.unshift(i)
+		}
+	}
+
+	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
+	return name;
+}
+
+var generateID = function(elem) {
+	return generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
+}
 
 
 
@@ -286,6 +314,7 @@ var conditionalField = function(parent = null) {
 				checkHTML5Support(wrapper);
 				focusInvalids(wrapper);
 				addQTranslateX(wrapper);
+				repeaterField(wrapper);
 			});
 		}
 
