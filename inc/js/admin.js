@@ -206,8 +206,6 @@ var repeaterField = function(parent = null) {
 
 						if (type === 'button' || type === 'submit') return;
 
-						console.log(newName);
-
 						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 						if (input.hasAttribute('for'))	input.setAttribute('for', newID);
 						if (input.hasAttribute('name'))	input.setAttribute('name', newName);
