@@ -206,6 +206,8 @@ var repeaterField = function(parent = null) {
 
 						if (type === 'button' || type === 'submit') return;
 
+						console.log(newName);
+
 						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 						if (input.hasAttribute('for'))	input.setAttribute('for', newID);
 						if (input.hasAttribute('name'))	input.setAttribute('name', newName);
@@ -252,7 +254,10 @@ var generateName = function(elem) {
 			var i = 0,
 				child = elem;
 
-			while ((child = child.previousSibling) != null) i++;
+			while ((child = child.previousSibling) != null) {
+				if (child.classList && child.classList.contains('mpcf-repeater-row'))
+					i++;
+			}
 			name.unshift(i)
 		}
 	}
