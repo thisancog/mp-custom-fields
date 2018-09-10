@@ -687,11 +687,6 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-controls {
 	margin-top: 16px;
-	padding-left: 38px;
-}
-
-.mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
-	padding-left: 0;
 }
 
 .mpcf-repeater-controls:last-child {
