@@ -586,7 +586,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-input .mpcf-repeater-input {
-	width: calc(100% + 38px);
+	width: calc(100% + 16px);
 }
 
 .mpcf-repeater-wrapper {
@@ -599,10 +599,11 @@ body.no-js .mpcf-file-picker + label {
 	counter-reset: subsection
 }
 
-.mpcf-repeater-wrapper li {
+.mpcf-repeater-row {
 	position: relative;
+	width: calc(100% - 16px);
 	left: -38px;
-	padding: 16px 0 16px 38px;
+	padding: 16px 16px 16px 38px;
 	margin-bottom: 0;
 	border-bottom: 1px solid #DDD;
 	list-style-type: none;
@@ -653,16 +654,20 @@ body.no-js .mpcf-file-picker + label {
 	background-color: #F0F0F0;
 }
 
+.mpcf-repeater-row > .mpcf-field-option:nth-last-child(2) {
+	margin-bottom: 0;
+}
+
 .mpcf-repeater-row-controls {
 	position: absolute;
-	top: 18px;
+	top: 6px;
 	right: -32px;
 	opacity: 0;
 }
 
-.mpcf-repeater-wrapper li:hover .mpcf-repeater-row-controls,
-.mpcf-repeater-wrapper li:focus .mpcf-repeater-row-controls,
-.mpcf-repeater-wrapper li:focus-within .mpcf-repeater-row-controls {
+.mpcf-repeater-wrapper li:hover > .mpcf-repeater-row-controls,
+.mpcf-repeater-wrapper li:focus > .mpcf-repeater-row-controls,
+.mpcf-repeater-wrapper li:focus-within > .mpcf-repeater-row-controls {
 	opacity: 1;
 }
 
@@ -675,7 +680,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-row-controls div + div {
-	margin-top: 8px;
+	margin-top: 4px;
 }
 
 .mpcf-repeater-row-controls div:before {
