@@ -306,13 +306,14 @@ function mpcf_ajax_get_repeater_row() {
 	if (isset($_POST['values'])) {
 		$values = json_decode(stripcslashes($_POST['values']), true);
 
-		foreach ($values as $i => $row) { ?>
-			<li class="mpcf-repeater-row">
-<?php 			mpcf_build_gui_from_fields($fields, $row, false);
-				echo $buttons; ?>
-			</li>
-<?php	}
-
+		if ($values !== false && !empty($values)) {
+			foreach ($values as $i => $row) { ?>
+				<li class="mpcf-repeater-row">
+<?php 				mpcf_build_gui_from_fields($fields, $row, false);
+					echo $buttons; ?>
+				</li>
+<?php		}
+		}
 	} else {
 		mpcf_build_gui_from_fields($fields, $values, false);
 		echo $buttons;

@@ -1,9 +1,11 @@
 $ = jQuery;
 
+
 window.addEventListener('load', function() {
 	panelSwitch();
 	goToInvalids();
 	checkHTML5Support();
+	registerColorPicker();
 	registerEditors();
 	repeaterField();
 	conditionalField();
@@ -132,6 +134,7 @@ var repeaterField = function(parent = null) {
 			loader.classList.remove('mpcf-loading-active');
 			registerMediaPicker();
 			registerEditors(rowsWrapper);
+			registerColorPicker(rowsWrapper);
 			conditionalField(rowsWrapper);
 			checkHTML5Support(rowsWrapper);
 			focusInvalids(rowsWrapper);
@@ -159,6 +162,7 @@ var repeaterField = function(parent = null) {
 			reorder();
 			registerMediaPicker();
 			registerEditors(newRow);
+			registerColorPicker(newRow);
 			conditionalField(newRow);
 			checkHTML5Support(newRow);
 			focusInvalids(newRow);
@@ -453,9 +457,9 @@ window.addEventListener('load', initGoogleMap);
 	Register color pickers
  **************************************************************/
 
-$(document).ready(function() {
+function registerColorPicker() {
 	$('.mpcf-color-input').find('input').wpColorPicker();
-});
+}
 
 
 /**************************************************************

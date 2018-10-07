@@ -28,7 +28,12 @@ class MPCFRepeaterField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			array('name' => 'fields')
+			array('name' => 'fields'),
+			array(
+				'name' => 'maxheight',
+				'title'	=> __('Maximum height'),
+				'type'	=> 'number'
+			)
 		);
 	}
 
@@ -40,6 +45,9 @@ class MPCFRepeaterField extends MPCFModule {
 		if (is_array($args['value']) && is_string($args['value'][0]))
 			$args['value'] = unserialize($args['value'][0]);
 
+	//	$maxheight = mpcf_get_input_param($this, 'maxheight');
+	//	$maxheight = $maxheight ? 'style="max-height: ' . $maxheight . 'px; overflow: scroll;"' : '';
+
 		$required = false;
 		// echo "<pre>";
 		// var_dump($args['value']);
@@ -48,7 +56,8 @@ class MPCFRepeaterField extends MPCFModule {
 
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
 			data-fields="<?php echo esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-			data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"></ol>
+			data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
+			<?php /* echo $maxheight; */ ?>></ol>
 
 		<div class="mpcf-loading-container mpcf-loading-active"></div>
 
