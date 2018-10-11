@@ -601,8 +601,8 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-row {
 	position: relative;
-	width: calc(100% - 16px);
-	left: -38px;
+	width: calc(100% - 38px);
+	left: -13px;
 	padding: 16px 16px 16px 38px;
 	margin-bottom: 0;
 	border-bottom: 1px solid #DDD;
