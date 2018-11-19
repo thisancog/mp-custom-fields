@@ -44,14 +44,15 @@ class MPCFRepeaterField extends MPCFModule {
 	function build_field($args = array()) {
 		if (is_array($args['value']) && is_string($args['value'][0]))
 			$args['value'] = unserialize($args['value'][0]);
+		
+		array_walk_recursive($args['value'], function(&$item, $key) {
+			$item = dbuhmknice($item);
+		});
 
 	//	$maxheight = mpcf_get_input_param($this, 'maxheight');
 	//	$maxheight = $maxheight ? 'style="max-height: ' . $maxheight . 'px; overflow: scroll;"' : '';
 
 		$required = false;
-		// echo "<pre>";
-		// var_dump($args['value']);
-		// echo "</pre>";
 		?>
 
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
