@@ -42,8 +42,11 @@ class MPCFRepeaterField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		if (is_array($args['value']) && is_string($args['value'][0]))
-			$args['value'] = unserialize($args['value'][0]);
+		if (is_array($args['value']))
+			$args['value'] = $args['value'][0];
+
+		if (is_string($args['value']))
+			$args['value'] = empty($args['value']) ? array() : unserialize($args['value']);
 		
 		array_walk_recursive($args['value'], function(&$item, $key) {
 			$item = mpcf_mknice($item);
