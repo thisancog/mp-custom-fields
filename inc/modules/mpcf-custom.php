@@ -20,7 +20,7 @@ class MPCFCustomField extends MPCFModule {
 
 		// If this field contains html5 input elements and therefore requires
 		// a browser compatibility check
-		$this->html5 = true;
+		$this->html5 = false;
 
 		// If this field could hold translatable content.
 		// This will flag the input tag with a "mpcf-multilingual" class.
