@@ -71,7 +71,10 @@ function mpcf_setup_theme_admin_menu() {
 
 	$dependencies = array('jquery', 'jquery-ui-sortable', 'wp-color-picker');
 
-	wp_enqueue_media();
+	if (did_action('wp_enqueue_media') === 0) {
+		wp_enqueue_media();
+	}
+
 	wp_enqueue_editor();
 	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
 //	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);

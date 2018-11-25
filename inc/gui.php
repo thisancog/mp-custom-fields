@@ -92,7 +92,8 @@ function mpcf_build_admin_gui($panels, $optionName) {
  *****************************************************/
 
 function mpcf_build_gui_as_panels($panels, $values) { 
-	$activetab = isset($values['mpcf-activetab']) ? $values['mpcf-activetab'][0] : 0; ?>
+	$activetab = isset($values['mpcf-activetab']) ? $values['mpcf-activetab'][0] : 0;
+	$hasEditors = false; ?>
 
 	<div class="mpcf-panels">
 		<input type="hidden" name="mpcf-activetab" class="activetab" value="<?php echo $activetab; ?>" ?>
@@ -119,7 +120,8 @@ function mpcf_build_gui_as_panels($panels, $values) {
 
 <?php	for ($i = 0; $i < count($panels); $i++) { ?>
 			<div class="mpcf-panel" data-index="<?php echo $i; ?>">
-				<?php mpcf_build_gui_from_fields($panels[$i]['fields'], $values); ?>
+<?php 			mpcf_build_gui_from_fields($panels[$i]['fields'], $values);
+				$hasEditors = $hasEditors || mpcf_ajax_enqueue_editors($panels[$i]['fields']); ?>
 			</div>
 <?php	} ?>
 
@@ -128,6 +130,18 @@ function mpcf_build_gui_as_panels($panels, $values) {
 	</div>
 
 <?php
+
+	// Preload editor as an instance for repeater fields
+
+	if ($hasEditors) {
+		$screen = get_current_screen();
+		if ($screen->parent_base !== 'edit') { ?>
+			<div class="mpcf-editor-instance"><?php wp_editor('', 'mpcf-editor-instance'); ?></div>
+<?php	}
+	} ?>
+
+<?php	
+
 }
 
 
@@ -337,7 +351,11 @@ function mpcf_ajax_get_repeater_row() {
 }
 
 function mpcf_ajax_enqueue_editors($fields) {
-	return count(array_filter($fields, function($field) { return $field['type'] === 'editor'; })) > 0;
+	$hasEditors = false;
+	if (isset($fields[0]['fields']))
+		$hasEditors = $hasEditors || mpcf_ajax_enqueue_editors($fields[0]['fields']);
+
+	return $hasEditors || count(array_filter($fields, function($field) { return $field['type'] === 'editor'; })) > 0;
 }
 
 
