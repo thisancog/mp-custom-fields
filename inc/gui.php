@@ -302,6 +302,8 @@ function mpcf_ajax_get_repeater_row() {
 	$values = array();
 	$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div><div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div></div>';
 
+	$enqueueEditor = false;
+
 	ob_start();
 	if (isset($_POST['values'])) {
 		$values = json_decode(stripcslashes($_POST['values']), true);
@@ -310,13 +312,21 @@ function mpcf_ajax_get_repeater_row() {
 			foreach ($values as $i => $row) { ?>
 				<li class="mpcf-repeater-row">
 <?php 				mpcf_build_gui_from_fields($fields, $row, false);
+					$enqueueEditor = $enqueueEditor || mpcf_ajax_enqueue_editors($fields);
 					echo $buttons; ?>
 				</li>
 <?php		}
 		}
 	} else {
 		mpcf_build_gui_from_fields($fields, $values, false);
+		$enqueueEditor = $enqueueEditor || mpcf_ajax_enqueue_editors($fields);
 		echo $buttons;
+	}
+
+	if ($enqueueEditor) {
+		\_WP_Editors::enqueue_scripts();
+		print_footer_scripts();
+		\_WP_Editors::editor_js();
 	}
 
 	$components = ob_get_contents();
@@ -324,6 +334,10 @@ function mpcf_ajax_get_repeater_row() {
 	echo $components;
 
 	wp_die();
+}
+
+function mpcf_ajax_enqueue_editors($fields) {
+	return count(array_filter($fields, function($field) { return $field['type'] === 'editor'; })) > 0;
 }
 
 

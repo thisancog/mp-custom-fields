@@ -223,21 +223,22 @@ var repeaterField = function(parent = null) {
 }
 
 var registerEditors = function(parent) {
-	return;
-	parent = parent || document;
+	parent = parent || document;	
 
 	var editors = parent.querySelectorAll('.mpcf-input-editor'),
 		defaults = wp.editor.getDefaultSettings();
 
 	[].forEach.call(editors, function(editor) {
-		var id = editor.id,
-			settings = defaults,
-			data = JSON.parse(editor.dataset.settings);
+		var id = editor.id;
+		//	settings = defaults,
+		//	data = JSON.parse(editor.dataset.settings);
 
-		settings.tinymce = tinyMCEPreInit.mceInit.content;
-		settings.tinymce.wpautop = data.wpautop;
-		settings.quicktags.buttons = tinyMCEPreInit.qtInit.content.buttons;
-		wp.editor.initialize(id, settings);
+		// settings.tinymce = tinyMCEPreInit.mceInit.content;
+		// settings.tinymce.wpautop = data.wpautop;
+		// settings.quicktags.buttons = tinyMCEPreInit.qtInit.content.buttons;
+		// wp.editor.initialize(id, settings);
+
+
 	});
 }
 
