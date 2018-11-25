@@ -46,7 +46,7 @@ class MPCFRepeaterField extends MPCFModule {
 			$args['value'] = unserialize($args['value'][0]);
 		
 		array_walk_recursive($args['value'], function(&$item, $key) {
-			$item = dbuhmknice($item);
+			$item = mpcf_mknice($item);
 		});
 
 	//	$maxheight = mpcf_get_input_param($this, 'maxheight');
