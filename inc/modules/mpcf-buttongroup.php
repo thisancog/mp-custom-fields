@@ -51,6 +51,12 @@ class MPCFButtonGroupField extends MPCFModule {
 				'name'	=> 'default',
 				'title'	=> __('Default', 'mpcf'),
 				'type'	=> 'text'
+			),
+			array(
+				'name'	=> 'required',
+				'title' => __('Required', 'mpcf'),
+				'type'	=> 'truefalse',
+				'default'	=> false
 			)
 		);
 	}
