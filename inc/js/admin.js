@@ -303,6 +303,8 @@ var conditionalField = function(parent = null) {
 			values = values.options;
 
 		var switchContent = function(values = false) {
+			if (typeof options[select.value] === 'undefined') return;
+
 			var request = {
 					'action': 'mpcf_get_conditional_fields',
 					'fields': JSON.stringify(options[select.value].fields),
