@@ -365,9 +365,12 @@ function mpcf_ajax_get_conditional_fields() {
 
 	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
 		$values = $_POST['values'];
-		foreach ($values as $prop => $value) {
-			$values[$prop] = stripcslashes($value);
-		}
+
+	//	This causes values to go blank when a conditional field contains a repeater field. Not sure why.
+		
+	//	foreach ($values as $prop => $value) {
+	//		$values[$prop] = stripcslashes($value);
+	//	}
 	}
 
 	ob_start();
