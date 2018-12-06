@@ -123,6 +123,7 @@ var repeaterField = function(parent = null) {
 		// populate repeater
 
 		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
+
 			rowsWrapper.innerHTML = response;
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
@@ -269,8 +270,50 @@ var generateName = function(elem) {
 	return name;
 }
 
+
 var generateID = function(elem) {
 	return generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
+}
+
+
+
+var renameDynamicFields = function(parent) {
+	var rows = parent.querySelectorAll('.mpcf-repeater-row');
+
+
+	// each row
+	[].forEach.call(rows, function(row, rowIndex) {
+		var fields = row.querySelectorAll('.mpcf-field-option');
+
+
+		// each field
+		[].forEach.call(fields, function(field, fieldIndex) {
+			var inputs = field.querySelectorAll('[name], [id], [for]'),
+				valids = ['input', 'button', 'label', 'textarea', 'select', 'datalist', 'keygen', 'fieldset', 'option'];
+
+			inputs = [].filter.call(inputs, function(input) {
+				return valids.indexOf(input.tagName.toLowerCase()) > -1;
+			});
+
+			// each input
+			inputs.forEach(function(input) {
+				if (!input.dataset.name)
+					input.dataset.name = input.name || input.getAttribute('for'); 
+
+				let type    = input.getAttribute('type'),
+					newID   = generateID(input),
+					newName = generateName(input);
+
+				if (type === 'button' || type === 'submit') return;
+
+				if (input.hasAttribute('id'))	input.setAttribute('id', newID);
+				if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+				if (input.hasAttribute('name'))	input.setAttribute('name', newName);
+			});
+		});
+	});
+
+	parent.classList.toggle('empty', parent.childElementCount === 0);
 }
 
 
