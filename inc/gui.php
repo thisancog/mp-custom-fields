@@ -322,7 +322,7 @@ function mpcf_ajax_get_repeater_row() {
 	if (isset($_POST['values'])) {
 		$values = json_decode(stripcslashes($_POST['values']), true);
 
-		if ($values !== false && !empty($values)) {
+		if ($values !== false && !empty($values) && !(count($values) === 1 && empty($values[0]))) {
 			foreach ($values as $i => $row) { ?>
 				<li class="mpcf-repeater-row">
 <?php 				mpcf_build_gui_from_fields($fields, $row, false);
