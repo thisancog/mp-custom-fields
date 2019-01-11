@@ -787,19 +787,36 @@ function addQTranslateX(parent = null) {
 function dragDropLists() {
 	$('.mpcf-drag-drop-list-container').each(function() {
 		var list = this,
-			baseName = list.dataset.basename;
+			selectionList = $(list).find('.mpcf-drag-drop-list-selection'),
+			remainingList = $(list).find('.mpcf-drag-drop-list-remaining'),
+			baseName = list.dataset.basename,
+			multiple = !!+list.dataset.multiple;
 
 		$(list).find('.mpcf-drag-drop-list-sublist').sortable({
 			connectWith: '.mpcf-drag-drop-list-sublist',
 			placeholder: 'sortable-placeholder'
 		}).disableSelection();
 
-		$(list).find('.mpcf-drag-drop-list-sublist').on('sortreceive', function() {
-			$(list).find('.mpcf-drag-drop-list-selection li').each(function(index) {
+		$(list).find('.mpcf-drag-drop-list-sublist').on('sortreceive', function(e) {
+			if (multiple) {
+				if (e.target.classList.contains('mpcf-drag-drop-list-selection')) {
+					$(e.srcElement).parent('li').clone(true).appendTo(remainingList)
+				}
+
+				remainingList.find('li').each(function() {
+					var title = $(this).find('.title').text();
+					if (remainingList.find('li .title:contains("' + title + '")').length > 1)
+						this.remove();
+				});
+			}
+
+			selectionList.find('li').each(function(index) {
 				$(this).find('input').attr('name', baseName + '[' + index + ']');
 			});
 
-			$(list).find('.mpcf-drag-drop-list-remaining li input').attr('name', '');
+			remainingList.find('input').attr('name', '');
+			if (remainingList.find('li').length === 0)
+				remainingList.html('');
 		});
 	});
 }
