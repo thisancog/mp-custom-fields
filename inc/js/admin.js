@@ -537,7 +537,7 @@ function changeMedia(elem, e) {
 		title: localizedmpcf.chooseMedia,
 		multiple: multiple
 	}).open()
-	.on('select', function(e){
+	.on('select', function(e) {
 		var choice = image.state().get('selection').first().toJSON();
 
 		parent.find('.mpcf-media-id').val(choice.id);
@@ -545,14 +545,13 @@ function changeMedia(elem, e) {
 		parent.find('.mpcf-clearmedia').removeClass('hidden');
 
 		if (parent.is('.mpcf-filepicker')) {
-
 			parent.find('.mpcf-preview-content-file .filename').html(choice.filename);
 			parent.find('.mpcf-preview-content-file .filesize').html(choice.filesizeHumanReadable);
 			return;
 		}
 
 		if (choice.mime.indexOf('image') > -1) {
-			parent.find('.mpcf-imagepreview').attr('src', choice.url);
+			parent.find('.mpcf-imagepreview').attr('src', choice.sizes.medium.url);
 			parent.find('.mpcf-imagepreview').removeClass('hidden');
 			parent.find('.mpcf-videopreview').attr('src', '');
 			parent.find('.mpcf-videopreview').addClass('hidden');
