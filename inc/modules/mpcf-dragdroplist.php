@@ -69,12 +69,13 @@ class MPCFDragDropList extends MPCFModule {
 	function render_list($options, $namebase) {
 		$i = 0;
 
-		foreach ($options as $id => $option) {
-			$title = $options[$id];
+		foreach ($options as $option) {
+			$id = $option['id'];
+			$title = $option['title'];
 			$name = $namebase . '[' . $i . ']'; ?>
 
 			<li class="mpcf-drag-drop-list-item">
-				<div class="title"><?php echo $option; ?></div>
+				<div class="title"><?php echo $title; ?></div>
 				<input type="hidden" value="<?php echo $id; ?>" name="<?php echo $name; ?>" />
 			</li>
 
@@ -91,19 +92,19 @@ class MPCFDragDropList extends MPCFModule {
 		$selectedIDs = $args['value'];
 		$selection = array();
 		$remaining = array();
+		array_walk($options, function($option, $index) use (&$remaining) { $remaining[] = $index; });
 
-		array_walk($options, function($option, $id) use (&$remaining, &$selection, $selectedIDs, $multiple) {
-			if (in_array($id, $selectedIDs)) {
-				$selection[$id] = $option;
+		array_walk($selectedIDs, function($option, $index) use (&$remaining, &$selection, $options, $multiple) {
+			$set = array('id' => $option, 'title' => $options[$option]);
+			$selection[] = $set;
 
-				if ($multiple)
-					$remaining[$id] = $option;
-			} else {
-				$remaining[$id] = $option;
-			}
-		}); ?>
+			if (!$multiple)
+				unset($remaining[array_search($option, $remaining)]);
+		});
 
-		<div class="mpcf-drag-drop-list-container" id="<?php echo $args['name']; ?>" data-basename="<?php echo $args['name']; ?>">
+		$remaining = array_map(function($option) use ($options) { return array('id' => $option, 'title' => $options[$option]); }, $remaining); ?>
+
+		<div class="mpcf-drag-drop-list-container" id="<?php echo $args['name']; ?>" data-basename="<?php echo $args['name']; ?>" data-multiple="<?php echo $multiple; ?>">
 			<div class="mpcf-drag-drop-list-column">
 				<div class="mpcf-drag-drop-list-column-header"><?php _e('Selection', 'mpcf'); ?></div>
 				<ul class="mpcf-drag-drop-list-sublist mpcf-drag-drop-list-selection"><?php $this->render_list($selection, $args['name']) ?></ul>
