@@ -732,6 +732,11 @@ body.no-js .mpcf-file-picker + label {
 	align-items: flex-start;
 }
 
+.mpcf-drag-drop-list-column {
+	min-width: 150px;
+	width: calc(50% - 16px);
+}
+
 .mpcf-drag-drop-list-column:first-child {
 	margin-right: 32px;
 }
@@ -742,6 +747,7 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-drag-drop-list-sublist {
 	display: inline-block;
+	width: 100%;
 	min-width: 150px;
 	min-height: 30px;
 	margin: 10px 0 0;
