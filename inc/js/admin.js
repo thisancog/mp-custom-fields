@@ -10,6 +10,7 @@ window.addEventListener('load', function() {
 	repeaterField();
 	conditionalField();
 	addQTranslateX();
+	dragDropLists();
 });
 
 
@@ -772,6 +773,34 @@ function addQTranslateX(parent = null) {
 	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
 		qTranslateConfig.qtx.addContentHook(field);
+	});
+}
+
+
+
+
+
+/**************************************************************
+	Drag and drop lists
+ **************************************************************/
+
+function dragDropLists() {
+	$('.mpcf-drag-drop-list-container').each(function() {
+		var list = this,
+			baseName = list.dataset.basename;
+
+		$(list).find('.mpcf-drag-drop-list-sublist').sortable({
+			connectWith: '.mpcf-drag-drop-list-sublist',
+			placeholder: 'sortable-placeholder'
+		}).disableSelection();
+
+		$(list).find('.mpcf-drag-drop-list-sublist').on('sortreceive', function() {
+			$(list).find('.mpcf-drag-drop-list-selection li').each(function(index) {
+				$(this).find('input').attr('name', baseName + '[' + index + ']');
+			});
+
+			$(list).find('.mpcf-drag-drop-list-remaining li input').attr('name', '');
+		});
 	});
 }
 

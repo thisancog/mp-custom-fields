@@ -161,7 +161,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		}
 
-		if ($type !== 'repeater' && $type !== 'conditional')
+		if ($type !== 'repeater' && $type !== 'conditional' && $type !== 'dragdroplist')
 			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
 		$required = !$required && $field['required'] ? true : $required;
@@ -243,8 +243,8 @@ function mpcf_save_meta_boxes($post_id) {
 		}
 
 		foreach ($fields as $field) {
-			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 			$actions = isset($field['actions']) ? $field['actions'] : array();
+			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 
 			if (isset($actions['save_before'])) {
 				$value = call_user_func($actions['save_before'], $post_id, $field['name'], $value);

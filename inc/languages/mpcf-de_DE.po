@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2018-08-01 16:54+0200\n"
-"PO-Revision-Date: 2018-08-01 16:56+0200\n"
+"POT-Creation-Date: 2019-01-11 15:55+0100\n"
+"PO-Revision-Date: 2019-01-11 15:57+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,47 +17,66 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:66 inc/mpcf-admin.php:83
+#: inc/gui.php:64
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:80 inc/mpcf-admin.php:212
+#: inc/gui.php:78
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:360
+#: inc/gui.php:395
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/modules.php:81 inc/modules/mpcf-buttongroup.php:38
-#: inc/modules/mpcf-radio.php:38 inc/modules/mpcf-select.php:43
+#: inc/gui.php:416
+#, php-format
+msgid "Can't create internationalisation file %s."
+msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
+
+#: inc/modules.php:82 inc/modules/mpcf-buttongroup.php:38
+#: inc/modules/mpcf-dragdroplist.php:44 inc/modules/mpcf-radio.php:38
+#: inc/modules/mpcf-select.php:43
 msgid "Name"
 msgstr "Name"
 
-#: inc/modules.php:87 inc/modules/mpcf-buttongroup.php:44
-#: inc/modules/mpcf-radio.php:44 inc/modules/mpcf-select.php:49
-#: inc/mpcf-admin.php:120 inc/mpcf-admin.php:159 inc/mpcf-admin.php:366
+#: inc/modules.php:88 inc/modules/mpcf-buttongroup.php:44
+#: inc/modules/mpcf-dragdroplist.php:50 inc/modules/mpcf-radio.php:44
+#: inc/modules/mpcf-select.php:49
 msgid "Title"
 msgstr "Titel"
 
-#: inc/modules.php:164
+#: inc/modules.php:165
 msgid "Base Class"
 msgstr "Grundmodul"
 
-#: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-radio.php:33
-#: inc/modules/mpcf-select.php:38
+#: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-dragdroplist.php:39
+#: inc/modules/mpcf-radio.php:33 inc/modules/mpcf-select.php:38
 msgid "Choices"
 msgstr "Optionen"
 
-#: inc/modules/mpcf-buttongroup.php:52 inc/modules/mpcf-truefalse.php:33
+#: inc/modules/mpcf-buttongroup.php:52 inc/modules/mpcf-radio.php:52
+#: inc/modules/mpcf-truefalse.php:33
 msgid "Default"
 msgstr "Standardwert"
 
-#: inc/modules/mpcf-buttongroup.php:59
+#: inc/modules/mpcf-buttongroup.php:57 inc/modules/mpcf-color.php:33
+#: inc/modules/mpcf-custom.php:43 inc/modules/mpcf-date.php:34
+#: inc/modules/mpcf-datetime.php:34 inc/modules/mpcf-dragdroplist.php:58
+#: inc/modules/mpcf-email.php:57 inc/modules/mpcf-month.php:33
+#: inc/modules/mpcf-number.php:33 inc/modules/mpcf-password.php:33
+#: inc/modules/mpcf-radio.php:57 inc/modules/mpcf-range.php:33
+#: inc/modules/mpcf-select.php:57 inc/modules/mpcf-text.php:58
+#: inc/modules/mpcf-textarea.php:43 inc/modules/mpcf-time.php:33
+#: inc/modules/mpcf-week.php:33
+msgid "Required"
+msgstr "Pflichtangabe"
+
+#: inc/modules/mpcf-buttongroup.php:65
 msgid "Button group"
 msgstr "Button-Gruppe"
 
-#: inc/modules/mpcf-buttongroup.php:70
+#: inc/modules/mpcf-buttongroup.php:76 inc/modules/mpcf-radio.php:77
 msgid " (default)"
 msgstr " (Standard)"
 
@@ -67,17 +86,7 @@ msgstr "Beschriftung"
 
 #: inc/modules/mpcf-checkbox.php:40
 msgid "Checkbox"
-msgstr ""
-
-#: inc/modules/mpcf-color.php:33 inc/modules/mpcf-date.php:34
-#: inc/modules/mpcf-datetime.php:34 inc/modules/mpcf-email.php:57
-#: inc/modules/mpcf-month.php:33 inc/modules/mpcf-number.php:33
-#: inc/modules/mpcf-password.php:33 inc/modules/mpcf-radio.php:52
-#: inc/modules/mpcf-range.php:33 inc/modules/mpcf-select.php:57
-#: inc/modules/mpcf-text.php:58 inc/modules/mpcf-textarea.php:43
-#: inc/modules/mpcf-time.php:33 inc/modules/mpcf-week.php:33
-msgid "Required"
-msgstr "Pflichtangabe"
+msgstr "Checkbox"
 
 #: inc/modules/mpcf-color.php:41
 msgid "Color picker"
@@ -85,7 +94,23 @@ msgstr "Farbauswahl"
 
 #: inc/modules/mpcf-conditional.php:34
 msgid "Conditional field"
+msgstr "Abh&auml;ngiges Feld"
+
+#: inc/modules/mpcf-custom.php:37
+msgid "Callback"
+msgstr "Callback"
+
+#: inc/modules/mpcf-custom.php:39
+msgid ""
+"a callback function to be applied to populate this field, called with "
+"arguments $field and $args, i.e. cb($field, $args)"
 msgstr ""
+"Eine Callback-Funktion, die mit den Argumenten $field und $args aufgerufen "
+"wird, um dieses Feld zu bef&uuml;llen (bspw. cb($field, $args))."
+
+#: inc/modules/mpcf-custom.php:51 inc/modules/mpcf-text.php:66
+msgid "Text field"
+msgstr "Text"
 
 #: inc/modules/mpcf-date.php:40 inc/modules/mpcf-datetime.php:40
 #: inc/modules/mpcf-email.php:52 inc/modules/mpcf-month.php:39
@@ -126,6 +151,23 @@ msgstr "Datum und Zeit"
 #, php-format
 msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
 msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
+
+#: inc/modules/mpcf-dragdroplist.php:33 inc/modules/mpcf-email.php:47
+#: inc/modules/mpcf-select.php:33
+msgid "Multiple"
+msgstr "Mehrfach"
+
+#: inc/modules/mpcf-dragdroplist.php:66 inc/modules/mpcf-select.php:70
+msgid "Select"
+msgstr "Auswahl"
+
+#: inc/modules/mpcf-dragdroplist.php:108
+msgid "Selection"
+msgstr "Auswahl"
+
+#: inc/modules/mpcf-dragdroplist.php:113
+msgid "Available options"
+msgstr "Verf&uuml;gbare Optionen"
 
 #: inc/modules/mpcf-editor.php:37
 msgid "Add paragraphs"
@@ -171,7 +213,7 @@ msgstr "ob Medienbuttons angezeigt werden sollen"
 
 #: inc/modules/mpcf-editor.php:70
 msgid "Minimal editor"
-msgstr ""
+msgstr "Minimaler Editor"
 
 #: inc/modules/mpcf-editor.php:76 inc/modules/mpcf-textarea.php:50
 msgid "Rows"
@@ -185,7 +227,7 @@ msgstr ""
 
 #: inc/modules/mpcf-editor.php:84
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: inc/modules/mpcf-email.php:37 inc/modules/mpcf-password.php:39
 #: inc/modules/mpcf-text.php:43
@@ -196,10 +238,6 @@ msgstr "Mindestl&auml;nge"
 #: inc/modules/mpcf-text.php:48
 msgid "Maximum length"
 msgstr "H&ouml;chstl&auml;nge"
-
-#: inc/modules/mpcf-email.php:47 inc/modules/mpcf-select.php:33
-msgid "Multiple"
-msgstr "Mehrfach"
 
 #: inc/modules/mpcf-email.php:65
 msgid "Email"
@@ -214,7 +252,7 @@ msgid "Change"
 msgstr "&Auml;ndern"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: inc/modules/mpcf-repeater.php:54
+#: inc/modules/mpcf-repeater.php:63
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
@@ -293,7 +331,7 @@ msgstr "Zahl"
 msgid "Password"
 msgstr "Passwort"
 
-#: inc/modules/mpcf-radio.php:60
+#: inc/modules/mpcf-radio.php:65
 msgid "Radio button"
 msgstr "Radio-Button"
 
@@ -303,15 +341,11 @@ msgstr "Bereich"
 
 #: inc/modules/mpcf-repeater.php:36
 msgid "Repeater"
-msgstr ""
+msgstr "Wiederholung"
 
 #: inc/modules/mpcf-select.php:63
 msgid "Size"
 msgstr "Gr&ouml;&szlig;e"
-
-#: inc/modules/mpcf-select.php:70
-msgid "Select"
-msgstr "Auswahl"
 
 #: inc/modules/mpcf-text.php:37
 msgid "Suggestion list"
@@ -322,10 +356,6 @@ msgid "Add possible suggestions to choose from as a comma seperated list"
 msgstr ""
 "F&uuml;ge m&ouml;gliche Vorschl&auml;ge, aus denen gew&auml;hlt werden kann, "
 "als kommagetrennte Liste hinzu."
-
-#: inc/modules/mpcf-text.php:66
-msgid "Text field"
-msgstr "Text"
 
 #: inc/modules/mpcf-textarea.php:52
 msgid "number of rows"
@@ -365,141 +395,19 @@ msgstr "Woche"
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
 
-#: inc/mpcf-admin.php:18
-msgid "Custom Fields"
-msgstr "Custom Fields"
-
-#: inc/mpcf-admin.php:19
-msgid "Settings"
-msgstr "Einstellungen"
-
-#: inc/mpcf-admin.php:30 inc/mpcf-settings.php:19
-msgid "You do not have sufficient permissions to access this page."
-msgstr ""
-"Du hast nicht die notwendigen Berechtigungen, um diese Seite anzuzeigen."
-
-#: inc/mpcf-admin.php:61 inc/mpcf-admin.php:231
-msgid "Meta boxes"
-msgstr "Metaboxen"
-
-#: inc/mpcf-admin.php:65
-msgid "Search"
-msgstr "Suche"
-
-#: inc/mpcf-admin.php:113 mp-custom-fields.php:57
-#, php-format
-msgid "Panel: %s"
-msgstr "Panel: %s"
-
-#: inc/mpcf-admin.php:127
-msgid "Icon"
-msgstr "Symbol"
-
-#: inc/mpcf-admin.php:128
-#, php-format
-msgid ""
-"Include a dashicon as the icon for this panel by referencing its name as "
-"given %sin this list%s."
-msgstr ""
-"F&uuml;ge diesem Panel ein Symbol hinzu, indem du den Namen eines Dashicon "
-"angibst, wie sie %sin dieser Liste aufgef&uuml;hrt sind%s."
-
-#: inc/mpcf-admin.php:135 inc/mpcf-admin.php:369
-msgid "Fields"
-msgstr "Felder"
-
-#: inc/mpcf-admin.php:140
-msgid "Field"
-msgstr "Feld"
-
-#: inc/mpcf-admin.php:153 inc/mpcf-settings.php:24
-msgid "General"
-msgstr "Allgemein"
-
-#: inc/mpcf-admin.php:165 inc/mpcf-admin.php:367
-msgid "Post type"
-msgstr "Artikeltyp"
-
-#: inc/mpcf-admin.php:173
-msgid "Context"
-msgstr "Kontext"
-
-#: inc/mpcf-admin.php:175
-msgid "advanced"
-msgstr "fortgeschritten"
-
-#: inc/mpcf-admin.php:176
-msgid "normal"
-msgstr "normal"
-
-#: inc/mpcf-admin.php:177
-msgid "side"
-msgstr "seitlich"
-
-#: inc/mpcf-admin.php:180
-msgid "The place on the screen where the box should be displayed."
-msgstr "Der Ort, an dem die Metabox angezeigt werden soll."
-
-#: inc/mpcf-admin.php:185
-msgid "Priority"
-msgstr "Priorit&auml;t"
-
-#: inc/mpcf-admin.php:187
-msgid "high"
-msgstr "hoch"
-
-#: inc/mpcf-admin.php:188
-msgid "low"
-msgstr "niedrig"
-
-#: inc/mpcf-admin.php:191
-msgid "The priority within the context where the box should be displayed."
-msgstr ""
-"Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt wird."
-
-#: inc/mpcf-admin.php:200 mp-custom-fields.php:56
-#, php-format
-msgid "Edit meta box: %s"
-msgstr "Metabox bearbeiten: %s"
-
-#: inc/mpcf-admin.php:211
-msgid "Add panel"
-msgstr "Panel hinzuf&uuml;gen"
-
-#: inc/mpcf-admin.php:230
-msgid "Meta box"
-msgstr "Metabox"
-
-#: inc/mpcf-admin.php:275
-#, php-format
-msgid "without %s"
-msgstr "ohne %s"
-
-#: inc/mpcf-admin.php:283
-#, php-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-#: inc/mpcf-admin.php:318
-msgid "No meta boxes found."
-msgstr "Keine Metabox gefunden."
-
-#: inc/mpcf-admin.php:331
-msgid "Edit this metabox"
-msgstr "Diese Metabox bearbeiten"
-
-#: inc/mpcf-admin.php:335 inc/mpcf-admin.php:384
-msgid "Delete"
-msgstr "L&ouml;schen"
-
-#: inc/mpcf-admin.php:368
-msgid "Panels"
-msgstr "Panele"
-
 #: inc/mpcf-register-metaboxes.php:29
 #, php-format
 msgid "%s Options"
 msgstr "%s Einstellungen"
+
+#: inc/mpcf-settings.php:19
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+"Du hast nicht die notwendigen Berechtigungen, um diese Seite anzuzeigen."
+
+#: inc/mpcf-settings.php:24
+msgid "General"
+msgstr "Allgemein"
 
 #: inc/mpcf-settings.php:30
 msgid "Class for multilingual fields"
@@ -513,15 +421,15 @@ msgstr ""
 "Gib eine Klasse an, die den Feldern hinzugef&uuml;gt wird, um sie f&uuml;r "
 "Plugins zu markieren, die sie in mehrsprachige Felder umwandeln."
 
-#: inc/mpcf-settings.php:37
+#: inc/mpcf-settings.php:38
 msgid "Interfaces"
 msgstr "Schnittstellen"
 
-#: inc/mpcf-settings.php:43
+#: inc/mpcf-settings.php:44
 msgid "Google Maps API Key"
 msgstr "Google Maps API Schl&uuml;ssel"
 
-#: inc/mpcf-settings.php:44
+#: inc/mpcf-settings.php:45
 #, php-format
 msgid ""
 "Generate a free API key <a href=\"%s\" target=\"_blank\" rel=\"noopener"
@@ -531,7 +439,7 @@ msgstr ""
 "kostenlosen API-Schl&uuml;ssel um f&uuml;r das Kartenfeld Google Maps "
 "benutzen zu k&ouml;nnen und gib ihn hier ein."
 
-#: inc/mpcf-settings.php:53
+#: inc/mpcf-settings.php:55
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
@@ -547,6 +455,16 @@ msgstr "Medium &auml;ndern"
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
+#: mp-custom-fields.php:56
+#, php-format
+msgid "Edit meta box: %s"
+msgstr "Metabox bearbeiten: %s"
+
+#: mp-custom-fields.php:57
+#, php-format
+msgid "Panel: %s"
+msgstr "Panel: %s"
+
 #: mp-custom-fields.php:58
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
@@ -554,6 +472,90 @@ msgstr "Dateien ausgew&auml;hlt"
 #: mp-custom-fields.php:59
 msgid "Upload file"
 msgstr "Datei hochladen"
+
+#~ msgid "Custom Fields"
+#~ msgstr "Custom Fields"
+
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
+
+#~ msgid "Meta boxes"
+#~ msgstr "Metaboxen"
+
+#~ msgid "Search"
+#~ msgstr "Suche"
+
+#~ msgid "Icon"
+#~ msgstr "Symbol"
+
+#~ msgid ""
+#~ "Include a dashicon as the icon for this panel by referencing its name as "
+#~ "given %sin this list%s."
+#~ msgstr ""
+#~ "F&uuml;ge diesem Panel ein Symbol hinzu, indem du den Namen eines "
+#~ "Dashicon angibst, wie sie %sin dieser Liste aufgef&uuml;hrt sind%s."
+
+#~ msgid "Fields"
+#~ msgstr "Felder"
+
+#~ msgid "Field"
+#~ msgstr "Feld"
+
+#~ msgid "Post type"
+#~ msgstr "Artikeltyp"
+
+#~ msgid "Context"
+#~ msgstr "Kontext"
+
+#~ msgid "advanced"
+#~ msgstr "fortgeschritten"
+
+#~ msgid "normal"
+#~ msgstr "normal"
+
+#~ msgid "side"
+#~ msgstr "seitlich"
+
+#~ msgid "The place on the screen where the box should be displayed."
+#~ msgstr "Der Ort, an dem die Metabox angezeigt werden soll."
+
+#~ msgid "Priority"
+#~ msgstr "Priorit&auml;t"
+
+#~ msgid "high"
+#~ msgstr "hoch"
+
+#~ msgid "low"
+#~ msgstr "niedrig"
+
+#~ msgid "The priority within the context where the box should be displayed."
+#~ msgstr ""
+#~ "Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt "
+#~ "wird."
+
+#~ msgid "Add panel"
+#~ msgstr "Panel hinzuf&uuml;gen"
+
+#~ msgid "Meta box"
+#~ msgstr "Metabox"
+
+#~ msgid "without %s"
+#~ msgstr "ohne %s"
+
+#~ msgid "%s (%s)"
+#~ msgstr "%s (%s)"
+
+#~ msgid "No meta boxes found."
+#~ msgstr "Keine Metabox gefunden."
+
+#~ msgid "Edit this metabox"
+#~ msgstr "Diese Metabox bearbeiten"
+
+#~ msgid "Delete"
+#~ msgstr "L&ouml;schen"
+
+#~ msgid "Panels"
+#~ msgstr "Panele"
 
 #~ msgid ""
 #~ "Set editor height in pixels. Takes precedence over &quot;rows&quot; "

@@ -71,7 +71,7 @@ class MPCFSelectField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$multiple = isset($args['mutiple']) && !empty($args['mutiple']) ? ' ' . $args['mutiple'] : '';
+		$multiple = isset($args['multiple']) && !empty($args['multiple']) ? ' ' . $args['multiple'] : '';
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
 		$args['value'] = !empty($multiple) ? unserialize(($args['value'])) : $args['value'];
 		$params = mpcf_list_input_params($this, array('required', 'size')); ?>

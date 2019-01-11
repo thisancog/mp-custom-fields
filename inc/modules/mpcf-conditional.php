@@ -45,34 +45,36 @@ class MPCFConditionalField extends MPCFModule {
 			$value[$prop] = mpcf_mknice($val); 
 		} ?>
 
-		<div class="mpcf-conditional-choice">
-<?php	if (!empty($label)) { ?>
-			<div class="mpcf-title"><label for="<?php echo $args['name']; ?>-type"><?php echo $label; ?></label></div>
-<?php 	} ?>
+		<div class="mpcf-conditional-container" data-basename="<?php echo $args['name']; ?>">
+			<div class="mpcf-conditional-choice">
+<?php		if (!empty($label)) { ?>
+				<div class="mpcf-title"><label for="<?php echo $args['name']; ?>-type"><?php echo $label; ?></label></div>
+<?php 		} ?>
 
-			<select name="<?php echo $args['name']; ?>[type]"
-					id="<?php echo $args['name']; ?>-type"
-					data-basename="<?php echo $args['name']; ?>"
-					data-options="<?php echo esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-					data-values="<?php echo esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>">
+				<select name="<?php echo $args['name']; ?>[type]"
+						id="<?php echo $args['name']; ?>-type"
+						data-basename="<?php echo $args['name']; ?>"
+						data-options="<?php echo esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
+						data-values="<?php echo esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>">
 
-				<option value="-1" disabled<?php echo $noSelection; ?>>------</option>
+					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
-<?php 		foreach ($options as $name => $params) {
-				$disabled = false;
+<?php 			foreach ($options as $name => $params) {
+					$disabled = false;
 
-				if (is_array($params['title']))	extract($params['title']);
- 				else 							$title = $params['title'];
+					if (is_array($params['title']))	extract($params['title']);
+	 				else 							$title = $params['title'];
 
-				$selected = isset($value['type']) && $value['type'] == $name;
-				$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
-				<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
-<?php		} ?>
-			</select>
+					$selected = isset($value['type']) && $value['type'] == $name;
+					$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
+					<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
+<?php			} ?>
+				</select>
+			</div>
+
+			<div class="mpcf-conditional-wrapper"></div>
+			<div class="mpcf-loading-container"></div>
 		</div>
-
-		<div class="mpcf-conditional-wrapper"></div>
-		<div class="mpcf-loading-container"></div>
 <?php
 	}
 }
