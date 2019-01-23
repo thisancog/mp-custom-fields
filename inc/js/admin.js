@@ -33,13 +33,18 @@ var panelSwitch = function() {
 			listItem.addEventListener('click', function() {
 				if (listItem.classList.contains('active')) return;
 
-				var dest = listItem.dataset.index;
+				var dest = listItem.dataset.index,
+					painter = wp.svgPainter;
 
-				[].forEach.call(listItems, (listItem) => listItem.classList.remove('active'));
+				[].forEach.call(listItems, (listItem) => {
+					listItem.classList.remove('active');
+					painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'base');
+				});
 				[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
 
 				listItem.classList.add('active');
 				[].filter.call(panels, (panel) => panel.dataset.index === dest).forEach((panel) => panel.classList.add('active-panel'));
+				painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'focus');
 				panelSet.querySelector('.activetab').setAttribute('value', dest);
 			});
 		});
