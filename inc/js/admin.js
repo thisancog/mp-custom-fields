@@ -24,8 +24,10 @@ var panelSwitch = function() {
 	[].forEach.call(panelSets, function(panelSet) {
 		var start = panelSet.querySelector('.activetab').getAttribute('value') || 0,
 			listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
-			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
+			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel'),
+			painter = wp.svgPainter;
 
+		[].forEach.call(listItems, (item) => painter.paintElement($(item.querySelector('.mpcf-panel-icon')), 'base'));
 		[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
 		[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
 
@@ -33,8 +35,7 @@ var panelSwitch = function() {
 			listItem.addEventListener('click', function() {
 				if (listItem.classList.contains('active')) return;
 
-				var dest = listItem.dataset.index,
-					painter = wp.svgPainter;
+				var dest = listItem.dataset.index;
 
 				[].forEach.call(listItems, (listItem) => {
 					listItem.classList.remove('active');
