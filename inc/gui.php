@@ -106,7 +106,7 @@ function mpcf_build_gui_as_panels($panels, $values) {
 				if (strpos($panels[$i]['icon'], 'dashicons') > -1) { ?>
 					<div class="mpcf-panel-icon dashicons <?php echo $panels[$i]['icon']; ?>"></div>
 <?php 			} else { ?>
-					<div class="mpcf-panel-icon"><img src="<?php echo $panels[$i]['icon']; ?>" alt=""></div>
+					<div class="mpcf-panel-icon" style="background-image: url(<?php echo $panels[$i]['icon']; ?>);"></div>
 <?php 			}
 			} ?>
 
