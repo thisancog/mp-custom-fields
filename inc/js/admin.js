@@ -332,12 +332,13 @@ var conditionalField = function(parent = null) {
 	[].forEach.call(fields, function(field) {
 		if (field.dataset.registered && field.dataset.registered == 1) return;
 
-		var select = field.querySelector('.mpcf-conditional-choice select'),
+		var select = field.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
 			loader = field.querySelector('.mpcf-loading-container'),
 			wrapper = field.querySelector('.mpcf-conditional-wrapper'),
 			baseName = select.dataset.basename,
 			options = JSON.parse(select.dataset.options),
-			values = JSON.parse(select.dataset.values);
+			values = JSON.parse(select.dataset.values),
+			isSingle = select.tagName.toLowerCase() === 'input';
 
 		field.dataset.registered = 1;
 		select.removeAttribute('data-options');
@@ -347,7 +348,11 @@ var conditionalField = function(parent = null) {
 			values = values.options;
 
 		var switchContent = function(values = false) {
-			if (typeof options[select.value] === 'undefined') return;
+			// no option with this value available, i.e. no option selected
+			if ((isSingle && select.checked === false) || typeof options[select.value] === 'undefined') {
+				wrapper.innerHTML = '';
+				return;
+			}
 
 			var request = {
 					'action': 'mpcf_get_conditional_fields',
