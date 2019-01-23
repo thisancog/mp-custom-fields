@@ -36,8 +36,8 @@ class MPCFConditionalField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$value   = isset($args['value']) && !empty($args['value']) ? $args['value'] : array();
-		if (is_string($value))
-			$value = unserialize($value);
+		if (count($value) == 1 && is_string($value[0]))
+			$value = unserialize($value[0]);
 
 		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
