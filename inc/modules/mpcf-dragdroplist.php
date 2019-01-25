@@ -84,17 +84,19 @@ class MPCFDragDropList extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$args['value'] = !empty($args['value']) ? unserialize($args['value'][0]) : array();
+		$value = !empty($args['value']) && !empty($args['value'][0]) ? $args['value'] : array();
+		if (count($value) === 1 && is_string($value[0]))
+			$value = unserialize($value[0]);
+
 		$multiple = isset($args['multiple']) ? $args['multiple'] : false;
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
 		$params = mpcf_list_input_params($this, array('required', 'size'));
 
-		$selectedIDs = $args['value'];
 		$selection = array();
 		$remaining = array();
 		array_walk($options, function($option, $index) use (&$remaining) { $remaining[] = $index; });
 
-		array_walk($selectedIDs, function($option, $index) use (&$remaining, &$selection, $options, $multiple) {
+		array_walk($value, function($option, $index) use (&$remaining, &$selection, $options, $multiple) {
 			$set = array('id' => $option, 'title' => $options[$option]);
 			$selection[] = $set;
 
