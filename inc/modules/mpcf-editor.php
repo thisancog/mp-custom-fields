@@ -86,19 +86,19 @@ class MPCFEditorField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$id = str_replace(array('-', '_'), '', strtolower($args['name']));
-		$rows = isset($args['rows']) ? $args['rows'] : 10;
 
 		$editorargs = array(
 			'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
 			'editor_class'		=> mpcf_get_input_class($this),
 			'editor_css'		=> isset($args['css']) ? '<style>' . $args['css'] . '</style>' : null,
-			'editor_height'		=> isset($args['height']) ? $args['height'] : null,
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
-			'textarea_rows'		=> $rows,
 			'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
 		);
 
+		if      (isset($args['rows']))		$editorargs['textarea_rows'] = $args['rows'];
+		else if (isset($args['height']))	$editorargs['editor_height'] = $args['height'];
+		else 								$editorargs['editor_height'] = 200;
 		/* ?>
 
 		<textarea 	class="<?php echo mpcf_get_input_class($this); ?>"
@@ -109,6 +109,18 @@ class MPCFEditorField extends MPCFModule {
 
 <?php 	*/
 		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
+
+		// @ Wordpress Bug: editor_height is not honored
+		$minHeight = isset($editorargs['editor_height']) ? $editorargs['editor_height'] : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
+
+		<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
+
+<?php	
+	}
+
+	function get_editor_min_height_from_rows($rows) {
+		$height = max(100 + ($rows - 3) * 18.57, 100);
+		return $height;
 	}
 }
 
