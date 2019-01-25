@@ -77,7 +77,8 @@
 
 .mpcf-panels-menu li.active:before,
 .mpcf-panels-menu li.active:after,
-.mpcf-panels-menu li.active .mpcf-panel-icon:after {
+.mpcf-panels-menu li.active .mpcf-panel-icon:after,
+.mpcf-panels-menu li.active .mpcf-panel-icon-svg:before {
 	content: '';
 }
 
