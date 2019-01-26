@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-01-11 15:55+0100\n"
-"PO-Revision-Date: 2019-01-11 15:57+0100\n"
+"POT-Creation-Date: 2019-01-26 18:47+0100\n"
+"PO-Revision-Date: 2019-01-26 18:47+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -161,11 +161,11 @@ msgstr "Mehrfach"
 msgid "Select"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:108
+#: inc/modules/mpcf-dragdroplist.php:111
 msgid "Selection"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:113
+#: inc/modules/mpcf-dragdroplist.php:116
 msgid "Available options"
 msgstr "Verf&uuml;gbare Optionen"
 
@@ -248,6 +248,7 @@ msgid "File picker"
 msgstr "Dateiauswahl"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
+#: mp-custom-fields.php:55
 msgid "Change"
 msgstr "&Auml;ndern"
 
@@ -260,8 +261,8 @@ msgstr "Hinzuf&uuml;gen"
 msgid "0b"
 msgstr "0b"
 
-#: inc/modules/mpcf-file.php:71 inc/modules/mpcf-media.php:63
-#: mp-custom-fields.php:60
+#: inc/modules/mpcf-file.php:72 inc/modules/mpcf-media.php:63
+#: mp-custom-fields.php:62
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -444,34 +445,41 @@ msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
 #: mp-custom-fields.php:53
+msgid "Add file"
+msgstr "Datei hinzuf&uuml;gen"
+
+#: mp-custom-fields.php:54
 msgid "Add media"
 msgstr "Medium hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:54
+#: mp-custom-fields.php:56
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:55
+#: mp-custom-fields.php:57
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:56
+#: mp-custom-fields.php:58
 #, php-format
 msgid "Edit meta box: %s"
 msgstr "Metabox bearbeiten: %s"
 
-#: mp-custom-fields.php:57
+#: mp-custom-fields.php:59
 #, php-format
 msgid "Panel: %s"
 msgstr "Panel: %s"
 
-#: mp-custom-fields.php:58
+#: mp-custom-fields.php:60
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:59
+#: mp-custom-fields.php:61
 msgid "Upload file"
 msgstr "Datei hochladen"
+
+#~ msgid "Change file"
+#~ msgstr "Datei &auml;ndern"
 
 #~ msgid "Custom Fields"
 #~ msgstr "Custom Fields"
