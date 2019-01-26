@@ -72,19 +72,23 @@ function mpcf_add_metaboxes() {
 	global $post;
 	$boxes = get_option('mpcf_meta_boxes', array());
 	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
+	$isFrontpage = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
 		$post_type = $box['post_type'];
 		$page_template = $box['page_template'];
+
+		$registerThisBox = true;
 
 		if ($post_type === 'page' && !empty($page_template)) {
 			if (is_string($page_template))
 				$page_template = explode(',', $page_template);
 
 			$page_template = array_map('trim', $page_template);
+			$onFrontpage = in_array('frontpage', $page_template);
 
 			$valids = array_filter($page_template, function($template) {
-				return substr($template, 0, 1) !== '-';
+				return substr($template, 0, 1) !== '-' && $template !== 'frontpage';
 			});
 
 			$invalids = array_filter($page_template, function($template) {
@@ -92,13 +96,17 @@ function mpcf_add_metaboxes() {
 			});
 
 			if (!empty($invalids) && in_array('-' . $currentTemplate, $invalids))
-				continue;
+				$registerThisBox = false;
 
 			if (!empty($valids) && !in_array($currentTemplate, $valids))
-				continue;
+				$registerThisBox = false;
+
+			if ($onFrontpage && !$isFrontpage)
+				$registerThisBox = false;
 		}
 
-		add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $box['context'], $box['priority']);
+		if ($registerThisBox)
+			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $box['context'], $box['priority']);
 	}
 }
 
