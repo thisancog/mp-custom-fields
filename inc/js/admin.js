@@ -546,7 +546,7 @@ $(document).ready(function($) {
 
 function registerMediaPicker() {
 	var change = $('.mpcf-mediapicker .mpcf-imagepreview, .mpcf-mediapicker .mpcf-videopreview, .mpcf-mediapicker .mpcf-changemedia, .mpcf-filepicker .filename'),
-		clear = $('.mpcf-clearmedia');
+		clear = $('.mpcf-clearmedia, .mpcf-clearfile');
 
 	change.unbind('click');
 	clear.unbind('click');
@@ -569,14 +569,16 @@ function changeMedia(elem, e) {
 		var choice = image.state().get('selection').first().toJSON();
 
 		parent.find('.mpcf-media-id').val(choice.id);
-		parent.find('.mpcf-changemedia').val(localizedmpcf.changeMedia);
-		parent.find('.mpcf-clearmedia').removeClass('hidden');
+		parent.find('.mpcf-changemedia').val(localizedmpcf.change);
 
 		if (parent.is('.mpcf-filepicker')) {
+			parent.find('.mpcf-clearfile').removeClass('hidden');
 			parent.find('.mpcf-preview-content-file .filename').html(choice.filename);
 			parent.find('.mpcf-preview-content-file .filesize').html(choice.filesizeHumanReadable);
 			return;
 		}
+		
+		parent.find('.mpcf-clearmedia').removeClass('hidden');
 
 		if (choice.mime.indexOf('image') > -1) {
 			parent.find('.mpcf-imagepreview').attr('src', choice.sizes.medium.url);
@@ -594,12 +596,22 @@ function changeMedia(elem, e) {
 }
 
 function clearimg(elem) {
-	var parent = $(elem).parents('.mpcf-mediapicker');
+	var parent = $(elem).parents('.mpcf-mediapicker'),
+		isFilePicker = parent.is('.mpcf-filepicker');
+
 	parent.find('.mpcf-media-id').val('');
-	parent.find('.mpcf-imagepreview').attr('src', '').removeClass('hidden');
-	parent.find('.mpcf-videopreview').attr('src', '').addClass('hidden');
-	parent.find('.mpcf-changemedia').val(localizedmpcf.addMedia);
-	parent.find('.mpcf-clearmedia').addClass('hidden');
+
+	if (isFilePicker) {
+		parent.find('.mpcf-changemedia').val(localizedmpcf.addFile);
+		parent.find('.mpcf-clearfile').addClass('hidden');
+		parent.find('.mpcf-preview-content-file .filename').html('');
+		parent.find('.mpcf-preview-content-file .filesize').html('0b');
+	} else {
+		parent.find('.mpcf-imagepreview').attr('src', '').removeClass('hidden');
+		parent.find('.mpcf-videopreview').attr('src', '').addClass('hidden');
+		parent.find('.mpcf-changemedia').val(localizedmpcf.addMedia);
+		parent.find('.mpcf-clearmedia').addClass('hidden');
+	}
 }
 
 
