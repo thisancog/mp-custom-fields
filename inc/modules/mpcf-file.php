@@ -44,7 +44,7 @@ class MPCFFilePicker extends MPCFModule {
 		$class		= mpcf_input_class($this, 'mpcf-media-id');
 		$id			= uniqid('mpcf-changemedia-' . $args['name']);
 
-		$file = get_attached_file($args['value']);
+		$file = get_attached_file(mpcf_translate_string($args['value']));
 		$size = filesize($file);
 		$sizes = array('b', 'KB', 'MB', 'GB');
 
@@ -52,8 +52,9 @@ class MPCFFilePicker extends MPCFModule {
 			$s = floor(log($size) / log(1024));
 			$filesize = sprintf('%d ' . $sizes[$s], $size / pow(1024, floor($s)));
 		} else {
-			$filesize = __('0b', 'dbuh');
+			$filesize = __('0b', 'mpcf');
 		}
+
 
 	//	$accept = (isset($args['accept']) && !empty($args['accept']) ? ' accept="' . $args['accept'] . '"' : '');
 	//	$size = (isset($args['size']) && !empty($args['size']) ? ' size="' . $args['size'] . '"' : '');
@@ -68,12 +69,11 @@ class MPCFFilePicker extends MPCFModule {
 		<div class="mpcf-content-buttons">
 			<input type="hidden"<?php echo $class; ?> name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
 			<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
-			<input type="button" class="mpcf-changefile mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
+			<input type="button" class="mpcf-clearfile mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
 		</div>
 <?php
 	}
 }
-
 
 
 
