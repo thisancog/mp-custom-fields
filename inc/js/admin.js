@@ -19,17 +19,22 @@ window.addEventListener('load', function() {
 **************************************************************/
 
 var panelSwitch = function() {
-	var panelSets = document.querySelectorAll('.mpcf-panels');
+	var panelSets = document.querySelectorAll('.mpcf-panels'),
+		painter = wp.svgPainter;
 
 	[].forEach.call(panelSets, function(panelSet) {
-		var start = panelSet.querySelector('.activetab').getAttribute('value') || 0,
+		var start = panelSet.querySelector('.activetab').value || 0,
 			listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
-			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel'),
-			painter = wp.svgPainter;
+			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
 
+		// apply color to SVG icons
 		[].forEach.call(listItems, (item) => painter.paintElement($(item.querySelector('.mpcf-panel-icon')), 'base'));
+
+		// find active panel and give it a class
 		[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
 		[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
+		panelSet.classList.toggle('last-item-selected', start == listItems.length - 1);
+
 
 		[].forEach.call(listItems, function(listItem) {
 			listItem.addEventListener('click', function() {
@@ -37,15 +42,23 @@ var panelSwitch = function() {
 
 				var dest = listItem.dataset.index;
 
+				// remove active class from current active panel
 				[].forEach.call(listItems, (listItem) => {
 					listItem.classList.remove('active');
 					painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'base');
 				});
+
 				[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
 
+				// apply new active class
 				listItem.classList.add('active');
 				[].filter.call(panels, (panel) => panel.dataset.index === dest).forEach((panel) => panel.classList.add('active-panel'));
+				panelSet.classList.toggle('last-item-selected', dest == listItems.length - 1);
+
+				// apply color to SVG icon of active panel
 				painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'focus');
+
+				// update activeTab field
 				panelSet.querySelector('.activetab').setAttribute('value', dest);
 			});
 		});
@@ -185,6 +198,8 @@ var repeaterField = function(parent = null) {
 			var el = e.target;
 			el.removeEventListener('click', removeRow);
 
+			removeQTranslateX(el);
+
 			while ((el = el.parentElement) && !el.classList.contains('mpcf-repeater-row'));
 			el.parentElement.removeChild(el);
 
@@ -233,7 +248,7 @@ var repeaterField = function(parent = null) {
 var registerEditors = function(parent) {
 	return;
 	
-	parent = parent || document;	
+	parent = parent || document;
 
 	var editors = parent.querySelectorAll('.mpcf-input-editor'),
 		defaults = tinyMCEPreInit.mceInit['mpcf-editor-instance'];
@@ -370,6 +385,7 @@ var conditionalField = function(parent = null) {
 			loader.classList.add('mpcf-loading-active');
 
 			$.post(ajaxurl, request, function(response) {
+				removeQTranslateX(wrapper);
 				wrapper.innerHTML = response;
 				rename();
 
@@ -773,17 +789,28 @@ class addDragDrop {
 
 
 /**************************************************************
-	Add qtranslate-X after dynamically loaded fields
+	Add qTranslate-X/qTranslate-XT after dynamically loaded fields
 **************************************************************/
 
 function addQTranslateX(parent = null) {
-	if (typeof qTranslateX === 'undefined' || typeof qTranslateConfig === 'undefined') return;
+	if (typeof qTranslateConfig === 'undefined') return;
 
 	parent = parent || document;
 
 	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
 		qTranslateConfig.qtx.addContentHook(field);
+		qTranslateConfig.qtx.refreshContentHook(field);
+	});
+}
+
+function removeQTranslateX(parent = null) {
+	if (typeof qTranslateConfig === 'undefined') return;
+	parent = parent || document;
+
+	var fields = parent.querySelectorAll('.mpcf-multilingual');
+	[].forEach.call(fields, function(field) {
+		qTranslateConfig.qtx.removeContentHook(field);
 	});
 }
 
