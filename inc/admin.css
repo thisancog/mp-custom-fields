@@ -406,8 +406,11 @@
 }
 
 .mpcf-preview-content-file .filesize {
-	margin-left: 1em;
 	color: #CCC;
+}
+
+.mpcf-preview-content-file .filename:not(:empty) + .filesize {
+	margin-left: 1em;
 }
 
 .mpcf-imagepreview,
@@ -422,7 +425,8 @@
 
 .mpcf-imagepreview.hidden,
 .mpcf-videopreview.hidden,
-.mpcf-clearmedia.hidden {
+.mpcf-clearmedia.hidden,
+.mpcf-clearfile.hidden {
 	display: none;
 }
 

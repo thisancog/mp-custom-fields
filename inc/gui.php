@@ -96,7 +96,7 @@ function mpcf_build_gui_as_panels($panels, $values) {
 	$hasEditors = false; ?>
 
 	<div class="mpcf-panels">
-		<input type="hidden" name="mpcf-activetab" class="activetab" value="<?php echo $activetab; ?>" ?>
+		<input type="hidden" name="mpcf-activetab" class="activetab" value="<?php echo $activetab; ?>" />
 		<ul class="mpcf-panels-menu">
 
 <?php	for ($i = 0; $i < count($panels); $i++) { ?>

@@ -30,6 +30,15 @@ function mpcf_beautify_string($string) {
 	return preg_replace('/[-]+/i', '-', $string);
 }
 
+function mpcf_translate_string($string = '') {
+	$string = __($string);
+
+	if (function_exists('qtranxf_gettext'))
+		$string = qtranxf_gettext($string);
+
+	return $string;
+}
+
 
 
 ?>
