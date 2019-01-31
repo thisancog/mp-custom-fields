@@ -40,7 +40,8 @@ var panelSwitch = function() {
 			listItem.addEventListener('click', function() {
 				if (listItem.classList.contains('active')) return;
 
-				var dest = listItem.dataset.index;
+				var dest = listItem.dataset.index,
+					destPanel = [].filter.call(panels, panel => panel.dataset.index === dest)[0];
 
 				// remove active class from current active panel
 				[].forEach.call(listItems, (listItem) => {
@@ -52,7 +53,7 @@ var panelSwitch = function() {
 
 				// apply new active class
 				listItem.classList.add('active');
-				[].filter.call(panels, (panel) => panel.dataset.index === dest).forEach((panel) => panel.classList.add('active-panel'));
+				destPanel.classList.add('active-panel');
 				panelSet.classList.toggle('last-item-selected', dest == listItems.length - 1);
 
 				// apply color to SVG icon of active panel
@@ -799,7 +800,6 @@ class addDragDrop {
 
 
 
-
 /**************************************************************
 	Add qTranslate-X/qTranslate-XT after dynamically loaded fields
 **************************************************************/
@@ -811,6 +811,11 @@ function addQTranslateX(parent = null) {
 
 	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
+		if (field.classList.contains('mpcf-input-editor')) {
+			qTranslateConfig.qtx.addContentHooksTinyMCE(field);
+			return;
+		}
+
 		qTranslateConfig.qtx.addContentHook(field);
 		qTranslateConfig.qtx.refreshContentHook(field);
 	});
