@@ -108,13 +108,15 @@ class MPCFEditorField extends MPCFModule {
 					rows=""><?php echo mpcf_mknice($args['value']); ?></textarea>
 
 <?php 	*/
+
 		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
 
 		// @ Wordpress Bug: editor_height is not honored
-		$minHeight = isset($editorargs['editor_height']) ? $editorargs['editor_height'] : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
+		$minHeight = isset($editorargs['editor_height'])
+				   ? $editorargs['editor_height']
+				   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
 
 		<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
-
 <?php	
 	}
 

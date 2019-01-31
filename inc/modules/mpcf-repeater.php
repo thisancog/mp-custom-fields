@@ -37,7 +37,7 @@ class MPCFRepeaterField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		if (is_array($args['value']) && count($args['value']) === 1 && unserialize($args['value'][0]) !== false)
+		if (is_array($args['value']) && count($args['value']) === 1 && is_string($args['value'][0]) && unserialize($args['value'][0]) !== false)
 			$args['value'] = unserialize($args['value'][0]);
 
 		if (is_string($args['value']))
