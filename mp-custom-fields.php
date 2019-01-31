@@ -23,6 +23,8 @@ add_action('save_post', 'mpcf_save_meta_boxes', 10, 2);
 add_action('wp_ajax_mpcf_get_repeater_row', 'mpcf_ajax_get_repeater_row');
 add_action('wp_ajax_mpcf_get_conditional_fields', 'mpcf_ajax_get_conditional_fields');
 
+add_filter('admin_body_class', 'mpcf_filter_admin_body_class');
+
 register_deactivation_hook(__FILE__, 'mpcf_deactivate');
 
 function mpcf_load_textdomain() {
@@ -64,6 +66,8 @@ function mpcf_admin_init() {
 	wp_localize_script('mpcf-admin-script', 'localizedmpcf', $language);
 	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
 //	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);
+
+	mpcf_add_metaboxes_to_taxonomies();
 }
 
 
