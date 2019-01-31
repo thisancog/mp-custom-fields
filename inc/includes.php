@@ -3,6 +3,7 @@
 require_once('modules.php');
 require_once('mpcf-settings.php');
 require_once('mpcf-register-metaboxes.php');
+require_once('mpcf-register-taxonomy-metaboxes.php');
 require_once('gui.php');
 
 if (file_exists(__DIR__ . '/mpcf-admin.php'))
@@ -37,6 +38,20 @@ function mpcf_translate_string($string = '') {
 		$string = qtranxf_gettext($string);
 
 	return $string;
+}
+
+
+function mpcf_filter_admin_body_class() {
+	global $current_screen;
+
+	$isActive = false;
+
+	if (!empty($current_screen->taxonomy)) {
+		$boxes = mpcf_get_taxonomy_boxes($current_screen->taxonomy);
+		if (count($boxes) > 0) $isActive = true;
+	}
+
+	return $isActive ? 'mpcf-active' : '';
 }
 
 

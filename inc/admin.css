@@ -2,6 +2,27 @@
 	General GUI
  ******************************/
 
+ .mpcf-active #edittag {
+ 	max-width: initial;
+ }
+
+.mpcf-tax-box {
+	width: 95%;
+	margin-bottom: 24px;
+	background: #FFF;
+	border: 1px solid #E5E5E5;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.mpcf-tax-box .mpcf-tax-box-title {
+	padding: 8px 12px;
+	margin: 0;
+	border-bottom: 1px solid #eee;
+	font-size: 14px;
+	line-height: 1.4;
+	user-select: none;
+}
+
 .mpcf-parent {}
 
 .mpcf-panels {
@@ -23,6 +44,15 @@
 	background: #FFF;
 }
 
+.mpcf-tax-box .mpcf-panels {
+	position: relative;
+	width: calc(100% - 22px);
+	margin: 0;
+	padding: 0;
+	line-height: 1;
+	background: #FFF;
+}
+
 .mpcf-panels-menu {
 	width: 250px;
 	margin: 0 30px -12px 0;
@@ -31,7 +61,8 @@
 	border-right: 1px solid #DDD;
 }
 
-.mpcf-options .mpcf-panels-menu {
+.mpcf-options .mpcf-panels-menu,
+.mpcf-tax-box .mpcf-panels-menu {
 	margin-bottom: 0;
 }
 
@@ -796,3 +827,16 @@ body.no-js .mpcf-file-picker + label {
 	border-color: #CCC;
 }
 
+
+
+/******************************
+	Select
+ ******************************/
+
+.mpcf-select-input select {
+	padding: 5px 0;
+}
+
+.mpcf-select-input option {
+	padding: 0 10px;
+}

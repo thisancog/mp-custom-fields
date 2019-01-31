@@ -181,13 +181,17 @@ function mpcf_get_multingual_class() {
 	return isset($o['multilingualclass']) && !empty($o['multilingualclass']) ? $o['multilingualclass'] : '';
 }
 
+function mpcf_is_translatable($field) {
+	$args = $field->args;
+	$dontTranslate = isset($args['notranslate']) ? $args['notranslate'] : false;
+	return !$dontTranslate && $field->translatable;
+}
+
 function mpcf_get_input_class($field, $append = '') {
 	$classes	= 'mpcf-input-' . $field->name;
 	$args	= $field->args;
 	$paramClass	= (isset($args['inputClass']) && !empty($args['inputClass']) ? ' ' . $args['inputClass'] : '');
-
-	$dontTranslate = isset($args['notranslate']) ? $args['notranslate'] : false;
-	$translatable = !$dontTranslate && $field->translatable ? ' ' . mpcf_get_multingual_class() : '';
+	$translatable = mpcf_is_translatable($field) ? ' ' . mpcf_get_multingual_class() : '';
 
 	return $classes . $paramClass . $translatable . (!empty($append) ? ' ' . $append : '');
 }

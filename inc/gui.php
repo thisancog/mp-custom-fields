@@ -41,6 +41,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
 				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+
 				if (isset($actions['save_before']))
 					$value = call_user_func($actions['save_before'], null, $name, $value);
 
@@ -151,18 +152,27 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	setlocale(LC_TIME, get_locale());
 	$required = false;
 
+	$id = mpcf_get_queried_object_id();
+
 	foreach ($fields as $field) {
 		if (!isset($field['type'])) continue;
 
 		$type = $field['type'];
 		$field = mpcf_sanitize_args($field);
+		$actions = isset($field['actions']) ? $field['actions'] : array();
 
-		if (!isset($field['value']) || empty($field['value'])) {
+
+		$field['value'] = isset($field['value']) ? $field['value'] : null;
+
+		if ($field['value'] === null || empty($field['value'])) {
 			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		}
 
-		if ($type !== 'repeater' && $type !== 'conditional' && $type !== 'dragdroplist')
-			$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
+		if (isset($actions['display_before'])) {
+			$field['value'] = call_user_func($actions['display_before'], $id, $field['name'], $field['value']);
+		}
+
+		$field = mpcf_resolve_deep_fields($field);
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
@@ -201,6 +211,34 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	if ($required && $echoRequired) {
 		mpcf_required_hint();
 	}
+}
+
+
+function mpcf_resolve_deep_fields($field) {
+	$type = $field['type'];
+	$deepFields = array('repeater', 'conditional', 'dragdroplist');
+	$isDeep = in_array($type, $deepFields);
+
+	if ($type === 'select' && isset($field['multiple']) && $field['multiple'] === true)
+		$isDeep = true;
+
+	if ($isDeep)
+		return $field;
+
+	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
+
+	return $field;
+}
+
+
+function mpcf_get_queried_object_id() {
+	global $post;
+	global $tag_ID;
+
+	if ($post)			return $post->ID;
+	else if ($tag_ID) 	return $tag_ID;
+
+	return null;
 }
 
 
@@ -293,7 +331,7 @@ function mpcf_before_save($type, $post_id, $name, $value) {
 	Fire 'after_save' function of module
  *****************************************************/
 
-function mpcf_after_save($type, $post_id, $name, $value) {
+function mpcf_after_save($type, $id, $name, $value) {
 	$o = get_option('mpcf_options');
 
 	if (isset($o['modules'][$type])) {
@@ -301,7 +339,7 @@ function mpcf_after_save($type, $post_id, $name, $value) {
 		$module = new $classname();
 
 		if (method_exists($module, 'save_before'))
-			$module->save_before($post_id, $name, $value);
+			$module->save_before($id, $name, $value);
 	}
 }
 
@@ -443,9 +481,11 @@ function mpcf_create_i18n_file($optionName = false) {
 
 	if ($optionName !== false) {
 		$formName = 'mpcf-options-'. $optionName;
+		$formName = 'mpcf-options';
 		$obj->{'admin-config'}->options->forms->{$formName} = new stdClass();
 		$obj->{'admin-config'}->options->forms->{$formName}->fields = new stdClass();
-		$obj->{'admin-config'}->options->forms->{$formName}->fields->jquery = '.' . mpcf_get_multingual_class();
+		$obj->{'admin-config'}->options->forms->{$formName}->fields->all = new stdClass();
+		$obj->{'admin-config'}->options->forms->{$formName}->fields->all->jquery = '.' . mpcf_get_multingual_class();
 	}
 
 	$obj = json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
