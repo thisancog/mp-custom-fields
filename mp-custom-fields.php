@@ -92,6 +92,8 @@ function mpcf_setup_theme_admin_menu() {
 
 	wp_enqueue_style('mpcf-admin-styles', plugins_url('inc/admin.css', __FILE__));
 	wp_enqueue_style('wp-color-picker');
+
+	mpcf_add_metaboxes_to_archives();
 }
 
 
