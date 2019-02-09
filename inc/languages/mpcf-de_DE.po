@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-01-26 18:47+0100\n"
-"PO-Revision-Date: 2019-01-26 18:47+0100\n"
+"POT-Creation-Date: 2019-02-01 17:02+0100\n"
+"PO-Revision-Date: 2019-02-01 17:02+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,19 +17,19 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:64
+#: inc/gui.php:65
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:78
+#: inc/gui.php:79
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:395
+#: inc/gui.php:433
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:416
+#: inc/gui.php:454
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
@@ -248,7 +248,7 @@ msgid "File picker"
 msgstr "Dateiauswahl"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: mp-custom-fields.php:55
+#: mp-custom-fields.php:57
 msgid "Change"
 msgstr "&Auml;ndern"
 
@@ -262,7 +262,7 @@ msgid "0b"
 msgstr "0b"
 
 #: inc/modules/mpcf-file.php:72 inc/modules/mpcf-media.php:63
-#: mp-custom-fields.php:62
+#: mp-custom-fields.php:64
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -396,10 +396,16 @@ msgstr "Woche"
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
 
+#: inc/mpcf-register-archive-metaboxes.php:28
 #: inc/mpcf-register-metaboxes.php:29
+#: inc/mpcf-register-taxonomy-metaboxes.php:27
 #, php-format
 msgid "%s Options"
 msgstr "%s Einstellungen"
+
+#: inc/mpcf-register-archive-metaboxes.php:78
+msgid "Archive"
+msgstr "Archiv"
 
 #: inc/mpcf-settings.php:19
 msgid "You do not have sufficient permissions to access this page."
@@ -444,37 +450,37 @@ msgstr ""
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
-#: mp-custom-fields.php:53
+#: mp-custom-fields.php:55
 msgid "Add file"
 msgstr "Datei hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:54
+#: mp-custom-fields.php:56
 msgid "Add media"
 msgstr "Medium hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:56
+#: mp-custom-fields.php:58
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:57
+#: mp-custom-fields.php:59
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:58
+#: mp-custom-fields.php:60
 #, php-format
 msgid "Edit meta box: %s"
 msgstr "Metabox bearbeiten: %s"
 
-#: mp-custom-fields.php:59
+#: mp-custom-fields.php:61
 #, php-format
 msgid "Panel: %s"
 msgstr "Panel: %s"
 
-#: mp-custom-fields.php:60
+#: mp-custom-fields.php:62
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:61
+#: mp-custom-fields.php:63
 msgid "Upload file"
 msgstr "Datei hochladen"
 

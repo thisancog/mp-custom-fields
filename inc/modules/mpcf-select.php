@@ -70,7 +70,14 @@ class MPCFSelectField extends MPCFModule {
 		return __('Select', 'mpcf');
 	}
 
+	function display_before($id, $field, $value) {
+		if (empty($value) || $value == -1)
+			$value = false;
+		return $value;
+	}
+
 	function build_field($args = array()) {
+		$value = $args['value'];
 		$multiple = isset($args['multiple']) && $args['multiple'] ? ' multiple' : '';
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
 		$params = mpcf_list_input_params($this, array('required', 'size')); ?>
@@ -81,16 +88,17 @@ class MPCFSelectField extends MPCFModule {
 			<?php echo $params . $multiple; ?>>
 
 <?php 	if (!empty($required)) { ?>
-			<option value="" disabled<?php echo (empty($args['value']) ? ' selected' : ''); ?>>-----</option>
+			<option value="" disabled<?php echo (empty($value) ? ' selected' : ''); ?>>-----</option>
 <?php 	}
 
  		foreach ($options as $name => $title) {
  			if (is_array($title))
  				extract($title);
 
-			$selected = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value']));
+			$selected = $value == $name || (is_array($value) && in_array($name, $value));
 			$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
-			<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
+
+			<option value="<?php echo $name; ?>"<?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
 <?php	} ?>
 		</select>
 

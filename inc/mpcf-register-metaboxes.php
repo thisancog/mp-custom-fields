@@ -16,7 +16,6 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 		'context'		=> 'normal',
 		'priority'		=> 'default',
 		'multilingual'	=> false,
-		'fields'		=> array(),
 		'panels'		=> array()
 	);
 
@@ -64,6 +63,7 @@ function mpcf_remove_all_custom_fields() {
 }
 
 
+
 /*****************************************************
 	Send meta boxes to Wordpress
  *****************************************************/
@@ -108,6 +108,23 @@ function mpcf_add_metaboxes() {
 		if ($registerThisBox)
 			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $box['context'], $box['priority']);
 	}
+}
+
+
+
+/*****************************************************
+	Get meta boxes for post type
+ *****************************************************/
+
+function mpcf_get_metaboxes_for_type($post_type = 'post') {
+	if (!post_type_exists($post_type)) return;
+
+	$boxes = get_option('mpcf_meta_boxes', array());
+	$boxes = array_filter($boxes, function($box, $id) use ($post_type) {
+		return $box['post_type'] === $post_type;
+	}, ARRAY_FILTER_USE_BOTH);
+
+	return $boxes;
 }
 
 ?>

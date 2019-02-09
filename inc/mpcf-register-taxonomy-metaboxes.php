@@ -14,7 +14,6 @@ function mpcf_add_custom_fields_taxonomy($tax, $id, $arguments = array()) {
 		'title'			=> '',
 		'multilingual'	=> false,
 		'priority'		=> 0,
-		'fields'		=> array(),
 		'panels'		=> array()
 	);
 
@@ -23,7 +22,7 @@ function mpcf_add_custom_fields_taxonomy($tax, $id, $arguments = array()) {
 
 //	Give generic title if needed
 	if (empty($newbox['title'])) {
-		$obj = get_post_type_object($tax);
+		$obj = get_object_taxonomies($tax);
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
@@ -135,20 +134,15 @@ function mpcf_save_custom_fields_taxonomy($term_id) {
 			foreach ($panel['fields'] as $field) {
 				$name = $field['name'];
 				$type = $field['type'];
+				$field['context'] = 'taxonomy';
 
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
 				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
-
-				if (isset($actions['save_before']))
-					$value = call_user_func($actions['save_before'], $term_id, $name, $value);
+				$value = mpcf_before_save($field, $term_id, $value);
 
 				update_term_meta($term_id, $name, $value);
-				
-				if (isset($actions['save_after']))
-					call_user_func($actions['save_after'], $term_id, $name, $value);
-
-				mpcf_after_save($type, $term_id, $name, $value);
+				mpcf_after_save($field, $term_id, $value);
 			}
 		}
 	}

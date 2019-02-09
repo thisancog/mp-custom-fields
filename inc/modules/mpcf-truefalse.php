@@ -40,7 +40,7 @@ class MPCFTrueFalseField extends MPCFModule {
 		return __('True/false button', 'mpcf');
 	}
 
-	function save_before($post_id, $name, $value) {
+	function save_before($post_id, $field, $value) {
 		return ($value === 'true');
 	}
 

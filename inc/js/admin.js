@@ -84,6 +84,8 @@ var focusInvalids = function(elem) {
 				active = input.closest('.mpcf-panels').querySelector('.mpcf-panels-tabs .active-panel'),
 				parent = e.target;
 
+			console.log(input);
+
 			active.classList.remove('active-panel');
 			menu.querySelector('li[data-index="' + active.dataset.index + '"]').classList.remove('active');
 

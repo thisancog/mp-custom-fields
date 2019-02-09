@@ -33,6 +33,13 @@ class MPCFTextareaField extends MPCFModule {
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
 			array(
+				'name'			=> 'addparagraphs',
+				'title' 		=> __('Add paragraphs', 'mpcf'),
+				'type'			=> 'truefalse',
+				'default'		=> false,
+				'description' 	=> __('whether to automatically add paragraphs', 'mpcf')
+			),
+			array(
 				'name'	=> 'placeholder',
 				'title' => __('Placeholder', 'mpcf'),
 				'type'	=> 'text',
@@ -56,6 +63,12 @@ class MPCFTextareaField extends MPCFModule {
 
 	function label() {
 		return __('Text area', 'mpcf');
+	}
+
+	function display_before($post_id, $field, $value) {
+		if (isset($field['addparagraphs']) && $field['addparagraphs'] == true)
+			$value = wpautop($value);
+		return $value;
 	}
 
 	function build_field($args = array()) { ?>

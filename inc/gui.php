@@ -38,20 +38,15 @@ function mpcf_build_admin_gui($panels, $optionName) {
 			foreach ($panel['fields'] as $field) {
 				$name = $field['name'];
 				$type = $field['type'];
+				$field['context'] = 'option';
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
 				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
 
-				if (isset($actions['save_before']))
-					$value = call_user_func($actions['save_before'], null, $name, $value);
-
-				$value = mpcf_before_save($type, null, $name, $value);
+				$value = mpcf_before_save($field, $name, $value);
 				$values[$name] = $value;
-				
-				if (isset($actions['save_after']))
-					call_user_func($actions['save_after'], null, $name, $value);
 
-				mpcf_after_save($type, null, $name, $value);
+				mpcf_after_save($field, null, $value);
 			}
 		}
 
@@ -61,12 +56,14 @@ function mpcf_build_admin_gui($panels, $optionName) {
 	$values = get_option($optionName);
 	$message = '';
 
+	$formName = 'mpcf-options-' . $optionName;
+
 	if (isset($_POST['update_settings'])) {
 		$message = __('Options were saved.', 'mpcf');
 	} ?>
 
 	<div class="mpcf-options">
-		<form method="post" name="mpcf-options-<?php echo $optionName; ?>" id="mpcf-options-<?php echo $optionName; ?>" action="">
+		<form method="post" name="<?php echo $formName; ?>" id="<?php echo $formName; ?>" action="">
 
 <?php	if (!empty($message)) { ?>
 			<div id="message" class="mpcf-message updated fade"><p><strong><?php echo $message; ?></strong></p></div>
@@ -83,7 +80,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 	</div>
 <?php
 
-	mpcf_create_i18n_file($optionName);
+	mpcf_create_i18n_file($formName);
 }
 
 
@@ -168,6 +165,8 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		}
 
+		$field['value'] = mpcf_resolve_sanitized_fields($field['value']);
+
 		if (isset($actions['display_before'])) {
 			$field['value'] = call_user_func($actions['display_before'], $id, $field['name'], $field['value']);
 		}
@@ -214,6 +213,21 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 }
 
 
+function mpcf_resolve_sanitized_fields($var) {
+	if (is_array($var)) {
+		$var = array_map('mpcf_resolve_sanitized_fields', $var);
+
+		if (count($var) == 1 && isset($var[0]) && is_array($var[0]))
+			$var = $var[0];
+	} else if (is_string($var)) {
+		$data = @unserialize($var);
+		if ($data !== false) $var = $data;
+	}
+
+	return $var;
+}
+
+
 function mpcf_resolve_deep_fields($field) {
 	$type = $field['type'];
 	$deepFields = array('repeater', 'conditional', 'dragdroplist');
@@ -222,11 +236,13 @@ function mpcf_resolve_deep_fields($field) {
 	if ($type === 'select' && isset($field['multiple']) && $field['multiple'] === true)
 		$isDeep = true;
 
-	if ($isDeep)
+	if ($isDeep) {
+		$field['value'] = $field['value'] === false || $field['value'] === '' ? array() : $field['value'];
 		return $field;
+	}
+
 
 	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
-
 	return $field;
 }
 
@@ -268,12 +284,11 @@ function mpcf_save_meta_boxes($post_id) {
 	if (!isset($_POST['mpcf_meta_box_nonce']) || !wp_verify_nonce($_POST['mpcf_meta_box_nonce'], 'mpcf_meta_box_nonce')) return;
 	if (!current_user_can('edit_post', $post_id)) return;
 
-	$boxes = get_option('mpcf_meta_boxes', array());
+	$post_type = get_post_type($post_id);
+	$boxes = mpcf_get_metaboxes_for_type($post_type);
 
 	foreach ($boxes as $box) {
-		if ($box['post_type'] !== get_post_type($post_id)) continue;
-
-		$fields = $box['fields'];
+		$fields = array();
 		if (isset($box['panels'])) {
 			array_walk($box['panels'], function($panel) use (&$fields) {
 				$fields = array_merge($fields, $panel['fields']);
@@ -281,66 +296,20 @@ function mpcf_save_meta_boxes($post_id) {
 		}
 
 		foreach ($fields as $field) {
+			$field['context'] = 'post';
 			$actions = isset($field['actions']) ? $field['actions'] : array();
 			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 
-			if (isset($actions['save_before'])) {
-				$value = call_user_func($actions['save_before'], $post_id, $field['name'], $value);
-			}
-
-			$value = mpcf_before_save($field['type'], $post_id, $field['name'], $value);
+			$value = mpcf_before_save($field, $post_id, $value);
 			update_post_meta($post_id, $field['name'], $value);
-
-			if (isset($actions['save_after'])) {
-				call_user_func($actions['save_after'], $post_id, $field['name'], $value);
-			}
-
-			mpcf_after_save($field['type'], $post_id, $field['name'], $value);
+			mpcf_after_save($field, $post_id, $value);
+			
 		}
 	}
 
 
 	if (isset($_POST['mpcf-activetab']))	
 		update_post_meta($post_id, 'mpcf-activetab', $_POST['mpcf-activetab']);
-}
-
-
-
-/*****************************************************
-	Fire 'before_save' function of module
- *****************************************************/
-
-function mpcf_before_save($type, $post_id, $name, $value) {
-	$o = get_option('mpcf_options');
-
-	if (isset($o['modules'][$type])) {
-		$classname = $o['modules'][$type]['name'];
-		$module = new $classname();
-		if (method_exists($module, 'save_before')) {
-			$result = $module->save_before($post_id, $name, $value);
-			if ($result !== null)
-				$value = $result;
-		}
-	}
-
-	return $value;
-}
-
-
-/*****************************************************
-	Fire 'after_save' function of module
- *****************************************************/
-
-function mpcf_after_save($type, $id, $name, $value) {
-	$o = get_option('mpcf_options');
-
-	if (isset($o['modules'][$type])) {
-		$classname = $o['modules'][$type]['name'];
-		$module = new $classname();
-
-		if (method_exists($module, 'save_before'))
-			$module->save_before($id, $name, $value);
-	}
 }
 
 
@@ -445,7 +414,7 @@ function mpcf_update_edit_form() {
 	Create internationalisation file
  *****************************************************/
 
-function mpcf_create_i18n_file($optionName = false) {
+function mpcf_create_i18n_file($formName = false) {
 	if (!defined('QTRANSLATE_FILE')) return;
 
 	$fileName = dirname(dirname(__FILE__)) . '/i18n-config.json';
@@ -465,6 +434,7 @@ function mpcf_create_i18n_file($optionName = false) {
 		$obj->{'admin-config'}->options->pages = new stdClass();
 		$obj->{'admin-config'}->options->pages->{'options-general.php'} = '';
 		$obj->{'admin-config'}->options->pages->{'admin.php'} = '';
+		$obj->{'admin-config'}->options->pages->{'edit.php'} = '';
 		$obj->{'admin-config'}->options->forms = new stdClass();
 
 		$obj->{'admin-config'}->posts = new stdClass();
@@ -479,9 +449,7 @@ function mpcf_create_i18n_file($optionName = false) {
 		$obj = json_decode($obj);
 	}
 
-	if ($optionName !== false) {
-		$formName = 'mpcf-options-'. $optionName;
-		$formName = 'mpcf-options';
+	if ($formName !== false) {
 		$obj->{'admin-config'}->options->forms->{$formName} = new stdClass();
 		$obj->{'admin-config'}->options->forms->{$formName}->fields = new stdClass();
 		$obj->{'admin-config'}->options->forms->{$formName}->fields->all = new stdClass();

@@ -1,9 +1,11 @@
 <?php
 
-require_once('modules.php');
+require_once('mpcf-modules.php');
+require_once('mpcf-actions.php');
 require_once('mpcf-settings.php');
 require_once('mpcf-register-metaboxes.php');
 require_once('mpcf-register-taxonomy-metaboxes.php');
+require_once('mpcf-register-archive-metaboxes.php');
 require_once('gui.php');
 
 if (file_exists(__DIR__ . '/mpcf-admin.php'))
