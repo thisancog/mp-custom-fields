@@ -63,9 +63,11 @@ function mpcf_admin_init() {
 		'fileUpload'		=> __('Upload file', 'mpcf'),
 		'remove'	 		=> __('Remove', 'mpcf'),
 	);
+
+	$ver = filemtime(plugin_dir_path(__FILE__) . '/inc/js/admin.js');
 	wp_localize_script('mpcf-admin-script', 'localizedmpcf', $language);
-	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
-//	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);
+	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies, $ver);
+//	wp_register_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies, $ver);
 
 	mpcf_add_metaboxes_to_taxonomies();
 }
@@ -82,15 +84,18 @@ function mpcf_setup_theme_admin_menu() {
 	}
 
 	wp_enqueue_editor();
-	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies);
-//	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies);
+
+	$ver = filemtime(plugin_dir_path(__FILE__) . 'inc/js/admin.js');
+	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.js', __FILE__), $dependencies, $ver);
+//	wp_enqueue_script('mpcf-admin-script', plugins_url('inc/js/admin.min.js', __FILE__), $dependencies, $ver);
 
 	if ($mapskey) {
 		wp_enqueue_script('mpcf-google-maps', 'https://maps.googleapis.com/maps/api/js?key=' . $mapskey . '&libraries=places&callback=initGoogleMap');
 	}
 	
+	$verCSS = filemtime(plugin_dir_path(__FILE__) . 'inc/admin.css');
 
-	wp_enqueue_style('mpcf-admin-styles', plugins_url('inc/admin.css', __FILE__));
+	wp_enqueue_style('mpcf-admin-styles', plugins_url('inc/admin.css', __FILE__), array(), $verCSS);
 	wp_enqueue_style('wp-color-picker');
 
 	mpcf_add_metaboxes_to_archives();
