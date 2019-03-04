@@ -184,7 +184,7 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 	$registeredFields = [];
 
 	if ($context === 'post') {
-		$id = $id !== null ? $id : get_the_ID();
+		$id = $id !== null && get_post_status($id) !== false ? $id : get_the_ID();
 		$value = get_post_meta($id, $fieldName, true);
 
 		$post_type = get_post_type($id);

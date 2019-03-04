@@ -40,16 +40,15 @@ function mpcf_add_custom_fields_taxonomy($tax, $id, $arguments = array()) {
 
 function mpcf_remove_custom_fields_taxonomy($boxID) {
 	$boxes = get_option('mpcf_taxonomy_boxes', array());
+	$keys = array_keys($boxes);
 	$removed = null;
 
-	$boxes = array_filter($boxes, function($box, $id) use ($boxID, &$removed) {
+	array_walk($keys, function($id) use ($boxID, &$boxes, &$removed) {
 		if ($id === $boxID) {
-			$removed = $box;
-			return false;
+			$removed = $boxes[$id];
+			unset($boxes[$id]);
 		}
-
-		return true;
-	}, ARRAY_FILTER_USE_BOTH);
+	});
 
 	update_option('mpcf_taxonomy_boxes', $boxes);
 	return $removed;

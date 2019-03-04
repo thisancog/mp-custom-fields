@@ -48,18 +48,18 @@ function mpcf_add_custom_fields_archive($post_type, $id, $arguments = array()) {
 	Deregister a custom field box
  *****************************************************/
 
-function mpcf_remove_custom_fields_archive($boxID) {
-	$boxes = get_option('mpcf_archive_boxes', array());
+function mpcf_remove_custom_fields_archive($post_type) {
+	$boxes = mpcf_get_archive_boxes();
 	$removed = null;
 
-	$boxes = array_filter($boxes, function($box, $id) use ($boxID, &$removed) {
-		if ($id === $boxID) {
+	$boxes = array_filter($boxes, function($box) use ($post_type, &$removed) {
+		if ($box['post_type'] === $post_type) {
 			$removed = $box;
 			return false;
 		}
 
 		return true;
-	}, ARRAY_FILTER_USE_BOTH);
+	});
 
 	update_option('mpcf_archive_boxes', $boxes);
 
@@ -98,12 +98,14 @@ function mpcf_add_metaboxes_to_archives() {
 	Build graphical user interface for archive pages
  *****************************************************/
 
-function mpcf_get_archive_boxes($post_type) {
+function mpcf_get_archive_boxes($post_type = null) {
 	$boxes = get_option('mpcf_archive_boxes', array());
 
-	$boxes = array_filter($boxes, function($box) use ($post_type) {
-		return $box['post_type'] === $post_type;
-	});
+	if ($post_type !== null) {
+		$boxes = array_filter($boxes, function($box) use ($post_type) {
+			return $box['post_type'] === $post_type;
+		});
+	}
 
 	usort($boxes, function($a, $b) {
 		return $a['priority'] - $b['priority'];
@@ -231,9 +233,9 @@ function mpcf_get_archive_metaboxes_for_type($post_type = 'post') {
 	if (!post_type_exists($post_type)) return;
 
 	$boxes = get_option('mpcf_archive_boxes', array());
-	$boxes = array_filter($boxes, function($box, $id) use ($post_type) {
+	$boxes = array_filter($boxes, function($box) use ($post_type) {
 		return $box['post_type'] === $post_type;
-	}, ARRAY_FILTER_USE_BOTH);
+	});
 
 	return $boxes;
 }

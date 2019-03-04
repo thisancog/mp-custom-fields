@@ -301,6 +301,7 @@ function mpcf_save_meta_boxes($post_id) {
 			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 
 			$value = mpcf_before_save($field, $post_id, $value);
+
 			update_post_meta($post_id, $field['name'], $value);
 			mpcf_after_save($field, $post_id, $value);
 			
@@ -445,6 +446,11 @@ function mpcf_create_i18n_file($formName = false) {
 		$obj->{'admin-config'}->posts->forms->post = new stdClass();
 		$obj->{'admin-config'}->posts->forms->post->fields = new stdClass();
 		$obj->{'admin-config'}->posts->forms->post->fields->jquery = '.' . mpcf_get_multingual_class();
+
+		$obj->{'admin-config'}->options->anchors = new stdClass();
+		$obj->{'admin-config'}->options->anchors->{'mpcf-options'} = new stdClass();
+		$obj->{'admin-config'}->options->anchors->{'mpcf-options'}->{'jquery'} = '.mpcf-options .mpcf-panels';
+		$obj->{'admin-config'}->options->anchors->{'mpcf-options'}->{'where'} = 'before';
 	} else {
 		$obj = json_decode($obj);
 	}

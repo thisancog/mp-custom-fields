@@ -808,18 +808,23 @@ class addDragDrop {
 
 function addQTranslateX(parent = null) {
 	if (typeof qTranslateConfig === 'undefined') return;
-
+	
 	parent = parent || document;
 
 	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
-		if (field.classList.contains('mpcf-input-editor')) {
-			qTranslateConfig.qtx.addContentHooksTinyMCE(field);
-			return;
-		}
+		var hook = qTranslateConfig.qtx.hasContentHook(field.id);
 
+		if (typeof hook !== 'undefined') return;
+
+		if (field.classList.contains('mpcf-input-editor')) {
+			if (typeof qTranslateConfig.qtx.addContentHooksTinyMCE == 'function') {
+				qTranslateConfig.qtx.addContentHooksTinyMCE(field);
+				return;
+			}
+		}
+		
 		qTranslateConfig.qtx.addContentHook(field);
-		qTranslateConfig.qtx.refreshContentHook(field);
 	});
 }
 

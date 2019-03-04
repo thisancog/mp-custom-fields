@@ -43,16 +43,15 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 
 function mpcf_remove_custom_fields($boxID) {
 	$boxes = get_option('mpcf_meta_boxes', array());
+	$keys = array_keys($boxes);
 	$removed = null;
 
-	$boxes = array_filter($boxes, function($box, $id) use ($boxID, &$removed) {
+	array_walk($keys, function($id) use ($boxID, &$boxes, &$removed) {
 		if ($id === $boxID) {
-			$removed = $box;
-			return false;
+			$removed = $boxes[$id];
+			unset($boxes[$id]);
 		}
-
-		return true;
-	}, ARRAY_FILTER_USE_BOTH);
+	});
 
 	update_option('mpcf_meta_boxes', $boxes);
 	return $removed;
@@ -120,9 +119,9 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
 	if (!post_type_exists($post_type)) return;
 
 	$boxes = get_option('mpcf_meta_boxes', array());
-	$boxes = array_filter($boxes, function($box, $id) use ($post_type) {
+	$boxes = array_filter($boxes, function($box) use ($post_type) {
 		return $box['post_type'] === $post_type;
-	}, ARRAY_FILTER_USE_BOTH);
+	});
 
 	return $boxes;
 }
