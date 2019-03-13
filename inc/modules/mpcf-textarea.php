@@ -66,13 +66,16 @@ class MPCFTextareaField extends MPCFModule {
 	}
 
 	function display_before($post_id, $field, $value) {
+		$value = mpcf_mknice($value);
+
 		if (isset($field['addparagraphs']) && $field['addparagraphs'] == true)
 			$value = wpautop($value);
+
 		return $value;
 	}
 
 	function build_field($args = array()) { ?>
-		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo mpcf_list_input_params($this); ?>><?php echo $args['value']; ?></textarea>
+		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo mpcf_list_input_params($this); ?>><?php echo mpcf_mknice($args['value']); ?></textarea>
 <?php
 	}
 }
