@@ -68,6 +68,23 @@ var panelSwitch = function() {
 
 
 /**************************************************************
+	Registre asynchronously loaded elements
+ **************************************************************/
+
+var registerAsyncElements = function(parent) {
+	registerMediaPicker();
+	registerEditors(parent);
+	registerColorPicker(parent);
+	conditionalField(parent);
+	repeaterField(parent);
+
+	checkHTML5Support(parent);
+	addQTranslateX(parent);
+	focusInvalids(parent);
+}
+
+
+/**************************************************************
 	Show invalid form element
  **************************************************************/
 
@@ -84,8 +101,6 @@ var focusInvalids = function(elem) {
 				active = input.closest('.mpcf-panels').querySelector('.mpcf-panels-tabs .active-panel'),
 				parent = e.target;
 
-			console.log(input);
-
 			active.classList.remove('active-panel');
 			menu.querySelector('li[data-index="' + active.dataset.index + '"]').classList.remove('active');
 
@@ -94,6 +109,39 @@ var focusInvalids = function(elem) {
 
 			menu.querySelector('li[data-index="' + parent.dataset.index + '"]').classList.add('active');
 		});
+	});
+}
+
+
+
+/**************************************************************
+	Regiser adynamically loaded TinyMCE editors
+ **************************************************************/
+
+var registerEditors = function(parent) {
+	parent = parent || document;
+
+	var fields = parent.querySelectorAll('.mpcf-editor-input .mpcf-field'),
+		defaultSettings = wp.editor.getDefaultSettings(),
+		options = { 
+			tinymce: { 
+				wpautop: true,
+				plugins : 'charmap colorpicker compat3x directionality fullscreen hr image lists media paste tabfocus textcolor wordpress wpautoresize wpdialogs wpeditimage wpemoji wpgallery wplink wptextpattern wpview', 
+				toolbar1: 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker' 
+			},
+			quicktags: true 
+		};
+
+	[].forEach.call(fields, function(field) {
+		var editor = field.querySelector('.mpcf-input-editor'),
+			textarea = editor.cloneNode(),
+			id = editor.id,
+			idShort = id.split('-').pop();
+
+		textarea.innerText = wp.editor.getContent(id);
+		wp.editor.remove(idShort);
+		field.appendChild(textarea);
+		wp.editor.initialize(id, options);
 	});
 }
 
@@ -156,14 +204,7 @@ var repeaterField = function(parent = null) {
 
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
-			registerMediaPicker();
-			registerEditors(rowsWrapper);
-			registerColorPicker(rowsWrapper);
-			conditionalField(rowsWrapper);
-			checkHTML5Support(rowsWrapper);
-			focusInvalids(rowsWrapper);
-			addQTranslateX(rowsWrapper);
-			repeaterField(rowsWrapper);
+			registerAsyncElements(rowsWrapper);
 		});
 
 		// prefetch blank row
@@ -184,14 +225,7 @@ var repeaterField = function(parent = null) {
 			dragDropHandler.addElements(newRow);
 
 			reorder();
-			registerMediaPicker();
-			registerEditors(newRow);
-			registerColorPicker(newRow);
-			conditionalField(newRow);
-			checkHTML5Support(newRow);
-			focusInvalids(newRow);
-			addQTranslateX(newRow);
-			repeaterField(newRow);
+			registerAsyncElements(newRow);
 		});
 
 
@@ -248,26 +282,6 @@ var repeaterField = function(parent = null) {
 	});
 }
 
-var registerEditors = function(parent) {
-	return;
-	
-	parent = parent || document;
-
-	var editors = parent.querySelectorAll('.mpcf-input-editor'),
-		defaults = tinyMCEPreInit.mceInit['mpcf-editor-instance'];
-
-	[].forEach.call(editors, function(editor) {
-		var id = editor.id;
-		//	data = JSON.parse(editor.dataset.settings);
-
-		// tinymce.init(defaults);
-		// tinymce.execCommand('mceAddEditor', false, id);
-		// quicktags({id: id});
-
-
-	});
-}
-
 
 
 var generateName = function(elem) {
@@ -287,9 +301,16 @@ var generateName = function(elem) {
 				if (child.classList && child.classList.contains('mpcf-repeater-row'))
 					i++;
 			}
-			name.unshift(i)
+
+			name.unshift(i);
 		}
 	}
+
+	name = name.map(item => item.toString().match(/(\S+?)\[(\S+?)\]/)
+						 ?  item.toString().match(/(\S+?)\[(\S+?)\]/).slice(1)
+						 : item)
+				.flat(9999)
+				.filter((item, index, arr) => index === 0 || item !== arr[index - 1]);
 
 	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
 	return name;
@@ -300,16 +321,13 @@ var generateID = function(elem) {
 	return generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
 }
 
-
-
 var renameDynamicFields = function(parent) {
-	var rows = parent.querySelectorAll('.mpcf-repeater-row');
-
+	var rows = parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container');
 
 	// each row
 	[].forEach.call(rows, function(row, rowIndex) {
-		var fields = row.querySelectorAll('.mpcf-field-option');
 
+		var fields = row.querySelectorAll('.mpcf-field-option');
 
 		// each field
 		[].forEach.call(fields, function(field, fieldIndex) {
@@ -327,7 +345,7 @@ var renameDynamicFields = function(parent) {
 
 				let type    = input.getAttribute('type'),
 					newID   = generateID(input),
-					newName = generateName(input);
+					newName = generateName(input);				
 
 				if (type === 'button' || type === 'submit') return;
 
@@ -379,48 +397,45 @@ var conditionalField = function(parent = null) {
 			}
 
 			var request = {
-					'action': 'mpcf_get_conditional_fields',
-					'fields': JSON.stringify(options[select.value].fields),
-					'values': values
-				};
+				'action': 'mpcf_get_conditional_fields',
+				'fields': JSON.stringify(options[select.value].fields),
+				'values': values
+			};
 
 			wrapper.innerHTML = '';
 			loader.classList.add('mpcf-loading-active');
 
 			$.post(ajaxurl, request, function(response) {
+				var parent = furthestAncestor(wrapper, '.mpcf-conditional-input');
 				removeQTranslateX(wrapper);
+
 				wrapper.innerHTML = response;
-				rename();
+				renameDynamicFields(parent);
 
 				loader.classList.remove('mpcf-loading-active');
-				registerMediaPicker();
-				repeaterField(wrapper);
-				checkHTML5Support(wrapper);
-				focusInvalids(wrapper);
-				addQTranslateX(wrapper);
-				repeaterField(wrapper);
+				registerAsyncElements(wrapper);
 			});
 		}
 
-		var rename = function() {
-			var fields = wrapper.querySelectorAll('.mpcf-field-option');
+		// var rename = function() {
+		// 	var fields = wrapper.querySelectorAll('.mpcf-field-option');
 
-			[].forEach.call(fields, function(field, fieldIndex) {
-				var inputs = field.querySelectorAll('[name], [id], [for]');
+		// 	[].forEach.call(fields, function(field, fieldIndex) {
+		// 		var inputs = field.querySelectorAll('[name], [id], [for]');
 
-				[].forEach.call(inputs, function(input) {
-					let type = input.getAttribute('type'),
-						fieldName = options[select.value].fields[fieldIndex].name,
-						newID   = baseName + '-' + fieldName,
-						newName = baseName + '[' + fieldName +  ']';
+		// 		[].forEach.call(inputs, function(input) {
+		// 			let type = input.getAttribute('type'),
+		// 				fieldName = options[select.value].fields[fieldIndex].name,
+		// 				newID   = baseName + '-' + fieldName,
+		// 				newName = baseName + '[' + fieldName +  ']';
 
-					if (type === 'button' || type === 'submit') return;
-					if (input.hasAttribute('id'))	input.setAttribute('id', newID);
-					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
-					if (input.hasAttribute('name'))	input.setAttribute('name', newName);
-				});
-			});
-		}
+		// 			if (type === 'button' || type === 'submit') return;
+		// 			if (input.hasAttribute('id'))	input.setAttribute('id', newID);
+		// 			if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+		// 			if (input.hasAttribute('name'))	input.setAttribute('name', newName);
+		// 		});
+		// 	});
+		// }
 
 		select.addEventListener('change', () => switchContent());
 
@@ -882,5 +897,33 @@ function dragDropLists() {
 		});
 	});
 }
+
+
+
+
+/**************************************************************
+	Helper function
+ **************************************************************/
+
+var furthestAncestor = function(elem, selector) {
+	var ancestor = elem;
+
+	while (elem) {
+		elem = elem.parentElement;
+		if (elem && elem.matches(selector)) ancestor = elem;
+	};
+
+	return ancestor;
+};
+
+var unwrap = function(elem) {
+	var parent = elem.parentNode;
+	while (elem.firstChild)
+		parent.insertBefore(elem.firstChild, elem);
+	parent.removeChild(elem);
+}
+
+
+
 
 
