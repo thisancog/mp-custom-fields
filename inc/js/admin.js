@@ -138,7 +138,7 @@ var registerEditors = function(parent) {
 			id = editor.id,
 			idShort = id.split('-').pop();
 
-		textarea.innerText = wp.editor.getContent(id);
+		textarea.innerText = wp.editor.getContent(id) || '';
 		wp.editor.remove(idShort);
 		field.appendChild(textarea);
 		wp.editor.initialize(id, options);
@@ -318,7 +318,11 @@ var generateName = function(elem) {
 
 
 var generateID = function(elem) {
-	return generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
+	var id = generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
+
+	if (elem.tagName.toLowerCase() === 'input' && elem.type === 'radio')
+		id += '-' + elem.value;
+	return id;
 }
 
 var renameDynamicFields = function(parent) {
@@ -339,19 +343,32 @@ var renameDynamicFields = function(parent) {
 			});
 
 			// each input
-			inputs.forEach(function(input) {
-				if (!input.dataset.name)
-					input.dataset.name = input.name || input.getAttribute('for'); 
+			inputs.forEach(function(input, inputIndex) {
+				let type = input.getAttribute('type'),
+					newID, newName;
 
-				let type    = input.getAttribute('type'),
-					newID   = generateID(input),
-					newName = generateName(input);				
+				if (!input.dataset.name) {
+					if (input.getAttribute('for') && inputIndex !== 0) {
+						newID = inputs[inputIndex - 1].id;
+					} else {
+						input.dataset.name = input.name; 
+					}
+				}
+
+				if (!input.getAttribute('for')) {
+					newID = generateID(input);
+				}
 
 				if (type === 'button' || type === 'submit') return;
 
+				if (input.getAttribute('for'))
+				 	console.log(input, newID);
+
 				if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 				if (input.hasAttribute('for'))	input.setAttribute('for', newID);
-				if (input.hasAttribute('name'))	input.setAttribute('name', newName);
+
+				if (input.hasAttribute('name'))
+					input.setAttribute('name', generateName(input));
 			});
 		});
 	});

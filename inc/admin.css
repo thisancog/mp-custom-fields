@@ -199,7 +199,6 @@
 	align-items: baseline;	
 	margin-bottom: 15px;
 	width: 100%;
-	max-width: 800px;
 }
 
 .mpcf-field-option.mpcf-textarea-input,
@@ -223,6 +222,10 @@
 
 .mpcf-field {
 	width: calc(82% - 20px);
+}
+
+.mpcf-field .mpcf-field {
+	width: 100%;
 }
 
 .mpcf-subfield {
