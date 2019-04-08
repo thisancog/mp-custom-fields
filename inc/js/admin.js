@@ -6,7 +6,6 @@ window.addEventListener('load', function() {
 	goToInvalids();
 	checkHTML5Support();
 	registerColorPicker();
-	registerEditors();
 	repeaterField();
 	conditionalField();
 	addQTranslateX();
@@ -127,21 +126,26 @@ var registerEditors = function(parent) {
 			tinymce: { 
 				wpautop: true,
 				plugins : 'charmap colorpicker compat3x directionality fullscreen hr image lists media paste tabfocus textcolor wordpress wpautoresize wpdialogs wpeditimage wpemoji wpgallery wplink wptextpattern wpview', 
-				toolbar1: 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker' 
+				toolbar1: 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker',
 			},
+			mediaButtons: true,
 			quicktags: true 
 		};
 
 	[].forEach.call(fields, function(field) {
+		if (field.registered === true) return;
+
 		var editor = field.querySelector('.mpcf-input-editor'),
 			textarea = editor.cloneNode(),
+			oldContent = wp.editor.getContent(id),
 			id = editor.id,
 			idShort = id.split('-').pop();
 
-		textarea.innerText = wp.editor.getContent(id) || '';
+		textarea.innerText = oldContent || '';
 		wp.editor.remove(idShort);
 		field.appendChild(textarea);
 		wp.editor.initialize(id, options);
+		field.registered = true;
 	});
 }
 
@@ -360,9 +364,6 @@ var renameDynamicFields = function(parent) {
 				}
 
 				if (type === 'button' || type === 'submit') return;
-
-				if (input.getAttribute('for'))
-				 	console.log(input, newID);
 
 				if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 				if (input.hasAttribute('for'))	input.setAttribute('for', newID);
