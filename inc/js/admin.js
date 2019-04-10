@@ -197,10 +197,16 @@ var repeaterField = function(parent = null) {
 
 		repeater.dataset.registered = 1;
 
+		
+		// make sure that values are always an array
+		
+		if (!Array.isArray(JSON.parse(values))) {
+			values = JSON.stringify([JSON.parse(values)]);
+		}
+
 		// populate repeater
 
 		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
-
 			rowsWrapper.innerHTML = response;
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
