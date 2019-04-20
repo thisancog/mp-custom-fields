@@ -162,7 +162,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field['value'] = isset($field['value']) ? $field['value'] : null;
 
 		if ($field['value'] === null || empty($field['value'])) {
-			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
+			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : mpcf_get_default($field, $id, null);
 		}
 
 		$field['value'] = mpcf_resolve_sanitized_fields($field['value']);
@@ -303,6 +303,9 @@ function mpcf_save_meta_boxes($post_id) {
 			$value = mpcf_before_save($field, $post_id, $value);
 
 			update_post_meta($post_id, $field['name'], $value);
+
+			var_dump($value);
+
 			mpcf_after_save($field, $post_id, $value);
 			
 		}

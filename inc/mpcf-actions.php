@@ -1,5 +1,34 @@
 <?php
 
+/*****************************************************
+	Fire 'get_default' function of module
+ *****************************************************/
+
+function mpcf_get_default($field, $post_id, $value) {
+	$modules = mpcf_get_all_registered_modules();
+	$type = $field['type'];
+
+	if (isset($field['default']))
+		$value = $field['default'];
+
+	if (isset($modules[$type])) {
+		$classname = $modules[$type]['name'];
+		$module = new $classname();
+		
+		if (method_exists($module, 'get_default')) {
+			$result = $module->get_default($post_id, $field, $value);
+			if ($result !== null)
+				$value = $result;
+		}
+	}
+
+	if (isset($field['actions']) && isset($field['actions']['get_default'])) {
+		$value = call_user_func($field['actions']['get_default'], $post_id, $field['name'], $value);
+	}
+
+	return $value;
+}
+
 
 /*****************************************************
 	Fire 'before_save' function of module
@@ -41,7 +70,7 @@ function mpcf_after_save($field, $post_id, $value) {
 		$module = new $classname();
 
 		if (method_exists($module, 'save_after'))
-			$module->save_before($post_id, $field, $value);
+			$module->save_after($post_id, $field, $value);
 	}
 
 	if (isset($field['actions']) && isset($field['actions']['save_after'])) {
