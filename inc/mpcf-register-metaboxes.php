@@ -100,7 +100,7 @@ function mpcf_add_metaboxes() {
 			if (!empty($valids) && !in_array($currentTemplate, $valids))
 				$registerThisBox = false;
 
-			if ($onFrontpage && !$isFrontpage)
+			if (($onFrontpage && !$isFrontpage) || ($isFrontpage && in_array('-frontpage', $invalids)))
 				$registerThisBox = false;
 		}
 
