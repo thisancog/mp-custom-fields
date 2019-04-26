@@ -102,6 +102,11 @@
 	margin-right: 8px;
 }
 
+.mpcf-panel-icon-svg {
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
 .mpcf-panels-menu li.active .mpcf-panel-icon {
 	color: #0073AA;
 }
