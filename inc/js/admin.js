@@ -1,5 +1,6 @@
 $ = jQuery;
 
+var loadingElements = [];
 
 window.addEventListener('load', function() {
 	panelSwitch();
@@ -197,12 +198,14 @@ var repeaterField = function(parent = null) {
 
 		repeater.dataset.registered = 1;
 
-		
 		// make sure that values are always an array
 		
 		if (!Array.isArray(JSON.parse(values))) {
 			values = JSON.stringify([JSON.parse(values)]);
 		}
+
+		if (values.length !== -1)
+			updateLoadingElements(repeater);
 
 		// populate repeater
 
@@ -217,6 +220,8 @@ var repeaterField = function(parent = null) {
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
 			registerAsyncElements(rowsWrapper);
+
+			updateLoadingElements(repeater, true);
 		});
 
 		// prefetch blank row
@@ -416,11 +421,14 @@ var conditionalField = function(parent = null) {
 			values = values.options;
 
 		var switchContent = function(values = false) {
+
 			// no option with this value available, i.e. no option selected
 			if ((isSingle && select.checked === false) || typeof options[select.value] === 'undefined') {
 				wrapper.innerHTML = '';
 				return;
 			}
+
+			updateLoadingElements(field);
 
 			var request = {
 				'action': 'mpcf_get_conditional_fields',
@@ -439,6 +447,7 @@ var conditionalField = function(parent = null) {
 				renameDynamicFields(parent);
 
 				loader.classList.remove('mpcf-loading-active');
+				updateLoadingElements(field, true);
 				registerAsyncElements(wrapper);
 			});
 		}
@@ -879,6 +888,19 @@ function removeQTranslateX(parent = null) {
 	});
 }
 
+
+/**************************************************************
+	Panel switch
+**************************************************************/
+
+var updateLoadingElements = function(elem, toRemove = false) {
+	var btn = document.querySelector('#publish');
+
+	if (!toRemove)	loadingElements.push(elem);
+	else 			loadingElements = loadingElements.filter(elem => elem !== elem);
+
+	btn.classList.toggle('disabled', loadingElements.length > 0);
+}
 
 
 
