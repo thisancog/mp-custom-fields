@@ -303,9 +303,6 @@ function mpcf_save_meta_boxes($post_id) {
 			$value = mpcf_before_save($field, $post_id, $value);
 
 			update_post_meta($post_id, $field['name'], $value);
-
-			var_dump($value);
-
 			mpcf_after_save($field, $post_id, $value);
 			
 		}
