@@ -7,7 +7,6 @@ window.addEventListener('load', function() {
 	goToInvalids();
 	checkHTML5Support();
 	registerColorPicker();
-	registerEditors();
 	repeaterField();
 	conditionalField();
 	addQTranslateX();
@@ -138,8 +137,8 @@ var registerEditors = function(parent) {
 		var editor = field.querySelector('.mpcf-input-editor'),
 			description = field.querySelector('.mpcf-description'),
 			textarea = editor.cloneNode(),
-			oldContent = wp.editor.getContent(id),
 			id = editor.id,
+			oldContent = wp.editor.getContent(id),
 			idShort = id.split('-').pop();
 
 		textarea.innerText = oldContent || '';
