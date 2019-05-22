@@ -893,7 +893,7 @@ function removeQTranslateX(parent = null) {
 **************************************************************/
 
 var updateLoadingElements = function(elem, toRemove = false) {
-	var btn = document.querySelector('#publish');
+	var btn = document.querySelector('#publish, #submit');
 
 	if (!toRemove)	loadingElements.push(elem);
 	else 			loadingElements = loadingElements.filter(elem => elem !== elem);
