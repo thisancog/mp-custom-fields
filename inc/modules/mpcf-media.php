@@ -37,18 +37,18 @@ class MPCFMediaSelector extends MPCFModule {
 	function build_field($args = array()) {
 		$type	= !empty($args['value']) ? get_post_mime_type($args['value']) : '';
 		$media	= (strpos($type, 'image') > -1)
-				? wp_get_attachment_image_src($args['value'], 'small')
+				? wp_get_attachment_image_src($args['value'], 'medium')
 				: wp_get_attachment_url($args['value']);
 
 		$image		= (strpos($type, 'image') > -1) ? $media[0] : '';
-		$video		= (strpos($type, 'video') > -1) ? $media : '';
+		$video		= (strpos($type, 'video') > -1) ? $media    : '';
 
 		$vidclass	= (strpos($type, 'video') > -1) ? '' : ' hidden';
 		$imgclass	= (strpos($type, 'image') > -1 || empty($args['value'])) ? '' : ' hidden';
 		$caption	= (!empty($args['value'])) ? __('Change', 'mpcf') : __('Add', 'mpcf');
 		$clearclass	= !empty($args['value']) ? '' : 'hidden';
 		$class		= mpcf_input_class($this, 'mpcf-media-id');
-		$id = uniqid('mpcf-changemedia-' . $args['name']); ?>
+		$id 		= uniqid('mpcf-changemedia-' . $args['name']); ?>
 
 		<div class="mpcf-mediapicker">
 			<div class="mpcf-preview-content dashicons-format-image dashicons-before">
