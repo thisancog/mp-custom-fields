@@ -734,7 +734,7 @@ body.no-js .mpcf-file-picker + label {
 	position: relative;
 	width: calc(100% - 60px);
 	left: -1px;
-	padding: 16px 40px 16px 38px;
+	padding: 11px 40px 16px 38px;
 	margin-bottom: 0;
 	border-bottom: 1px solid #DDD;
 	list-style-type: none;
