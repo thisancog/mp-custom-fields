@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-02-01 17:02+0100\n"
-"PO-Revision-Date: 2019-02-01 17:02+0100\n"
+"POT-Creation-Date: 2019-06-22 15:30+0200\n"
+"PO-Revision-Date: 2019-06-22 15:30+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,36 +17,36 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:65
+#: inc/gui.php:62 inc/mpcf-register-archive-metaboxes.php:131
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:79
+#: inc/gui.php:76 inc/mpcf-register-archive-metaboxes.php:155
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:433
+#: inc/gui.php:403
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:454
+#: inc/gui.php:424
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
 
 #: inc/modules.php:82 inc/modules/mpcf-buttongroup.php:38
 #: inc/modules/mpcf-dragdroplist.php:44 inc/modules/mpcf-radio.php:38
-#: inc/modules/mpcf-select.php:43
+#: inc/modules/mpcf-select.php:43 inc/mpcf-modules.php:82
 msgid "Name"
 msgstr "Name"
 
 #: inc/modules.php:88 inc/modules/mpcf-buttongroup.php:44
 #: inc/modules/mpcf-dragdroplist.php:50 inc/modules/mpcf-radio.php:44
-#: inc/modules/mpcf-select.php:49
+#: inc/modules/mpcf-select.php:49 inc/mpcf-modules.php:88
 msgid "Title"
 msgstr "Titel"
 
-#: inc/modules.php:165
+#: inc/modules.php:165 inc/mpcf-modules.php:165
 msgid "Base Class"
 msgstr "Grundmodul"
 
@@ -67,7 +67,7 @@ msgstr "Standardwert"
 #: inc/modules/mpcf-number.php:33 inc/modules/mpcf-password.php:33
 #: inc/modules/mpcf-radio.php:57 inc/modules/mpcf-range.php:33
 #: inc/modules/mpcf-select.php:57 inc/modules/mpcf-text.php:58
-#: inc/modules/mpcf-textarea.php:43 inc/modules/mpcf-time.php:33
+#: inc/modules/mpcf-textarea.php:50 inc/modules/mpcf-time.php:33
 #: inc/modules/mpcf-week.php:33
 msgid "Required"
 msgstr "Pflichtangabe"
@@ -115,7 +115,7 @@ msgstr "Text"
 #: inc/modules/mpcf-date.php:40 inc/modules/mpcf-datetime.php:40
 #: inc/modules/mpcf-email.php:52 inc/modules/mpcf-month.php:39
 #: inc/modules/mpcf-number.php:39 inc/modules/mpcf-text.php:53
-#: inc/modules/mpcf-textarea.php:37 inc/modules/mpcf-time.php:39
+#: inc/modules/mpcf-textarea.php:44 inc/modules/mpcf-time.php:39
 #: inc/modules/mpcf-week.php:39
 msgid "Placeholder"
 msgstr "Platzhalter"
@@ -161,19 +161,19 @@ msgstr "Mehrfach"
 msgid "Select"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:111
+#: inc/modules/mpcf-dragdroplist.php:109
 msgid "Selection"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:116
+#: inc/modules/mpcf-dragdroplist.php:114
 msgid "Available options"
 msgstr "Verf&uuml;gbare Optionen"
 
-#: inc/modules/mpcf-editor.php:37
+#: inc/modules/mpcf-editor.php:37 inc/modules/mpcf-textarea.php:37
 msgid "Add paragraphs"
 msgstr "Abs&auml;tze hinzuf&uuml;gen"
 
-#: inc/modules/mpcf-editor.php:40
+#: inc/modules/mpcf-editor.php:40 inc/modules/mpcf-textarea.php:40
 msgid "whether to automatically add paragraphs"
 msgstr "ob automatisch Abs&auml;tze hinzuf&uuml;gt werden sollen"
 
@@ -215,7 +215,7 @@ msgstr "ob Medienbuttons angezeigt werden sollen"
 msgid "Minimal editor"
 msgstr "Minimaler Editor"
 
-#: inc/modules/mpcf-editor.php:76 inc/modules/mpcf-textarea.php:50
+#: inc/modules/mpcf-editor.php:76 inc/modules/mpcf-textarea.php:57
 msgid "Rows"
 msgstr "Zeilen"
 
@@ -253,7 +253,7 @@ msgid "Change"
 msgstr "&Auml;ndern"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: inc/modules/mpcf-repeater.php:63
+#: inc/modules/mpcf-repeater.php:60
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
@@ -358,11 +358,11 @@ msgstr ""
 "F&uuml;ge m&ouml;gliche Vorschl&auml;ge, aus denen gew&auml;hlt werden kann, "
 "als kommagetrennte Liste hinzu."
 
-#: inc/modules/mpcf-textarea.php:52
+#: inc/modules/mpcf-textarea.php:59
 msgid "number of rows"
 msgstr "Anzahl der Zeilen"
 
-#: inc/modules/mpcf-textarea.php:58
+#: inc/modules/mpcf-textarea.php:65
 msgid "Text area"
 msgstr "Mehrzeiliger Text"
 
@@ -396,16 +396,20 @@ msgstr "Woche"
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
 
-#: inc/mpcf-register-archive-metaboxes.php:28
-#: inc/mpcf-register-metaboxes.php:29
-#: inc/mpcf-register-taxonomy-metaboxes.php:27
+#: inc/mpcf-register-archive-metaboxes.php:27
+#: inc/mpcf-register-metaboxes.php:28
+#: inc/mpcf-register-taxonomy-metaboxes.php:26
 #, php-format
 msgid "%s Options"
 msgstr "%s Einstellungen"
 
-#: inc/mpcf-register-archive-metaboxes.php:78
+#: inc/mpcf-register-archive-metaboxes.php:91
 msgid "Archive"
 msgstr "Archiv"
+
+#: inc/mpcf-register-archive-metaboxes.php:145
+msgid "View archive"
+msgstr "Archiv ansehen"
 
 #: inc/mpcf-settings.php:19
 msgid "You do not have sufficient permissions to access this page."

@@ -74,12 +74,14 @@ function mpcf_admin_init() {
 
 
 function mpcf_setup_theme_admin_menu() {
+	global $pagenow;
+	
 	$o = get_option('mpcf_options');
 	$mapskey = (isset($o['googlemapskey']) ? $o['googlemapskey'] : false);
 
 	$dependencies = array('jquery', 'jquery-ui-sortable', 'wp-color-picker');
 
-	if (did_action('wp_enqueue_media') === 0) {
+	if ($pagenow !== 'post.php' && $pagenow !== 'edit.php' && did_action('wp_enqueue_media') === 0) {
 		wp_enqueue_media();
 	}
 
