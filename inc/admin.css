@@ -25,6 +25,10 @@
 
 .mpcf-parent {}
 
+.mpcf-options {
+	margin-right: 20px;
+}
+
 .mpcf-panels {
 	display: flex;
 	width: calc(100% + 14px);
