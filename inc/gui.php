@@ -187,7 +187,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			$html5Test  = isset($module->html5) && $module->html5 ? ' data-invalid-test="Not-a-valid-value"' : '';
 			$wrapperClasses = isset($module->wrapperClasses) && !empty($module->wrapperClasses) ? ' ' . $module->wrapperClasses : ''; ?>
 
-			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"<?php echo $html5Test; ?>>
+			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $hasHTML5 . $isRequired; ?>"id="mpcf-field-<?php echo $field['name']; ?>" <?php echo $html5Test; ?>>
 
 <?php		if (isset($field['title']) && !empty($field['title'])) { ?>
 				<div class="mpcf-title"><label for="<?php echo $field['name']; ?>"><?php echo $field['title']; ?></label></div>
