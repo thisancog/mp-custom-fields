@@ -387,13 +387,16 @@
 	transform: translateY(-50%);
 	padding: 5px 15px;
 
+	min-width: 200px;
+	max-width: 400px;
+
 	background: #E9E9E9;
 	color: #000000;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 
-	white-space: nowrap;
+	font-size: 11px;
 	line-height: 1.3;
 	opacity: 0;
 	-webkit-transition: all 0.2s ease;
