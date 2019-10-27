@@ -50,6 +50,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 			}
 		}
 
+		$values['mpcf-activetab'] = isset($_POST['mpcf-activetab']) ? $_POST['mpcf-activetab'] : 0;
 		update_option($optionName, $values);
 	}
 
@@ -162,7 +163,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field['value'] = isset($field['value']) ? $field['value'] : null;
 
 		if ($field['value'] === null || empty($field['value'])) {
-			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : mpcf_get_default($field, $id, null);
+			$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		}
 
 		$field['value'] = mpcf_resolve_sanitized_fields($field['value']);
