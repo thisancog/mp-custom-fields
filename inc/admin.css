@@ -786,7 +786,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-controls {
-	margin-top: 16px;
+	margin: 16px 0 0 25px;
 }
 
 .mpcf-repeater-controls:last-child {
