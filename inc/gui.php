@@ -41,12 +41,13 @@ function mpcf_build_admin_gui($panels, $optionName) {
 				$field['context'] = 'option';
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
-				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+				if (isset($_POST[$name])) {
+					$value = mpcf_mksafe($_POST[$name]);
+					$value = mpcf_before_save($field, $name, $value);
+					$values[$name] = $value;
 
-				$value = mpcf_before_save($field, $name, $value);
-				$values[$name] = $value;
-
-				mpcf_after_save($field, null, $value);
+					mpcf_after_save($field, null, $value);
+				}
 			}
 		}
 
