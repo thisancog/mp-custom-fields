@@ -80,7 +80,8 @@ class MPCFSelectField extends MPCFModule {
 		$value = $args['value'];
 		$multiple = isset($args['multiple']) && $args['multiple'] ? ' multiple' : '';
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
-		$params = mpcf_list_input_params($this, array('required', 'size')); ?>
+		$params = mpcf_list_input_params($this, array('required', 'size'));
+		$required = $args['required']; ?>
 
 		<select
 			name="<?php echo $args['name']; ?><?php echo (!empty($multiple) ? '[]' : ''); ?>"
