@@ -200,8 +200,7 @@
 	General fields
  ******************************/
 
-.mpcf-field-option,
-.mpcf-conditional-choice {
+.mpcf-field-option {
 	display: flex;
 	align-items: baseline;	
 	margin-bottom: 15px;
@@ -437,6 +436,7 @@
 }
 
 
+
 /******************************
 	Media picker
  ******************************/
@@ -582,6 +582,16 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-filepicker .mpcf-content-buttons {
 	width: auto;
+}
+
+
+/******************************
+	Checkbox
+ ******************************/
+
+.mpcf-checkbox-input .mpcf-field input {
+	position: relative;
+	top: 2px;
 }
 
 
@@ -801,6 +811,15 @@ body.no-js .mpcf-file-picker + label {
 /******************************
 	Conditional
  ******************************/
+
+.mpcf-conditional-choice {
+	margin-bottom: 15px;
+}
+
+.mpcf-conditional-choice input[type="checkbox"] {
+	position: relative;
+	top: 2px;
+}
 
 .mpcf-conditional-wrapper {
 	padding-top: 32px;
