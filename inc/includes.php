@@ -72,9 +72,9 @@ function mpcf_dev_only($user = '') {
 function mpcf_dump($var) {
 	if (!is_user_logged_in()) return;
 
-	echo '<div class="mpcf-dump" style="position: fixed; top: 0px; left: 0px; z-index: 999999; background: #FFF; padding: 10px; border: 1px solid #DDD; font: 12px/1.3 Helvetica;">';
+	echo '<div class="mpcf-dump" style="position: fixed; top: 0px; left: 0px; z-index: 999999; max-width: 100vw; max-height: 100vh; overflow: scroll; background: #FFF; padding: 10px; border: 1px solid #DDD; font: 12px/1.3 Helvetica;"><pre>';
 	var_dump($var);
-	echo '</div>';
+	echo '</pre></div>';
 }
 
 
