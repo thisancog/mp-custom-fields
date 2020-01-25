@@ -57,5 +57,26 @@ function mpcf_filter_admin_body_class() {
 }
 
 
+/*****************************************************
+	Dev helper functions
+ *****************************************************/
+
+function mpcf_dev_only($user = '') {
+	if (!is_user_logged_in() || empty($user)) return false;
+	if (is_numeric($user) && get_current_user_id() == $user) return true;
+	$currentUser = wp_get_current_user();
+	if (is_string($user)  && ($currentUser->user_login == $user || $currentUser->display_name == $user)) return true;
+	return false;
+}
+
+function mpcf_dump($var) {
+	if (!is_user_logged_in()) return;
+
+	echo '<div class="mpcf-dump" style="position: fixed; top: 0px; left: 0px; z-index: 999999; background: #FFF; padding: 10px; border: 1px solid #DDD; font: 12px/1.3 Helvetica;">';
+	var_dump($var);
+	echo '</div>';
+}
+
+
 
 ?>
