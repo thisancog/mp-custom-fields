@@ -72,7 +72,7 @@ class MPCFDragDropList extends MPCFModule {
 		foreach ($options as $option) {
 			$id = $option['id'];
 			$title = $option['title'];
-			$name = $namebase . '[' . $i . ']'; ?>
+			$name = $namebase !== false ? $namebase . '[' . $i . ']' : ''; ?>
 
 			<li class="mpcf-drag-drop-list-item">
 				<div class="title"><?php echo $title; ?></div>
@@ -92,6 +92,7 @@ class MPCFDragDropList extends MPCFModule {
 
 		$selection = array();
 		$remaining = array();
+
 		array_walk($options, function($option, $index) use (&$remaining) { $remaining[] = $index; });
 
 		array_walk($value, function($option, $index) use (&$remaining, &$selection, $options, $multiple) {
@@ -112,7 +113,7 @@ class MPCFDragDropList extends MPCFModule {
 
 			<div class="mpcf-drag-drop-list-column">
 				<div class="mpcf-drag-drop-list-column-header"><?php _e('Available options', 'mpcf'); ?></div>
-				<ul class="mpcf-drag-drop-list-sublist mpcf-drag-drop-list-remaining"><?php $this->render_list($remaining, $args['name']) ?></ul>
+				<ul class="mpcf-drag-drop-list-sublist mpcf-drag-drop-list-remaining"><?php $this->render_list($remaining, false) ?></ul>
 			</div>
 		
 
