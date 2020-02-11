@@ -81,8 +81,10 @@ var resizePanelMenus = function() {
 			width;
 
 		title.style.position = 'fixed';
+		title.style.fontWeight = 'bold';
 		minWidth = Math.max(minWidth, title.scrollWidth);
 		title.style.position = '';
+		title.style.fontWeight = '';
 	});
 
 	if (minWidth >= maxWidth) return;

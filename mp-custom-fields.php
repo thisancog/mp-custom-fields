@@ -81,7 +81,7 @@ function mpcf_setup_theme_admin_menu() {
 
 	$dependencies = array('jquery', 'jquery-ui-sortable', 'wp-color-picker');
 
-	if ($pagenow !== 'post.php' && $pagenow !== 'edit.php' && did_action('wp_enqueue_media') === 0) {
+	if (did_action('wp_enqueue_media') === 0) {
 		wp_enqueue_media();
 	}
 
