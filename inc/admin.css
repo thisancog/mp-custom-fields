@@ -61,7 +61,7 @@
 }
 
 .mpcf-panels-menu {
-	width: 250px;
+	max-width: 250px;
 	margin: 0 30px -12px 0;
 	padding: 20px 0 0 0;
 	background: #F5F5F5;
@@ -78,7 +78,7 @@
 	display: flex;
 	align-items: center;
 	margin: 0;
-	padding: 12px 0 12px 12px;
+	padding: 12px 24px 12px 12px;
 	cursor: pointer;
 	color: #666;
 	background: #F5F5F5;
@@ -183,7 +183,7 @@
 }
 
 .mpcf-panels-tabs {
-	width: calc(100% - 250px);
+	width: 100%;
 	margin: 35px 0 20px;
 }
 
@@ -912,6 +912,33 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-select-input option {
 	padding: 0 10px;
 }
+
+
+
+/******************************
+	Table
+ ******************************/
+
+.mpcf-table-inner {
+	position: relative;
+	width: 100%;
+}
+
+.mpcf-table-inner.has-heading {
+	top: 5px;
+}
+
+.mpcf-table-inner.has-no-heading {
+	top: 13px;
+}
+
+.mpcf-table-inner th {
+	padding-bottom: 10px;
+	text-align: left;
+	font-weight: normal;
+	font-style: oblique;
+}
+
 
 
 

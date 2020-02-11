@@ -68,7 +68,7 @@ var panelSwitch = function() {
 
 
 /**************************************************************
-	Registre asynchronously loaded elements
+	Register asynchronously loaded elements
  **************************************************************/
 
 var registerAsyncElements = function(parent) {
