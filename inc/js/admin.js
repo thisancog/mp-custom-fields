@@ -4,6 +4,7 @@ var loadingElements = [];
 
 window.addEventListener('load', function() {
 	panelSwitch();
+	resizePanelMenus();
 	goToInvalids();
 	checkHTML5Support();
 	registerColorPicker();
@@ -65,6 +66,28 @@ var panelSwitch = function() {
 		});
 	});
 }
+
+/**************************************************************
+	Resize panel menus
+ **************************************************************/
+
+var resizePanelMenus = function() {
+	var menuItems = document.querySelectorAll('.mpcf-panel-item'),
+		minWidth = 0,
+		maxWidth = 250;
+
+	[].forEach.call(menuItems, function(item) {
+		var title = item.querySelector('.mpcf-panel-title'),
+			width;
+
+		title.style.position = 'fixed';
+		minWidth = Math.max(minWidth, title.scrollWidth);
+		title.style.position = '';
+	});
+
+	if (minWidth >= maxWidth) return;
+	document.styleSheets[0].insertRule('.mpcf-panel-title { min-width: ' + minWidth + 'px; }');
+};
 
 
 /**************************************************************
