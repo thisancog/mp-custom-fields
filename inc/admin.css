@@ -906,7 +906,7 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-select-input select {
-	padding: 5px 0;
+	padding: 0 25px 0 5px;
 }
 
 .mpcf-select-input option {
