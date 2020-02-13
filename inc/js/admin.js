@@ -658,7 +658,7 @@ function changeMedia(elem, e) {
 		parent.find('.mpcf-clearmedia').removeClass('hidden');
 
 		if (choice.mime.indexOf('image') > -1) {
-			parent.find('.mpcf-imagepreview').attr('src', choice.sizes.medium.url);
+			parent.find('.mpcf-imagepreview').attr('src', choice.url);
 			parent.find('.mpcf-imagepreview').removeClass('hidden');
 			parent.find('.mpcf-videopreview').attr('src', '');
 			parent.find('.mpcf-videopreview').addClass('hidden');
