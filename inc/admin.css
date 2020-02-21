@@ -916,6 +916,36 @@ body.no-js .mpcf-file-picker + label {
 
 
 /******************************
+	Number
+ ******************************/
+
+@media (min-width: 500px) {
+	.mpcf-number-input {
+		align-items: flex-start;
+	}
+
+	.mpcf-number-input .mpcf-title {
+		position: relative;
+		top: 6px;
+	}
+
+	.mpcf-number-input .mpcf-field {
+		display: flex;
+	}
+
+	.mpcf-number-input .mpcf-field input {
+		margin: 0 25px 0 0;
+	}
+
+	.mpcf-number-input .mpcf-description {
+		position: relative;
+		top: 6px;
+		margin: 0;
+	}
+}
+
+
+/******************************
 	Table
  ******************************/
 
