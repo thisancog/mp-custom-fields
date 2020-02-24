@@ -300,9 +300,9 @@ function mpcf_save_meta_boxes($post_id) {
 		foreach ($fields as $field) {
 			$field['context'] = 'post';
 			$actions = isset($field['actions']) ? $field['actions'] : array();
-			$value = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
 
-			$value = mpcf_before_save($field, $post_id, $value);
+			$value   = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
+			$value   = mpcf_before_save($field, $post_id, $value);
 
 			update_post_meta($post_id, $field['name'], $value);
 			mpcf_after_save($field, $post_id, $value);

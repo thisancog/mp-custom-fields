@@ -326,10 +326,13 @@ var repeaterField = function(parent = null) {
 
 
 var generateName = function(elem) {
-	var name = [elem.dataset.name];
+	var name = [elem.dataset.name],
+		isTable = false,
+		out = name[0].indexOf('extrabeds[0][0]') > -1;
 
 	while (elem.parentNode) {
 		elem = elem.parentNode;
+		isTable = isTable || (elem.classList && elem.classList.contains('mpcf-table-input'));
 
 		if (elem.dataset && elem.dataset.basename)
 			name.unshift(elem.dataset.basename);
@@ -347,13 +350,20 @@ var generateName = function(elem) {
 		}
 	}
 
-	name = name.map(item => item.toString().match(/(\S+?)\[(\S+?)\]/)
-						 ?  item.toString().match(/(\S+?)\[(\S+?)\]/).slice(1)
-						 : item)
-				.flat(9999)
-				.filter((item, index, arr) => index === 0 || item !== arr[index - 1]);
+	// split name in parts, considering levels such name[0][1]
+	name = name.map(item => {
+					var regex  = /(\[(\S+?)\])/g;
+					item = item.toString();
+					if (!item.match(regex)) return item;
 
-	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
+					return [item.replace(regex, '')].concat([...item.matchAll(regex)].map(match => match[2]));
+				});
+	name = name.flat(99999);
+	name = name.filter((item, index, arr) => index === 0 || (item !== arr[index - 1] || isTable));
+	name = name.length == 1
+		 ? name[0]
+		 : name[0] + '[' + name.slice(1).join('][') + ']';
+
 	return name;
 }
 
