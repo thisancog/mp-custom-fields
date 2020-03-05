@@ -35,10 +35,9 @@
 
 .mpcf-panels {
 	display: flex;
-	justify-content: space-between;
-	width: calc(100% + 6px);
+	width: calc(100% + 14px);
 	height: calc(100% + 24px);
-	margin: -6px 0 0 -12px;
+	margin: -6px 0 0 -14px;
 }
 
 .mpcf-options .mpcf-panels {
@@ -46,7 +45,8 @@
 	width: calc(100% - 22px);
 	margin: 20px 0;
 	padding: 0;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+	border: 1px solid #E5E5E5;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	line-height: 1;
 	background: #FFF;
 }
@@ -61,8 +61,9 @@
 }
 
 .mpcf-panels-menu {
+	width: 25%;
 	max-width: 250px;
-	margin: 0 30px -12px 0;
+	margin: 0 10px -12px 0;
 	padding: 20px 0 0 0;
 	background: #F5F5F5;
 	border-right: 1px solid #DDD;
@@ -78,7 +79,7 @@
 	display: flex;
 	align-items: center;
 	margin: 0;
-	padding: 12px 24px 12px 12px;
+	padding: 12px 0 12px 12px;
 	cursor: pointer;
 	color: #666;
 	background: #F5F5F5;
@@ -96,6 +97,7 @@
 	font-weight: bold;
 	margin-right: -1px;
 	border-right: 1px solid #FFF;
+	border-left: 1px solid #DDD;
 }
 
 .mpcf-panels-menu li:not(.active):hover .mpcf-panel-title {
@@ -107,6 +109,11 @@
 	width: 20px;
 	height: 20px;
 	margin-right: 8px;
+}
+
+.mpcf-panel-icon-svg {
+	background-size: contain;
+	background-repeat: no-repeat;
 }
 
 .mpcf-panels-menu li.active .mpcf-panel-icon {
@@ -154,7 +161,6 @@
 	left: -13px;
 	right: initial;
 	background-color: #F5F5F5;
-	border-left: 1px solid #DDD;
 }
 
 .mpcf-panels-menu li.active .mpcf-panel-icon:before {
@@ -183,8 +189,13 @@
 }
 
 .mpcf-panels-tabs {
-	width: 100%;
-	margin: 35px 0 20px;
+	width: calc(100% - 40px);
+	max-width: 1000px;
+	margin: 35px 20px 20px 20px;
+}
+
+.mpcf-options .mpcf-panels-tabs {
+	padding-right: 45px;
 }
 
 .mpcf-panel {
@@ -200,12 +211,12 @@
 	General fields
  ******************************/
 
-.mpcf-field-option {
+.mpcf-field-option,
+.mpcf-conditional-choice {
 	display: flex;
 	align-items: baseline;	
 	margin-bottom: 15px;
 	width: 100%;
-	max-width: 800px;
 }
 
 .mpcf-field-option.mpcf-textarea-input,
@@ -217,8 +228,8 @@
 .mpcf-required {}
 
 .mpcf-title {
-	width: 18%;
-	min-width: 80px;
+	width: 15%;
+	min-width: 130px;
 	margin-right: 20px;
 }
 
@@ -229,6 +240,10 @@
 
 .mpcf-field {
 	width: calc(82% - 20px);
+}
+
+.mpcf-field .mpcf-field {
+	width: 100%;
 }
 
 .mpcf-subfield {
@@ -359,6 +374,8 @@
 	100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
+
+
 .mpcf-tooltip {
 	position: relative;
 	margin-left: 16px;
@@ -407,6 +424,82 @@
 	opacity: 1;
 }
 
+@media (max-width: 1349px) {
+	.mpcf-field-option {
+		flex-direction: column;
+	}
+
+	.mpcf-title {
+		width: 100%;
+		margin: 0 0 20px;
+		font-weight: bold;
+	}
+
+	.mpcf-field {
+		width: 100%;
+	}
+}
+
+@media (max-width: 1129px) {
+	.mpcf-panels {
+		flex-direction: column;
+		width: calc(100% + 28px);
+		margin: -7px 0 0 -14px;
+	}
+
+	.mpcf-panels-menu {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		padding: 0;
+		border-right: none;
+	}
+
+	.mpcf-panels-menu li {
+		padding-right: 12px;
+
+		margin-right: -1px;
+		border-left: 1px solid #DDD;
+		border-bottom: 1px solid #DDD;
+	}
+
+	.mpcf-panels-menu li:last-child {
+		border-right: 1px solid #DDD;
+	}
+
+	.mpcf-panels-menu li:after,
+	.mpcf-panels-menu li.active:not(:last-child):after,
+	.mpcf-panels-menu li.active:before {
+		display: none;
+	}
+
+	.mpcf-panels-menu li:before,
+	.mpcf-panels-menu li .mpcf-panel-icon:before {
+		position: absolute;
+		bottom: -10px;
+		right: -1px;
+		z-index: 1;
+		display: block;
+		width: 10px;
+		height: 10px;
+	}
+
+	.mpcf-panels-menu li .mpcf-panel-icon:before {
+		bottom: -13px;
+		left: -13px;
+		right: initial;
+		z-index: 2;
+		padding: 0 0 22px 12px;
+
+		border-bottom-left-radius: 10px;
+		border-bottom: 1px solid #DDD;
+		border-left: 1px solid #DDD;
+		background-color: #F5F5F5;
+	}
+}
+
 
 
 
@@ -434,7 +527,6 @@
 .mpcf-hidden-input {
 	margin-bottom: 0;
 }
-
 
 
 /******************************
@@ -596,16 +688,22 @@ body.no-js .mpcf-file-picker + label {
 
 
 
-/******************************
-	Button group
- ******************************/
 
-.mpcf-buttongroup-input .mpcf-buttongroup-wrapper {
-	display: flex;
-	align-items: center;
+/****************************************
+	Button group and Image button group
+ ****************************************/
+
+.mpcf-imagebuttongroup-input {
+	align-items: flex-start;
 }
 
-.mpcf-buttongroup-input input {
+.mpcf-buttongroup-wrapper {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.mpcf-buttongroup-option input {
 	position: absolute;
 	z-index: -1;
 	width: 0.1px;
@@ -614,11 +712,11 @@ body.no-js .mpcf-file-picker + label {
 	overflow: hidden;
 }
 
-.mpcf-buttongroup-input input:before {
+.mpcf-buttongroup-option input:before {
 	content: none;
 }
 
-.mpcf-buttongroup-input .mpcf-buttongroup-option label {
+.mpcf-buttongroup-option label {
 	display: block;
 	padding: 5px 8px;
 	border: 1px solid #DDD;
@@ -627,36 +725,82 @@ body.no-js .mpcf-file-picker + label {
 	user-select: none;
 }
 
-.mpcf-buttongroup-input .mpcf-buttongroup-option + .mpcf-buttongroup-option label {
+.mpcf-buttongroup-option + .mpcf-buttongroup-option label {
 	border-left: 0;
 }
 
-.mpcf-buttongroup-input .mpcf-buttongroup-option:first-child label {
+.mpcf-buttongroup-option:first-child label {
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
 
-.mpcf-buttongroup-input .mpcf-buttongroup-option:last-child label {
+.mpcf-buttongroup-option:last-child label {
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup-input input:checked + label,
-.mpcf-buttongroup-input input:focus + label {
+.mpcf-buttongroup-input .mpcf-field input:checked + label,
+.mpcf-buttongroup-input .mpcf-field input:focus + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
 	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799;
 }
 
-.mpcf-buttongroup-input input:focus + label {
+.mpcf-buttongroup-input .mpcf-field input:focus + label {
 	border-color: #5B9DD9;
 	box-shadow: 0 0 2px rgba(30,140,190,.8);
 }
 
-.mpcf-buttongroup-input .mpcf-buttongroup-option label img {
-	height: 18px;
-	width: auto;
+/*** Image button group ***/
+
+.mpcf-imagebuttongroup-input .mpcf-field label {
+	position: relative;
+	min-width: 80px;
+	height: 0;
+	padding-bottom: 60%;
+
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	border-bottom: 2px solid #DDD;
+	transition: 0.2s ease border-bottom;
+}
+
+.mpcf-imagebuttongroup-input .mpcf-field label:not(.dashicons):not(.mpcf-has-svg-icon):before {
+	content: '';
+	position: absolute;
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: #007CBA;
+	opacity: 0;
+	mix-blend-mode: multiply;
+	transition: 0.2s opacity ease;
+}
+
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.dashicons):not(.mpcf-has-svg-icon):before {
+	opacity: 0.5;
+}
+
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label,
+.mpcf-imagebuttongroup-input .mpcf-field input:focus + label {
+	border-bottom: 2px solid #007CBA;
+}
+
+.mpcf-imagebuttongroup-input .mpcf-field label:before {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 40px;
+	transition: 0.2s ease color;
+}
+
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:before,
+.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:before {
+	color: #007CBA;
+	border-bottom-color: currentColor;
 }
 
 
@@ -708,9 +852,9 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-row {
 	position: relative;
-	width: calc(100% - 38px);
-	left: -13px;
-	padding: 16px 16px 16px 38px;
+	width: calc(100% - 60px);
+	left: -1px;
+	padding: 11px 40px 16px 38px;
 	margin-bottom: 0;
 	border-bottom: 1px solid #DDD;
 	list-style-type: none;
@@ -719,7 +863,7 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-repeater-wrapper li:before {
 	content: counter(section) ". ";
 	position: absolute;
-	top: 23px;
+	top: 18px;
 	left: 16px;
 	counter-increment: section;
 	z-index: 2;
@@ -767,8 +911,9 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-row-controls {
 	position: absolute;
-	top: 6px;
-	right: -32px;
+	top: 3px;
+	right: 1px;
+	padding: 3px 3px 3px 10px;
 	opacity: 0;
 }
 
@@ -798,28 +943,36 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-controls {
-	margin: 16px 0 0 25px;
+	margin: 16px 0 0 38px;
 }
 
 .mpcf-repeater-controls:last-child {
 	margin-bottom: 16px;
 }
 
+.mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
+	margin-left: 10px;
+}
+
+.mpcf-repeater-input > .mpcf-field > .mpcf-description {
+	margin-left: 38px;
+}
+
+@media (max-width: 1349px) {
+	.mpcf-repeater-row {
+		padding-left: 0;
+	}
+
+	.mpcf-repeater-wrapper li:before {
+		left: -20px;
+	}
+}
 
 
 
 /******************************
 	Conditional
  ******************************/
-
-.mpcf-conditional-choice {
-	margin-bottom: 15px;
-}
-
-.mpcf-conditional-choice input[type="checkbox"] {
-	position: relative;
-	top: 2px;
-}
 
 .mpcf-conditional-wrapper {
 	padding-top: 32px;
@@ -906,43 +1059,14 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-select-input select {
-	padding: 0 25px 0 5px;
+	padding: 5px 0;
+	width: 100%;
 }
 
 .mpcf-select-input option {
 	padding: 0 10px;
 }
 
-
-
-/******************************
-	Number
- ******************************/
-
-@media (min-width: 500px) {
-	.mpcf-number-input {
-		align-items: flex-start;
-	}
-
-	.mpcf-number-input .mpcf-title {
-		position: relative;
-		top: 6px;
-	}
-
-	.mpcf-number-input .mpcf-field {
-		display: flex;
-	}
-
-	.mpcf-number-input .mpcf-field input {
-		margin: 0 25px 0 0;
-	}
-
-	.mpcf-number-input .mpcf-description {
-		position: relative;
-		top: 6px;
-		margin: 0;
-	}
-}
 
 
 /******************************
