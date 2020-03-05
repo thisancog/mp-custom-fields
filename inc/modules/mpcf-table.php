@@ -96,8 +96,7 @@ class MPCFTableField extends MPCFModule {
 			<tr>
 
 <?php 		for ($c = 0; $c < $cols; $c++) {
-				$val = isset($value[$r]) ? $value[$r] : '';
-				$val = is_array($val) ? $val[$c] : $val; ?>
+				$val = isset($value[$r]) && isset($value[$r][$c]) ? $value[$r][$c] : ''; ?>
 
 				<td><input type="text"
 						   name="<?php echo $args['name']; ?>[<?php echo $r; ?>][<?php echo $c; ?>]"
