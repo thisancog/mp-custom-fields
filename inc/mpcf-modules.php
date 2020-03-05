@@ -15,7 +15,15 @@ function mpcf_register_modules() {
 
 	$declared = get_declared_classes();
 	foreach ($declared as $class) {
-		if (get_parent_class($class) === 'MPCFModule') {
+		$parent   = $class;
+		$isModule = false;
+
+		while ($parent !== false && !$isModule) {
+			$parent   = get_parent_class($parent);
+			$isModule = $isModule || $parent === 'MPCFModule';
+		}
+
+		if ($isModule) {
 			$vars = get_class_vars($class);
 
 			if (isset($vars['name']) && !isset($modules[$vars['name']])) {

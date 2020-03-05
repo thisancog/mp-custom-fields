@@ -987,11 +987,14 @@ function dragDropLists() {
  **************************************************************/
 
 var paintImageButtonGroup = function() {
-	var painter = wp.svgPainter,
+	var painter   = wp.svgPainter,
+		colors    = painterColors,
 		modules   = document.querySelectorAll('.mpcf-imagebuttongroup-input');
 	if (!modules) return;
 
-	painter.setColors(painterColors);
+
+	colors.icons.base = '#AAA';
+	painter.setColors(colors);
 
 	[].forEach.call(modules, function(module) {
 		var options  = document.querySelectorAll('.mpcf-imagebuttongroup-option');
@@ -1012,7 +1015,7 @@ var paintImageButtonGroup = function() {
 				label = option.querySelector('label.mpcf-has-svg-icon');
 
 			if (label)
-				painter.paintElement($(label), 'base');
+				painter.paintElement($(label), input.checked ? 'focus' : 'base');
 			input.addEventListener('change', changeSelection);
 		});
 

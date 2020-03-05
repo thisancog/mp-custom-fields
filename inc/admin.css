@@ -767,6 +767,10 @@ body.no-js .mpcf-file-picker + label {
 	transition: 0.2s ease border-bottom;
 }
 
+.mpcf-imagebuttongroup-input .mpcf-field label.mpcf-has-svg-icon {
+	transition: 0.2s background-image ease;
+}
+
 .mpcf-imagebuttongroup-input .mpcf-field label:not(.dashicons):not(.mpcf-has-svg-icon):before {
 	content: '';
 	position: absolute;
@@ -783,12 +787,12 @@ body.no-js .mpcf-file-picker + label {
 	opacity: 0.5;
 }
 
-.mpcf-imagebuttongroup-input .mpcf-field input:checked + label,
-.mpcf-imagebuttongroup-input .mpcf-field input:focus + label {
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon),
+.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:not(.mpcf-has-svg-icon) {
 	border-bottom: 2px solid #007CBA;
 }
 
-.mpcf-imagebuttongroup-input .mpcf-field label:before {
+.mpcf-imagebuttongroup-input .mpcf-field label:not(.mpcf-has-svg-icon):before {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -797,8 +801,8 @@ body.no-js .mpcf-file-picker + label {
 	transition: 0.2s ease color;
 }
 
-.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:before,
-.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:before {
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon):before,
+.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:not(.mpcf-has-svg-icon):before {
 	color: #007CBA;
 	border-bottom-color: currentColor;
 }
