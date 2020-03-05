@@ -1,6 +1,13 @@
 $ = jQuery;
 
-var loadingElements = [];
+var loadingElements = [],
+	painterColors = {
+		icons: {
+			base:    '#444',
+			current: '#fff',
+			focus:   '#007CBA'
+		}
+	};
 
 window.addEventListener('load', function() {
 	panelSwitch();
@@ -12,6 +19,7 @@ window.addEventListener('load', function() {
 	conditionalField();
 	addQTranslateX();
 	dragDropLists();
+	paintImageButtonGroup();
 });
 
 
@@ -22,6 +30,8 @@ window.addEventListener('load', function() {
 var panelSwitch = function() {
 	var panelSets = document.querySelectorAll('.mpcf-panels'),
 		painter = wp.svgPainter;
+
+	painter.setColors(painterColors);
 
 	[].forEach.call(panelSets, function(panelSet) {
 		var start = panelSet.querySelector('.activetab').value || 0,
@@ -326,13 +336,10 @@ var repeaterField = function(parent = null) {
 
 
 var generateName = function(elem) {
-	var name = [elem.dataset.name],
-		isTable = false,
-		out = name[0].indexOf('extrabeds[0][0]') > -1;
+	var name = [elem.dataset.name];
 
 	while (elem.parentNode) {
 		elem = elem.parentNode;
-		isTable = isTable || (elem.classList && elem.classList.contains('mpcf-table-input'));
 
 		if (elem.dataset && elem.dataset.basename)
 			name.unshift(elem.dataset.basename);
@@ -350,20 +357,13 @@ var generateName = function(elem) {
 		}
 	}
 
-	// split name in parts, considering levels such name[0][1]
-	name = name.map(item => {
-					var regex  = /(\[(\S+?)\])/g;
-					item = item.toString();
-					if (!item.match(regex)) return item;
+	name = name.map(item => item.toString().match(/(\S+?)\[(\S+?)\]/)
+						 ?  item.toString().match(/(\S+?)\[(\S+?)\]/).slice(1)
+						 : item)
+				.flat(9999)
+				.filter((item, index, arr) => index === 0 || item !== arr[index - 1]);
 
-					return [item.replace(regex, '')].concat([...item.matchAll(regex)].map(match => match[2]));
-				});
-	name = name.flat(99999);
-	name = name.filter((item, index, arr) => index === 0 || (item !== arr[index - 1] || isTable));
-	name = name.length == 1
-		 ? name[0]
-		 : name[0] + '[' + name.slice(1).join('][') + ']';
-
+	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
 	return name;
 }
 
@@ -977,6 +977,45 @@ function dragDropLists() {
 			if (remainingList.find('li').length === 0)
 				remainingList.html('');
 		});
+	});
+}
+
+
+
+/**************************************************************
+	Paint Image Button Group
+ **************************************************************/
+
+var paintImageButtonGroup = function() {
+	var painter = wp.svgPainter,
+		modules   = document.querySelectorAll('.mpcf-imagebuttongroup-input');
+	if (!modules) return;
+
+	painter.setColors(painterColors);
+
+	[].forEach.call(modules, function(module) {
+		var options  = document.querySelectorAll('.mpcf-imagebuttongroup-option');
+
+		var changeSelection = function() {
+			[].forEach.call(options, function(option) {
+				var input = option.querySelector('input'),
+					label = option.querySelector('label.mpcf-has-svg-icon'),
+					color = input.checked ? 'focus' : 'base';
+
+				if (!label) return;
+				painter.paintElement($(label), color);
+			});
+		};
+
+		[].forEach.call(options, function(option) {
+			var input = option.querySelector('input'),
+				label = option.querySelector('label.mpcf-has-svg-icon');
+
+			if (label)
+				painter.paintElement($(label), 'base');
+			input.addEventListener('change', changeSelection);
+		});
+
 	});
 }
 
