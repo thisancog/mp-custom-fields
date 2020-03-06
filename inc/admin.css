@@ -242,6 +242,16 @@
 	width: calc(82% - 20px);
 }
 
+.mpcf-text-input .mpcf-field,
+.mpcf-number-input .mpcf-field,
+.mpcf-date-input .mpcf-field,
+.mpcf-datetime-input .mpcf-field,
+.mpcf-time-input .mpcf-field,
+.mpcf-email-input .mpcf-field {
+	display: flex;
+	flex-wrap: wrap;
+}
+
 .mpcf-field .mpcf-field {
 	width: 100%;
 }
@@ -252,7 +262,17 @@
 }
 
 .mpcf-field input[type="text"],
-.mpcf-field input[type="email"],
+.mpcf-field input[type="number"],
+.mpcf-field input[type="date"],
+.mpcf-field input[type="datetime"],
+.mpcf-field input[type="time"],
+.mpcf-field input[type="email"] {
+	width: auto;
+	min-width: calc(100% - 151px);
+	flex-grow: 1;
+	margin-right: 20px;
+}
+
 .mpcf-field textarea {
 	width: 100%;
 }
@@ -261,6 +281,19 @@
 	margin: 20px 0;
 	font-style: oblique;
 	line-height: 1.3;
+}
+
+.mpcf-text-input .mpcf-description,
+.mpcf-number-input .mpcf-description,
+.mpcf-date-input .mpcf-description,
+.mpcf-datetime-input .mpcf-description,
+.mpcf-time-input .mpcfdescription,
+.mpcf-email-input .mpcfdescription {
+	position: relative;
+	top: 6px;
+	min-width: 130px;
+	margin: 0 0 10px;
+	flex-shrink: 0;
 }
 
 .mpcf-nohtml5-description {
