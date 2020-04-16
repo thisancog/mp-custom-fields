@@ -9,6 +9,8 @@ var loadingElements = [],
 		}
 	};
 
+var vpWidth = function() { return Math.max(document.documentElement.clientWidth, window.innerWidth || 0); }
+
 window.addEventListener('load', function() {
 	panelSwitch();
 	resizePanelMenus();
@@ -20,6 +22,10 @@ window.addEventListener('load', function() {
 	addQTranslateX();
 	dragDropLists();
 	paintImageButtonGroup();
+});
+
+window.addEventListener('resize', function() {
+	resizePanelMenus();
 });
 
 
@@ -84,20 +90,22 @@ var panelSwitch = function() {
 var resizePanelMenus = function() {
 	var menuItems = document.querySelectorAll('.mpcf-panel-item'),
 		minWidth = 0,
-		maxWidth = 250;
+		maxWidth = 250,
+		threshold = 1130;
 
-	[].forEach.call(menuItems, function(item) {
-		var title = item.querySelector('.mpcf-panel-title'),
-			width;
+	if (vpWidth() >= threshold) {
+		[].forEach.call(menuItems, function(item) {
+			var title = item.querySelector('.mpcf-panel-title');
 
-		title.style.position = 'fixed';
-		title.style.fontWeight = 'bold';
-		minWidth = Math.max(minWidth, title.scrollWidth);
-		title.style.position = '';
-		title.style.fontWeight = '';
-	});
+			title.style.position = 'fixed';
+			title.style.fontWeight = 'bold';
+			minWidth = Math.max(minWidth, title.scrollWidth);
+			title.style.position = '';
+			title.style.fontWeight = '';
+		});
+	}
 
-	if (minWidth >= maxWidth) return;
+	if (minWidth >= maxWidth) minWidth = 0;
 	document.styleSheets[0].insertRule('.mpcf-panel-title { min-width: ' + minWidth + 'px; }');
 };
 
@@ -1046,7 +1054,6 @@ var unwrap = function(elem) {
 		parent.insertBefore(elem.firstChild, elem);
 	parent.removeChild(elem);
 }
-
 
 
 
