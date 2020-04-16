@@ -43,7 +43,10 @@ class MPCFConditionalField extends MPCFModule {
 
 		foreach ($value as $prop => $val) {
 			$value[$prop] = mpcf_mknice($val); 
-		} ?>
+		}
+
+		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+		$valuesJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
 
 		<div class="mpcf-conditional-container" data-basename="<?php echo $args['name']; ?>">
 			<div class="mpcf-conditional-choice">
@@ -72,8 +75,8 @@ class MPCFConditionalField extends MPCFModule {
 					value="<?php echo $name; ?>"
 					<?php echo ($selected ? ' checked' : '') . $disabled; ?>
 					data-basename="<?php echo $args['name']; ?>"
-					data-options="<?php echo esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-					data-values="<?php echo esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>">
+					data-options="<?php echo $optionsJSON; ?>"
+					data-values="<?php echo $valuesJSON; ?>">
 			<label for="<?php echo $args['name']; ?>-type"><?php echo $title; ?></label>
 
 <?php		} else { ?>
@@ -81,8 +84,8 @@ class MPCFConditionalField extends MPCFModule {
 				<select name="<?php echo $args['name']; ?>[type]"
 						id="<?php echo $args['name']; ?>-type"
 						data-basename="<?php echo $args['name']; ?>"
-						data-options="<?php echo esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-						data-values="<?php echo esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>">
+						data-options="<?php echo $optionsJSON; ?>"
+						data-values="<?php echo $valuesJSON; ?>">
 
 					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
