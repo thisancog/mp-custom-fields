@@ -48,11 +48,15 @@ class MPCFRepeaterField extends MPCFModule {
 		});
 
 		$required = false;
+
+		$fieldsJSON = esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+		$valuesJSON = esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+
 		?>
 
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
-			data-fields="<?php echo esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-			data-values="<?php echo esc_attr(json_encode($args['value'], JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"></ol>
+			data-fields="<?php echo $fieldsJSON; ?>"
+			data-values="<?php echo $valuesJSON; ?>"></ol>
 
 		<div class="mpcf-loading-container mpcf-loading-active"></div>
 
