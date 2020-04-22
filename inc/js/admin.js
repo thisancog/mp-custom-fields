@@ -116,13 +116,13 @@ var resizePanelMenus = function() {
 
 var registerAsyncElements = function(parent) {
 	registerMediaPicker();
+	addQTranslateX(parent);
 	registerEditors(parent);
 	registerColorPicker(parent);
 	conditionalField(parent);
 	repeaterField(parent);
 
 	checkHTML5Support(parent);
-	addQTranslateX(parent);
 	focusInvalids(parent);
 }
 
@@ -177,14 +177,15 @@ var registerEditors = function(parent) {
 		};
 
 	[].forEach.call(fields, function(field) {
-		var editor = field.querySelector('.mpcf-input-editor'),
-			description = field.querySelector('.mpcf-description'),
-			textarea = editor.cloneNode(),
-			id = editor.id,
-			oldContent = wp.editor.getContent(id),
-			idShort = id.split('-').pop();
+		var editor          = field.querySelector('.mpcf-input-editor'),
+			description     = field.querySelector('.mpcf-description'),
+			textarea        = editor.cloneNode(),
+			id              = editor.id,
+			idShort         = id.split('-').pop(),
+			oldContent      = wp.editor.getContent(id),
+			oldContentAutop = wp.editor.autop(oldContent);
 
-		textarea.innerText = oldContent || '';
+		textarea.innerText = oldContentAutop || '';
 		wp.editor.remove(idShort);
 		field.appendChild(textarea);
 		wp.editor.initialize(id, options);
@@ -905,6 +906,8 @@ function addQTranslateX(parent = null) {
 
 	var fields = parent.querySelectorAll('.mpcf-multilingual');
 	[].forEach.call(fields, function(field) {
+		qTranslateConfig.qtx.addContentHooksByClass('mpcf-multilingual');
+
 		var hook = qTranslateConfig.qtx.hasContentHook(field.id);
 
 		if (typeof hook !== 'undefined') return;
@@ -916,7 +919,7 @@ function addQTranslateX(parent = null) {
 			}
 		}
 		
-		qTranslateConfig.qtx.addContentHook(field);
+		qTranslateConfig.qtx.addContentHook(field, false, field.id);
 	});
 }
 
@@ -1054,7 +1057,6 @@ var unwrap = function(elem) {
 		parent.insertBefore(elem.firstChild, elem);
 	parent.removeChild(elem);
 }
-
 
 
 
