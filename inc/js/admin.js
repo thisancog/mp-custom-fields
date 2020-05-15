@@ -262,6 +262,7 @@ var repeaterField = function(parent = null) {
 
 			reorder();
 			loader.classList.remove('mpcf-loading-active');
+			checkCheckableElements(rowsWrapper);
 			registerAsyncElements(rowsWrapper);
 
 			updateLoadingElements(repeater, true);
@@ -322,7 +323,7 @@ var repeaterField = function(parent = null) {
 
 					inputs.forEach(function(input) {
 						if (!input.dataset.name)
-							input.dataset.name = input.name || input.getAttribute('for'); 
+							input.dataset.name = input.name || input.getAttribute('for');
 
 						let type    = input.getAttribute('type'),
 							newID   = generateID(input),
@@ -378,6 +379,10 @@ var generateName = function(elem) {
 
 
 var generateID = function(elem) {
+	if (elem.tagName && elem.tagName.toLowerCase() == 'label' && 
+		elem.previousElementSibling && elem.previousElementSibling.tagName.toLowerCase() == 'input')
+		return generateID(elem.previousElementSibling);
+
 	var id = generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
 
 	if (elem.tagName.toLowerCase() === 'input' && elem.type === 'radio')
@@ -431,6 +436,13 @@ var renameDynamicFields = function(parent) {
 	});
 
 	parent.classList.toggle('empty', parent.childElementCount === 0);
+}
+
+
+// bugfix for Chrome
+var checkCheckableElements = function(parent) {
+	var fields = [].slice.call(parent.querySelectorAll('input[type="checkbox"], input[type="radio"]'));
+	fields.forEach(field => field.checked = field.getAttribute('checked') !== null);
 }
 
 
@@ -491,6 +503,7 @@ var conditionalField = function(parent = null) {
 
 				loader.classList.remove('mpcf-loading-active');
 				updateLoadingElements(field, true);
+				checkCheckableElements(wrapper);
 				registerAsyncElements(wrapper);
 			});
 		}
