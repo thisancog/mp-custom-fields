@@ -239,6 +239,11 @@ function mpcf_get_option($fieldName = null, $parentOption = null) {
 
 	/* ToDo: store and retrieve option boxes in/from a variable */
 
+//	WPML support for multilingual options
+	if (has_action('wpml_multilingual_options')) {
+		do_action('wpml_multilingual_options', $parentOption);
+	}
+
 	$o = get_option($parentOption);
 	$value = isset($o[$fieldName]) ? $o[$fieldName] : null;
 	return $value;
