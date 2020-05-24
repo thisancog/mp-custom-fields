@@ -346,10 +346,13 @@ var repeaterField = function(parent = null) {
 
 
 var generateName = function(elem) {
-	var name = [elem.dataset.name];
+	var name                 = [elem.dataset.name],
+		canContainDeepFields = false,
+		con = elem.dataset.name == 'extrabeds[0][0]';
 
 	while (elem.parentNode) {
 		elem = elem.parentNode;
+		canContainDeepFields = canContainDeepFields || (elem.classList && elem.classList.contains('mpcf-table-input'));
 
 		if (elem.dataset && elem.dataset.basename)
 			name.unshift(elem.dataset.basename);
@@ -367,13 +370,19 @@ var generateName = function(elem) {
 		}
 	}
 
-	name = name.map(item => item.toString().match(/(\S+?)\[(\S+?)\]/)
-						 ?  item.toString().match(/(\S+?)\[(\S+?)\]/).slice(1)
-						 : item)
-				.flat(9999)
-				.filter((item, index, arr) => index === 0 || item !== arr[index - 1]);
+	name = name.map(function(item, i) {
+		var regex     = /(\S+?)\[(\S+?)\](\[(\S+?)\])?/g,
+			subfields = [...item.toString().matchAll(regex)];
+		if (subfields.length == 0) return item;
 
+		subfields = subfields[0].filter(subfield => subfield.indexOf('[') == -1);
+		return subfields;
+	});
+
+	name = name.flat(9999);
+	name = name.filter((item, index, arr) => index === 0 || item !== arr[index - 1] || canContainDeepFields);
 	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
+
 	return name;
 }
 
