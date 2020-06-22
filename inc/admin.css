@@ -165,7 +165,7 @@
 
 .mpcf-panels-menu li.active .mpcf-panel-icon:before {
 	z-index: 2;
-	padding: 0 0 22px 12px;
+	padding: 0 0 32px 11px;
 	background-color: #FFF;
 	border-bottom-left-radius: 10px;
 	border-bottom: 1px solid #DDD;
@@ -1096,8 +1096,8 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-select-input select {
-	padding: 5px 0;
-	width: 100%;
+	padding: 5px;
+	width: calc(100% - 21px);
 }
 
 .mpcf-select-input option {
