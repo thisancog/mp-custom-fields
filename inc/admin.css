@@ -172,6 +172,10 @@
 	border-left: 1px solid #DDD;
 }
 
+.mpcf-panels-menu li.active:first-child:last-child .mpcf-panel-icon:before {
+	padding-bottom: 22px;
+}
+
 .mpcf-panels-menu li.active .mpcf-panel-icon-svg:before {
 	content: '';
 	padding: 0;
