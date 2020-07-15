@@ -222,7 +222,7 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 
 function mpcf_has_field($field = null, $id = null) {
 	$value = mpcf_get_field($field, $id);
-	return $value !== null && !empty($value);
+	return $value !== null && (!empty($value) || $value == '0');
 }
 
 function mpcf_the_field($field = null) {
