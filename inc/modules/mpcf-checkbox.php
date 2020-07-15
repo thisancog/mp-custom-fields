@@ -41,7 +41,7 @@ class MPCFCheckbox extends MPCFModule {
 	}
 
 	function save_before($post_id, $field, $value) {
-		return isset($_POST[$field['name']]) ? true : false;
+		return isset($_POST[$field['name']]) ? 1 : 0;
 	}
 
 	function build_field($args = array()) {
