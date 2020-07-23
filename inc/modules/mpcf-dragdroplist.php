@@ -96,6 +96,8 @@ class MPCFDragDropList extends MPCFModule {
 		array_walk($options, function($option, $index) use (&$remaining) { $remaining[] = $index; });
 
 		array_walk($value, function($option, $index) use (&$remaining, &$selection, $options, $multiple) {
+			if (!isset($options[$option])) return;
+
 			$set = array('id' => $option, 'title' => $options[$option]);
 			$selection[] = $set;
 
