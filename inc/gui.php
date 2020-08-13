@@ -160,7 +160,6 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field = mpcf_sanitize_args($field);
 		$actions = isset($field['actions']) ? $field['actions'] : array();
 
-
 		$field['value'] = isset($field['value']) ? $field['value'] : null;
 
 		if ($field['value'] === null || empty($field['value'])) {
@@ -174,6 +173,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		}
 
 		$field = mpcf_resolve_deep_fields($field);
+		$field = mpcf_tidy_up_wpml_traces($field);
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
@@ -243,8 +243,21 @@ function mpcf_resolve_deep_fields($field) {
 		return $field;
 	}
 
-
 	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
+
+	return $field;
+}
+
+function mpcf_tidy_up_wpml_traces($field) {
+	if (!function_exists('icl_object_id')) return $field;
+
+	if ($field['type'] == 'dragdroplist') {
+		if ($field['name'] == 'modules') {
+			if (isset($field['value'][0]) && is_array($field['value'][0]))
+				$field['value'] = $field['value'][0];
+		}
+	}
+
 	return $field;
 }
 
@@ -306,7 +319,6 @@ function mpcf_save_meta_boxes($post_id) {
 
 			update_post_meta($post_id, $field['name'], $value);
 			mpcf_after_save($field, $post_id, $value);
-			
 		}
 	}
 
