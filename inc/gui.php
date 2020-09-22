@@ -6,8 +6,8 @@
 
 function mpcf_meta_box_init($post, $metabox) {
 	global $post;
-	$boxes = get_option('mpcf_meta_boxes', array());
-	$box = $boxes[$metabox['id']];
+	$boxes  = get_option('mpcf_meta_boxes', array());
+	$box    = $boxes[$metabox['id']];
 	$values = get_post_meta($post->ID, '', true);
 	wp_nonce_field('mpcf_meta_box_nonce', 'mpcf_meta_box_nonce'); ?>
 
@@ -99,31 +99,17 @@ function mpcf_build_gui_as_panels($panels, $values) {
 		<input type="hidden" name="mpcf-activetab" class="activetab" value="<?php echo $activetab; ?>" />
 		<ul class="mpcf-panels-menu">
 
-<?php	for ($i = 0; $i < count($panels); $i++) { ?>
-			<li class="mpcf-panel-item" data-index="<?php echo $i; ?>">
-
-<?php 		if (isset($panels[$i]['icon'])) {
-				if (strpos($panels[$i]['icon'], 'dashicons') > -1) { ?>
-					<div class="mpcf-panel-icon dashicons <?php echo $panels[$i]['icon']; ?>"></div>
-<?php 			} else { ?>
-					<div class="mpcf-panel-icon mpcf-panel-icon-svg" style="background-image: url(<?php echo $panels[$i]['icon']; ?>);"></div>
-<?php 			}
-			} ?>
-
-				<span class="mpcf-panel-title"><?php echo $panels[$i]['name']; ?></span>
-			</li>
-<?php	} ?>
+<?php	for ($i = 0; $i < count($panels); $i++) {
+			mpcf_build_panel_menu_item($panels[$i], $i);
+		} ?>
 
 		</ul>
 
 		<div class="mpcf-panels-tabs">
 
-<?php	for ($i = 0; $i < count($panels); $i++) { ?>
-			<div class="mpcf-panel" data-index="<?php echo $i; ?>">
-<?php 			mpcf_build_gui_from_fields($panels[$i]['fields'], $values);
-				$hasEditors = $hasEditors || mpcf_ajax_enqueue_editors($panels[$i]['fields']); ?>
-			</div>
-<?php	} ?>
+<?php	for ($i = 0; $i < count($panels); $i++) {
+			$hasEditors = $hasEditors || mpcf_build_panel_tab($panels[$i], $values, $i);
+		} ?>
 
 		</div>
 
@@ -144,6 +130,33 @@ function mpcf_build_gui_as_panels($panels, $values) {
 
 }
 
+
+function mpcf_build_panel_menu_item($panel, $i) { ?>
+	<li class="mpcf-panel-item" data-index="<?php echo $i; ?>">
+
+<?php 	if (isset($panel['icon'])) {
+			if (strpos($panel['icon'], 'dashicons') > -1) { ?>
+				<div class="mpcf-panel-icon dashicons <?php echo $panel['icon']; ?>"></div>
+<?php 		} else { ?>
+				<div class="mpcf-panel-icon mpcf-panel-icon-svg" style="background-image: url(<?php echo $panel['icon']; ?>);"></div>
+<?php 		}
+		} ?>
+
+			<span class="mpcf-panel-title"><?php echo $panel['name']; ?></span>
+	</li>
+<?php
+}
+
+
+function mpcf_build_panel_tab($panel, $values, $i) { ?>
+	<div class="mpcf-panel" data-index="<?php echo $i; ?>">
+<?php 	mpcf_build_gui_from_fields($panel['fields'], $values);
+		$hasEditors = mpcf_ajax_enqueue_editors($panel['fields']); ?>
+	</div>
+<?php
+
+	return $hasEditors;
+}
 
 
 function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
@@ -173,7 +186,6 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		}
 
 		$field = mpcf_resolve_deep_fields($field);
-		$field = mpcf_tidy_up_wpml_traces($field);
 
 		$required = !$required && $field['required'] ? true : $required;
 		$hasRequireds = false;
@@ -243,8 +255,8 @@ function mpcf_resolve_deep_fields($field) {
 		return $field;
 	}
 
-	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 
+	$field['value'] = is_array($field['value']) && isset($field['value'][0]) ? $field['value'][0] : $field['value'];
 	return $field;
 }
 
@@ -290,6 +302,7 @@ function mpcf_sanitize_args($args) {
 }
 
 
+
 /*****************************************************
 	Save meta box form contents
  *****************************************************/
@@ -326,6 +339,8 @@ function mpcf_save_meta_boxes($post_id) {
 	if (isset($_POST['mpcf-activetab']))	
 		update_post_meta($post_id, 'mpcf-activetab', $_POST['mpcf-activetab']);
 }
+
+
 
 
 /*****************************************************
@@ -402,6 +417,31 @@ function mpcf_ajax_get_conditional_fields() {
 	ob_end_clean();
 	echo $components;
 
+	wp_die();
+}
+
+function mpcf_ajax_get_conditional_panels_fields() {
+	$panel  = json_decode(stripcslashes($_POST['panel']), true);
+	$values = array();
+
+	$tab    = '';
+	$menu   = '';
+
+	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
+		$values = $_POST['values'];
+	}
+
+	ob_start();
+	mpcf_build_panel_menu_item($panel, -1);
+	$menu = ob_get_contents();
+	ob_end_clean();
+
+	ob_start();
+	mpcf_build_panel_tab($panel, $values, false);
+	$tab = ob_get_contents();
+	ob_end_clean();
+
+	echo json_encode(array('tab' => $tab, 'menu' => $menu, 'values' => $values));
 	wp_die();
 }
 
