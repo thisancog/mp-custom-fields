@@ -67,16 +67,18 @@ class MPCFTextField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$params = mpcf_list_input_params($this, array('required', 'placeholder', 'minlength', 'maxlength'));
-		$hasList = isset($args['list']) && !empty($args['list']) ? $args['list'] : false;
-		$list = $hasList ? ' list="' . $args['name'] . '-list"' : '';
+		$params    = mpcf_list_input_params($this, array('required', 'placeholder', 'minlength', 'maxlength'));
+		$value     = htmlspecialchars(stripslashes($args['value']));
+
+		$hasList   = isset($args['list']) && !empty($args['list']) ? $args['list'] : false;
+		$list      = $hasList ? ' list="' . $args['name'] . '-list"' : '';
 		$listItems = $hasList ? $args['list'] : '';
-		$listId = $args['name'] . '-list'; ?>
+		$listId    = $args['name'] . '-list'; ?>
 
 		<input
 			type="text"
 			name="<?php echo $args['name']; ?>"
-			value="<?php echo $args['value']; ?>"<?php echo $params; ?>
+			value="<?php echo $value ?>"<?php echo $params; ?>
 			<?php echo $hasList ? 'list="' . $listId . '"' : '';?>>
 
 <?php 	if ($hasList) {
