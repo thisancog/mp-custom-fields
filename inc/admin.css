@@ -74,7 +74,7 @@
 	margin-bottom: 0;
 }
 
-.mpcf-panels-menu li {
+.mpcf-panels-menu li:not(:empty) {
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -165,11 +165,15 @@
 
 .mpcf-panels-menu li.active .mpcf-panel-icon:before {
 	z-index: 2;
-	padding: 0 0 22px 12px;
+	padding: 0 0 22px 11px;
 	background-color: #FFF;
 	border-bottom-left-radius: 10px;
 	border-bottom: 1px solid #DDD;
 	border-left: 1px solid #DDD;
+}
+
+.mpcf-options .mpcf-panels-menu li.active .mpcf-panel-icon:before {
+	padding-bottom: 22px;
 }
 
 .mpcf-panels-menu li.active .mpcf-panel-icon-svg:before {
@@ -274,7 +278,7 @@
 }
 
 .mpcf-field textarea {
-	width: 100%;
+	width: calc(100% - 20px);
 }
 
 .mpcf-description {
@@ -291,7 +295,6 @@
 .mpcf-email-input .mpcfdescription {
 	position: relative;
 	top: 6px;
-	max-width: 100%;
 	min-width: 130px;
 	margin: 0 0 10px;
 	flex-shrink: 0;
@@ -746,8 +749,7 @@ body.no-js .mpcf-file-picker + label {
 	overflow: hidden;
 }
 
-.mpcf-buttongroup-option input:before,
-.mpcf-buttongroup-option input:checked:before {
+.mpcf-buttongroup-option input:before {
 	content: none;
 }
 
@@ -1098,8 +1100,8 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-select-input select {
-	padding: 5px 0;
-	width: 100%;
+	padding: 5px;
+	width: calc(100% - 21px);
 }
 
 .mpcf-select-input option {
