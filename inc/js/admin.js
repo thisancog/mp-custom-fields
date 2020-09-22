@@ -1,6 +1,7 @@
 $ = jQuery;
 
 var loadingElements = [],
+	panelSwitchers = [],
 	painterColors = {
 		icons: {
 			base:    '#444',
@@ -19,6 +20,7 @@ window.addEventListener('load', function() {
 	registerColorPicker();
 	repeaterField();
 	conditionalField();
+	conditionalPanelsField();
 	addQTranslateX();
 	dragDropLists();
 	paintImageButtonGroup();
@@ -35,53 +37,110 @@ window.addEventListener('resize', function() {
 
 var panelSwitch = function() {
 	var panelSets = document.querySelectorAll('.mpcf-panels'),
-		painter = wp.svgPainter;
+		painter   = wp.svgPainter;
 
-	painter.setColors(painterColors);
+	wp.svgPainter.setColors(painterColors);
 
 	[].forEach.call(panelSets, function(panelSet) {
-		var start = panelSet.querySelector('.activetab').value || 0,
-			listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
-			panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
+		 panelSwitchers.push(new PanelSwitcher(panelSet));
+	// 	var start = panelSet.querySelector('.activetab').value || 0,
+	// 		listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
+	// 		panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
 
-		// apply color to SVG icons
-		[].forEach.call(listItems, (item) => painter.paintElement($(item.querySelector('.mpcf-panel-icon')), 'base'));
+	// 	// apply color to SVG icons
+	// 	[].forEach.call(listItems, (item) => painter.paintElement($(item.querySelector('.mpcf-panel-icon')), 'base'));
 
-		// find active panel and give it a class
-		[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
-		[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
-		panelSet.classList.toggle('last-item-selected', start == listItems.length - 1);
+	// 	// find active panel and give it a class
+	// 	[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
+	// 	[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
+	// 	panelSet.classList.toggle('last-item-selected', start == listItems.length - 1);
 
 
-		[].forEach.call(listItems, function(listItem) {
-			listItem.addEventListener('click', function() {
-				if (listItem.classList.contains('active')) return;
+	// 	[].forEach.call(listItems, function(listItem) {
+	// 		listItem.addEventListener('click', function() {
+	// 			if (listItem.classList.contains('active')) return;
 
-				var dest = listItem.dataset.index,
-					destPanel = [].filter.call(panels, panel => panel.dataset.index === dest)[0];
+	// 			var dest = listItem.dataset.index,
+	// 				destPanel = [].filter.call(panels, panel => panel.dataset.index === dest)[0];
 
-				// remove active class from current active panel
-				[].forEach.call(listItems, (listItem) => {
-					listItem.classList.remove('active');
-					painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'base');
-				});
+	// 			// remove active class from current active panel
+	// 			[].forEach.call(listItems, (listItem) => {
+	// 				listItem.classList.remove('active');
+	// 				painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'base');
+	// 			});
 
-				[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
+	// 			[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
 
-				// apply new active class
-				listItem.classList.add('active');
-				destPanel.classList.add('active-panel');
-				panelSet.classList.toggle('last-item-selected', dest == listItems.length - 1);
+	// 			// apply new active class
+	// 			listItem.classList.add('active');
+	// 			destPanel.classList.add('active-panel');
+	// 			panelSet.classList.toggle('last-item-selected', dest == listItems.length - 1);
 
-				// apply color to SVG icon of active panel
-				painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'focus');
+	// 			// apply color to SVG icon of active panel
+	// 			painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'focus');
 
-				// update activeTab field
-				panelSet.querySelector('.activetab').setAttribute('value', dest);
-			});
-		});
+	// 			// update activeTab field
+	// 			panelSet.querySelector('.activetab').setAttribute('value', dest);
+	// 		});
+	// 	});
 	});
 }
+
+class PanelSwitcher {
+	constructor(set) {
+		this.set       = set;
+		this.menuItems = [].slice.call(this.set.querySelectorAll('.mpcf-panels-menu li'));
+		this.panels    = [].slice.call(this.set.querySelectorAll('.mpcf-panels-tabs .mpcf-panel'));
+		this.activeTab = set.querySelector('.activetab');
+
+		this.registerEvents();
+		this.activatePreactivatedPanel();
+	}
+
+	registerEvents() {
+		this.menuItems.forEach(item => item.addEventListener('click', this.navigateToPanel.bind(this)));
+	}
+
+	activatePreactivatedPanel() {
+		this.activatePanel(this.activeTab.value || 0);
+	}
+
+	navigateToPanel(e) {
+		var target = e.target.classList.contains('mpcf-panel-item')
+				   ? e.target
+				   : e.target.closest('.mpcf-panel-item');
+
+		this.activatePanel(target.dataset.index);
+	}
+
+	activatePanel(panel) {
+		this.panels.forEach(item => item.classList.toggle('active-panel', item.dataset.index == panel));
+
+		this.menuItems.forEach(function(item) {
+			var icon      = item.querySelector('.mpcf-panel-icon'),
+				paintMode = item.dataset.index == panel ? 'focus' : 'base';
+
+			item.classList.toggle('active', item.dataset.index == panel);
+			if (icon) wp.svgPainter.paintElement($(icon), paintMode);
+		});
+
+		this.set.classList.toggle('last-item-selected', panel == this.menuItems.length - 1);
+		this.activeTab.setAttribute('value', panel);
+	}
+
+	registerMenuItem(item) {
+		this.menuItems.push(item);
+		this.menuItems = Array.from(new Set(this.menuItems));
+		item.addEventListener('click', this.navigateToPanel.bind(this));
+	}
+
+	registerPanel(panel) {
+		this.panels.push(panel);
+		this.panels = Array.from(new Set(this.panels));
+	}
+}
+
+
 
 /**************************************************************
 	Resize panel menus
@@ -120,6 +179,7 @@ var registerAsyncElements = function(parent) {
 	registerEditors(parent);
 	registerColorPicker(parent);
 	conditionalField(parent);
+	conditionalPanelsField(parent);
 	repeaterField(parent);
 
 	checkHTML5Support(parent);
@@ -347,8 +407,7 @@ var repeaterField = function(parent = null) {
 
 var generateName = function(elem) {
 	var name                 = [elem.dataset.name],
-		canContainDeepFields = false,
-		con = elem.dataset.name == 'extrabeds[0][0]';
+		canContainDeepFields = false;
 
 	while (elem.parentNode) {
 		elem = elem.parentNode;
@@ -400,7 +459,7 @@ var generateID = function(elem) {
 }
 
 var renameDynamicFields = function(parent) {
-	var rows = parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container');
+	var rows = parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel');
 
 	// each row
 	[].forEach.call(rows, function(row, rowIndex) {
@@ -546,6 +605,92 @@ var conditionalField = function(parent = null) {
 
 	});
 }
+
+
+/**************************************************************
+	Conditional panel fields
+ **************************************************************/
+
+var conditionalPanelsField = function(parent = null) {
+	parent = parent || document;
+
+	var fields = parent.querySelectorAll('.mpcf-conditionalpanels-input');
+	if (!fields) return;
+
+	[].forEach.call(fields, function(field) {
+		if (field.dataset.registered && field.dataset.registered == 1) return;
+
+		var set      = field.closest('.mpcf-panels'),
+			menu     = set.querySelector('.mpcf-panels-menu'),
+			tabs     = set.querySelector('.mpcf-panels-tabs'),
+			select   = field.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
+			wrapper  = field.querySelector('.mpcf-conditional-wrapper'),			
+			baseName = select.dataset.basename,
+			options  = JSON.parse(select.dataset.options),
+			values   = JSON.parse(select.dataset.values),
+			isSingle = select.tagName.toLowerCase() === 'input',
+			menuItem = document.createElement('li'),
+			tab      = document.createElement('div');
+
+		field.dataset.registered = 1;
+		select.removeAttribute('data-options');
+		select.removeAttribute('data-values');
+
+		menu.appendChild(menuItem);
+		tabs.appendChild(tab);
+
+		var switchContent = function() {
+			// no option with this value available, i.e. no option selected
+			if ((isSingle && select.checked === false) || typeof options[select.value] === 'undefined') {
+				if (menuItem)	menuItem.innerHTML = '';
+				if (tab)		tab.innerHTML = '';
+				return;
+			}
+
+			updateLoadingElements(field);
+
+			var request = {
+				'action': 'mpcf_get_conditional_panels_fields',
+				'panel':  JSON.stringify(options[select.value].panel),
+				'values': values
+			};
+
+			$.post(ajaxurl, request, function(response) {
+				response = JSON.parse(response);
+
+				if (tab)
+					removeQTranslateX(tab);
+
+				menuItem.outerHTML = response.menu;
+				tab.outerHTML      = response.tab;
+				menuItem           = menu.querySelector('li:last-child');
+				tab                = tabs.querySelector('.mpcf-panel:last-child');
+
+				menuItem.setAttribute('data-index', menu.children.length - 1);
+				tab.setAttribute('data-index', tabs.children.length - 1);
+				tab.setAttribute('data-basename', baseName);
+				tab.classList.add('mpcf-conditionalpanel');
+
+				panelSwitchers.forEach(function(switcher) {
+					if (switcher.set !== set) return;
+
+					switcher.registerMenuItem(menuItem);
+					switcher.registerPanel(tab);
+					switcher.activatePreactivatedPanel();
+				});
+
+				renameDynamicFields(set);
+				updateLoadingElements(field, true);
+				checkCheckableElements(tab);
+				registerAsyncElements(tab);
+			});
+		}
+
+		switchContent();
+		select.addEventListener('change', switchContent);
+	});
+}
+
 
 
 /**************************************************************
