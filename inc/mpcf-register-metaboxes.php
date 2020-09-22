@@ -69,9 +69,9 @@ function mpcf_remove_all_custom_fields() {
 
 function mpcf_add_metaboxes() {
 	global $post;
-	$boxes = get_option('mpcf_meta_boxes', array());
+	$boxes           = get_option('mpcf_meta_boxes', array());
 	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
-	$isFrontpage = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
+	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
 		$post_type = $box['post_type'];
