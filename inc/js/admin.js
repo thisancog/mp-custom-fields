@@ -389,6 +389,8 @@ var repeaterField = function(parent = null) {
 							newID   = generateID(input),
 							newName = generateName(input);
 
+						input.dataset.baseName = newName;
+
 						if (type === 'button' || type === 'submit') return;
 
 						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
@@ -409,6 +411,7 @@ var generateName = function(elem) {
 	var name                 = [elem.dataset.name],
 		canContainDeepFields = false;
 
+	// traverse parent nodes to find all name attributes to be applied to this input
 	while (elem.parentNode) {
 		elem = elem.parentNode;
 		canContainDeepFields = canContainDeepFields || (elem.classList && elem.classList.contains('mpcf-table-input'));
@@ -429,17 +432,29 @@ var generateName = function(elem) {
 		}
 	}
 
+	// generate nested Arrays
+
 	name = name.map(function(item, i) {
 		var regex     = /(\S+?)\[(\S+?)\](\[(\S+?)\])?/g,
 			subfields = [...item.toString().matchAll(regex)];
+
 		if (subfields.length == 0) return item;
 
-		subfields = subfields[0].filter(subfield => subfield.indexOf('[') == -1);
+		subfields = subfields[0].filter(subfield => subfield && subfield.indexOf('[') == -1);
 		return subfields;
 	});
 
+
+
+//  flatten Array
 	name = name.flat(9999);
+
+//  remove brackets from strings
+	name = name.map(item => item.toString().replace(/[\[\]]/g, ''));
+
 	name = name.filter((item, index, arr) => index === 0 || item !== arr[index - 1] || canContainDeepFields);
+
+//	join parts and apply format for nested HTML inputs	
 	name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
 
 	return name;
@@ -544,7 +559,6 @@ var conditionalField = function(parent = null) {
 			values = values.options;
 
 		var switchContent = function(values = false) {
-
 			// no option with this value available, i.e. no option selected
 			if ((isSingle && select.checked === false) || typeof options[select.value] === 'undefined') {
 				wrapper.innerHTML = '';
@@ -625,18 +639,22 @@ var conditionalPanelsField = function(parent = null) {
 			tabs     = set.querySelector('.mpcf-panels-tabs'),
 			select   = field.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
 			wrapper  = field.querySelector('.mpcf-conditional-wrapper'),			
-			baseName = select.dataset.basename,
+			baseName = select.dataset.baseName,
 			options  = JSON.parse(select.dataset.options),
 			values   = JSON.parse(select.dataset.values),
 			isSingle = select.tagName.toLowerCase() === 'input',
 			menuItem = document.createElement('li'),
-			tab      = document.createElement('div');
+			tab      = document.createElement('div'),
+			id       = Math.floor(Math.random() * Math.pow(10,10));
 
 		field.dataset.registered = 1;
 		select.removeAttribute('data-options');
 		select.removeAttribute('data-values');
-
+		
+		menuItem.setAttribute('data-id', id);
 		menu.appendChild(menuItem);
+
+		tab.setAttribute('data-id', id);
 		tabs.appendChild(tab);
 
 		var switchContent = function() {
@@ -663,11 +681,15 @@ var conditionalPanelsField = function(parent = null) {
 
 				menuItem.outerHTML = response.menu;
 				tab.outerHTML      = response.tab;
-				menuItem           = menu.querySelector('li:last-child');
-				tab                = tabs.querySelector('.mpcf-panel:last-child');
 
-				menuItem.setAttribute('data-index', menu.children.length - 1);
-				tab.setAttribute('data-index', tabs.children.length - 1);
+				menuItem = menu.querySelector('[data-index="-1"]');
+				tab      = tabs.querySelector('[data-index=""]');
+
+				menuItem.setAttribute('data-id', id);
+				tab.setAttribute('data-id', id);
+
+				menuItem.setAttribute('data-index', getElemOrder(menuItem));
+				tab.setAttribute('data-index', getElemOrder(tab));
 				tab.setAttribute('data-basename', baseName);
 				tab.classList.add('mpcf-conditionalpanel');
 
@@ -684,6 +706,18 @@ var conditionalPanelsField = function(parent = null) {
 				checkCheckableElements(tab);
 				registerAsyncElements(tab);
 			});
+		}
+
+		var getElemOrder = function(elem) {
+			var order = 0,
+				node  = elem.parentNode.firstChild;
+			while (node && node !== elem) {
+				if (node !== elem && node.nodeType == Node.ELEMENT_NODE)
+					order++;
+				node = node.nextElementSibling || node.nextSibling;
+			}
+
+			return order;
 		}
 
 		switchContent();
