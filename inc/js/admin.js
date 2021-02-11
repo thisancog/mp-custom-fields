@@ -499,9 +499,12 @@ var renameDynamicFields = function(parent) {
 					parent = input.parentElement,
 					newID, newName;
 
-				if (!input.dataset.name) {					
-					if (input.getAttribute('for') && parent.classList.contains('mpcf-title')) {
-						var labelFor = parent.closest('.mpcf-field-option').querySelector(validInputs.join(','));						
+				if (!input.dataset.name) {
+					var isLabel = input.getAttribute('for') && input.tagName.toLowerCase() == 'label';
+					isLabel = isLabel && (parent.classList.contains('mpcf-title') || parent.classList.contains('mpcf-buttongroup-option') || parent.classList.contains('mpcf-radio-option'));
+
+					if (isLabel) {
+						var labelFor = parent.closest('.mpcf-field-option, .mpcf-buttongroup-option, .mpcf-radio-option').querySelector(validInputs.join(','));
 						newID = labelFor ? generateID(labelFor) : '';
 					} else {
 						input.dataset.name = input.name; 
