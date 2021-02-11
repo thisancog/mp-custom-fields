@@ -82,7 +82,7 @@ class MPCFRadioField extends MPCFModule {
 					name="<?php echo $args['name']; ?>"
 					id="<?php echo $id; ?>"
 					value="<?php echo $name; ?>"
-					<?php echo ($args['value'] === $name ? ' checked' : ''); ?>>
+					<?php echo ($args['value'] == $name ? ' checked' : ''); ?>>
 				<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 			</div>
 

@@ -67,7 +67,6 @@ class MPCFNumberField extends MPCFModule {
 		<input  type="number"
 				name="<?php echo $args['name']; ?>"
 				value="<?php echo $args['value']; ?>"
-				pattern="[0-9]+"
 				<?php echo mpcf_list_input_params($this); ?>>
 
 <?php

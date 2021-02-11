@@ -223,6 +223,10 @@
 	width: 100%;
 }
 
+.mpcf-field-option.mpcf-radio-input {
+	align-items: flex-start;
+}
+
 .mpcf-field-option.mpcf-textarea-input,
 .mpcf-field-option.mpcf-media-input,
 .mpcf-field-option.mpcf-repeater-input {
@@ -283,8 +287,14 @@
 
 .mpcf-description {
 	margin: 20px 0;
+	max-width: 100%;
 	font-style: oblique;
 	line-height: 1.3;
+}
+
+.mpcf-description em,
+.mpcf-description i {
+	font-style: normal;
 }
 
 .mpcf-text-input .mpcf-description,

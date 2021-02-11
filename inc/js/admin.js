@@ -408,20 +408,21 @@ var repeaterField = function(parent = null) {
 
 
 var generateName = function(elem) {
-	var name                 = [elem.dataset.name],
+	var name                 = [elem.dataset.name || elem.name],
+		parent               = elem,
 		canContainDeepFields = false;
 
 	// traverse parent nodes to find all name attributes to be applied to this input
-	while (elem.parentNode) {
-		elem = elem.parentNode;
-		canContainDeepFields = canContainDeepFields || (elem.classList && elem.classList.contains('mpcf-table-input'));
+	while (parent.parentNode) {
+		parent = parent.parentNode;
+		canContainDeepFields = canContainDeepFields || (parent.classList && parent.classList.contains('mpcf-table-input'));
 
-		if (elem.dataset && elem.dataset.basename)
-			name.unshift(elem.dataset.basename);
+		if (parent.dataset && parent.dataset.basename)
+			name.unshift(parent.dataset.basename);
 
-		if (elem.classList && elem.classList.contains('mpcf-repeater-row')) {
+		if (parent.classList && parent.classList.contains('mpcf-repeater-row')) {
 			var i = 0,
-				child = elem;
+				child = parent;
 
 			while ((child = child.previousSibling) != null) {
 				if (child.classList && child.classList.contains('mpcf-repeater-row'))
@@ -432,8 +433,9 @@ var generateName = function(elem) {
 		}
 	}
 
-	// generate nested Arrays
 
+	// generate nested Arrays
+	name = name.filter(item => typeof item !== 'undefined' && item !== null);
 	name = name.map(function(item, i) {
 		var regex     = /(\S+?)\[(\S+?)\](\[(\S+?)\])?/g,
 			subfields = [...item.toString().matchAll(regex)];
@@ -463,8 +465,9 @@ var generateName = function(elem) {
 
 var generateID = function(elem) {
 	if (elem.tagName && elem.tagName.toLowerCase() == 'label' && 
-		elem.previousElementSibling && elem.previousElementSibling.tagName.toLowerCase() == 'input')
+		elem.previousElementSibling && elem.previousElementSibling.tagName.toLowerCase() == 'input') {
 		return generateID(elem.previousElementSibling);
+	}
 
 	var id = generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
 
@@ -474,17 +477,17 @@ var generateID = function(elem) {
 }
 
 var renameDynamicFields = function(parent) {
-	var rows = parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel');
+	var rows = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel')),
+		validInputs = ['input', 'textarea', 'select', 'fieldset'],
+		valids      = validInputs.concat(['button', 'label', 'datalist', 'keygen', 'option']);
 
 	// each row
-	[].forEach.call(rows, function(row, rowIndex) {
-
-		var fields = row.querySelectorAll('.mpcf-field-option');
+	rows.forEach(function(row, rowIndex) {
+		var fields = [].slice.call(row.querySelectorAll('.mpcf-field-option'));
 
 		// each field
-		[].forEach.call(fields, function(field, fieldIndex) {
-			var inputs = field.querySelectorAll('[name], [id], [for]'),
-				valids = ['input', 'button', 'label', 'textarea', 'select', 'datalist', 'keygen', 'fieldset', 'option'];
+		fields.forEach(function(field, fieldIndex) {
+			var inputs = field.querySelectorAll('[name], [id], [for]');
 
 			inputs = [].filter.call(inputs, function(input) {
 				return valids.indexOf(input.tagName.toLowerCase()) > -1;
@@ -492,12 +495,14 @@ var renameDynamicFields = function(parent) {
 
 			// each input
 			inputs.forEach(function(input, inputIndex) {
-				let type = input.getAttribute('type'),
+				let type   = input.getAttribute('type'),
+					parent = input.parentElement,
 					newID, newName;
 
-				if (!input.dataset.name) {
-					if (input.getAttribute('for') && inputIndex !== 0) {
-						newID = inputs[inputIndex - 1].id;
+				if (!input.dataset.name) {					
+					if (input.getAttribute('for') && parent.classList.contains('mpcf-title')) {
+						var labelFor = parent.closest('.mpcf-field-option').querySelector(validInputs.join(','));						
+						newID = labelFor ? generateID(labelFor) : '';
 					} else {
 						input.dataset.name = input.name; 
 					}
@@ -512,8 +517,10 @@ var renameDynamicFields = function(parent) {
 				if (input.hasAttribute('id'))	input.setAttribute('id', newID);
 				if (input.hasAttribute('for'))	input.setAttribute('for', newID);
 
-				if (input.hasAttribute('name'))
-					input.setAttribute('name', generateName(input));
+				if (input.hasAttribute('name')) {
+					newName = generateName(input);
+					input.setAttribute('name', newName);
+				}
 			});
 		});
 	});
@@ -589,26 +596,6 @@ var conditionalField = function(parent = null) {
 				registerAsyncElements(wrapper);
 			});
 		}
-
-		// var rename = function() {
-		// 	var fields = wrapper.querySelectorAll('.mpcf-field-option');
-
-		// 	[].forEach.call(fields, function(field, fieldIndex) {
-		// 		var inputs = field.querySelectorAll('[name], [id], [for]');
-
-		// 		[].forEach.call(inputs, function(input) {
-		// 			let type = input.getAttribute('type'),
-		// 				fieldName = options[select.value].fields[fieldIndex].name,
-		// 				newID   = baseName + '-' + fieldName,
-		// 				newName = baseName + '[' + fieldName +  ']';
-
-		// 			if (type === 'button' || type === 'submit') return;
-		// 			if (input.hasAttribute('id'))	input.setAttribute('id', newID);
-		// 			if (input.hasAttribute('for'))	input.setAttribute('for', newID);
-		// 			if (input.hasAttribute('name'))	input.setAttribute('name', newName);
-		// 		});
-		// 	});
-		// }
 
 		select.addEventListener('change', () => switchContent());
 
@@ -1140,12 +1127,13 @@ function removeQTranslateX(parent = null) {
 **************************************************************/
 
 var updateLoadingElements = function(elem, toRemove = false) {
-	var btn = document.querySelector('#publish, #submit, .editor-post-publish-button, .editor-post-save-draft, .editor-post-publish-panel__toggle');
+	var btns = [].slice.call(document.querySelectorAll('#publish, #submit, .editor-post-publish-button, .editor-post-save-draft, .editor-post-publish-panel__toggle'));
+	if (btns.length == 0) return;
 
 	if (!toRemove)	loadingElements.push(elem);
 	else 			loadingElements = loadingElements.filter(elem => elem !== elem);
 
-	btn.classList.toggle('disabled', loadingElements.length > 0);
+	btns[0].classList.toggle('disabled', loadingElements.length > 0);
 }
 
 

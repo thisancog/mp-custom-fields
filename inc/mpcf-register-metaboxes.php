@@ -74,8 +74,10 @@ function mpcf_add_metaboxes() {
 	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
-		$post_type = $box['post_type'];
-		$page_template = $box['page_template'];
+		$post_type     = $box['post_type'];
+		$page_template = isset($box['page_template']) ? $box['page_template'] : '';
+		$context       = isset($box['context']) ? $box['context'] : 'normal';
+		$priority      = isset($box['priority']) ? $box['priority'] : 'high';
 
 		$registerThisBox = true;
 
@@ -104,8 +106,10 @@ function mpcf_add_metaboxes() {
 				$registerThisBox = false;
 		}
 
-		if ($registerThisBox)
-			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $box['context'], $box['priority']);
+		if ($registerThisBox) {
+			
+			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
+		}
 	}
 }
 
