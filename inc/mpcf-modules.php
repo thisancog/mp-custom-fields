@@ -191,6 +191,8 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 	$boxes = array();
 	$registeredFields = [];
 
+	global $wp_query;
+
 	if ($context === 'post') {
 		$id = $id !== null && get_post_status($id) !== false ? $id : get_the_ID();
 		$value = get_post_meta($id, $fieldName, true);
@@ -201,6 +203,15 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 		$id = $id !== null ? $id : $wp_query->query['post_type'];
 		$value = mpcf_get_archive_meta($id, $fieldName);
 		$boxes = mpcf_get_archive_metaboxes_for_type($id);
+	} else if ($context == 'tax') {
+		$id = $id !== null ? $id :
+			  (isset($wp_query) && isset($wp_query->queried_object) && isset($wp_query->queried_object->term_id)
+			  	? $wp_query->queried_object->term_id : null);
+		if ($id == null) return;
+
+		$term  = get_term($id);
+		$value = get_term_meta($id, $fieldName, true);
+		$boxes = mpcf_get_taxonomy_boxes($term->taxonomy);
 	}
 
 	array_walk($boxes, function($box) use (&$registeredFields, $fieldName) {
@@ -220,8 +231,8 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 	return $value;
 }
 
-function mpcf_has_field($field = null, $id = null) {
-	$value = mpcf_get_field($field, $id);
+function mpcf_has_field($field = null, $id = null, $context = 'post') {
+	$value = mpcf_get_field($field, $id, $context);
 	return $value !== null && (!empty($value) || $value == '0');
 }
 

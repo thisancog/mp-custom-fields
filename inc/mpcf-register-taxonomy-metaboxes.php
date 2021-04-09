@@ -149,5 +149,22 @@ function mpcf_save_custom_fields_taxonomy($term_id) {
 
 
 
+/*****************************************************
+	Field getters
+ *****************************************************/
+
+function mpcf_get_tax_field($fieldName = null, $id = null) {
+	return mpcf_get_field($fieldName, $id, 'tax');
+}
+
+function mpcf_has_tax_field($fieldName = null, $id = null) {
+	return mpcf_has_field($fieldName, $id, 'tax');
+}
+
+function mpcf_the_tax_field($fieldName = null) {
+	echo mpcf_get_tax_field($fieldName);
+}
+
+
 
 ?>
