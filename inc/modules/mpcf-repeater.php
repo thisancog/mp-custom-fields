@@ -62,6 +62,7 @@ class MPCFRepeaterField extends MPCFModule {
 
 		<div class="mpcf-repeater-controls">
 			<input type="button" class="mpcf-repeater-add-row mpcf-button" value="<?php _e('Add', 'mpcf'); ?>" />
+			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo $args['name']; ?>" value="" />
 		</div>
 		
 <?php	foreach ($args['fields'] as $field => $data) {

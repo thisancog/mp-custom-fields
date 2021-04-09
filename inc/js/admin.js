@@ -43,46 +43,6 @@ var panelSwitch = function() {
 
 	[].forEach.call(panelSets, function(panelSet) {
 		 panelSwitchers.push(new PanelSwitcher(panelSet));
-	// 	var start = panelSet.querySelector('.activetab').value || 0,
-	// 		listItems = panelSet.querySelectorAll('.mpcf-panels-menu li'),
-	// 		panels = panelSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel');
-
-	// 	// apply color to SVG icons
-	// 	[].forEach.call(listItems, (item) => painter.paintElement($(item.querySelector('.mpcf-panel-icon')), 'base'));
-
-	// 	// find active panel and give it a class
-	// 	[].filter.call(listItems, (item) => item.dataset.index === start).forEach((item) => item.classList.add('active'));
-	// 	[].filter.call(panels, (panel) => panel.dataset.index === start).forEach((panel) => panel.classList.add('active-panel'));
-	// 	panelSet.classList.toggle('last-item-selected', start == listItems.length - 1);
-
-
-	// 	[].forEach.call(listItems, function(listItem) {
-	// 		listItem.addEventListener('click', function() {
-	// 			if (listItem.classList.contains('active')) return;
-
-	// 			var dest = listItem.dataset.index,
-	// 				destPanel = [].filter.call(panels, panel => panel.dataset.index === dest)[0];
-
-	// 			// remove active class from current active panel
-	// 			[].forEach.call(listItems, (listItem) => {
-	// 				listItem.classList.remove('active');
-	// 				painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'base');
-	// 			});
-
-	// 			[].forEach.call(panels, (panel) => panel.classList.remove('active-panel'));
-
-	// 			// apply new active class
-	// 			listItem.classList.add('active');
-	// 			destPanel.classList.add('active-panel');
-	// 			panelSet.classList.toggle('last-item-selected', dest == listItems.length - 1);
-
-	// 			// apply color to SVG icon of active panel
-	// 			painter.paintElement($(listItem.querySelector('.mpcf-panel-icon')), 'focus');
-
-	// 			// update activeTab field
-	// 			panelSet.querySelector('.activetab').setAttribute('value', dest);
-	// 		});
-	// 	});
 	});
 }
 
@@ -137,6 +97,17 @@ class PanelSwitcher {
 	registerPanel(panel) {
 		this.panels.push(panel);
 		this.panels = Array.from(new Set(this.panels));
+	}
+
+	removePanel(panel, menuItem) {
+		this.panels = this.panels.filter(otherPanel => otherPanel !== panel);
+		this.menuItems = this.panels.filter(otherItem => otherItem !== menuItem);
+
+		if (panel.classList.contains('active-panel'))
+			this.activatePanel(this.panels[0].dataset.index);
+		
+		panel.parentElement.removeChild(panel);
+		menuItem.parentElement.removeChild(menuItem);
 	}
 }
 
@@ -290,13 +261,15 @@ var repeaterField = function(parent = null) {
 	[].forEach.call(repeaters, function(repeater) {
 		if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
-		var rowsWrapper = repeater.querySelector('.mpcf-repeater-wrapper'),
-			loader = repeater.querySelector('.mpcf-loading-container'),
-			fields = rowsWrapper.dataset.fields,
-			fieldsObj = JSON.parse(fields),
-			values = rowsWrapper.dataset.values,
-			addBtn = repeater.querySelector('.mpcf-repeater-add-row'),
-			rowHTML = null,
+		var set             = repeater.closest('.mpcf-panels'),
+			rowsWrapper     = repeater.querySelector('.mpcf-repeater-wrapper'),
+			loader          = repeater.querySelector('.mpcf-loading-container'),
+			fields          = rowsWrapper.dataset.fields,
+			fieldsObj       = JSON.parse(fields),
+			values          = rowsWrapper.dataset.values,
+			addBtn          = repeater.querySelector('.mpcf-repeater-add-row'),
+			emtpyField      = repeater.querySelector('.mpcf-repeater-empty'),
+			rowHTML         = null,
 			dragDropHandler = null;
 
 		repeater.dataset.registered = 1;
@@ -310,6 +283,7 @@ var repeaterField = function(parent = null) {
 		if (values.length !== -1)
 			updateLoadingElements(repeater);
 
+
 		// populate repeater
 
 		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
@@ -318,15 +292,19 @@ var repeaterField = function(parent = null) {
 				btn.addEventListener('click', removeRow);
 			});
 
-			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), { cbEnd: reorder, clickElem: '.mpcf-repeater-row-move' });
+			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
+				cbEnd: function() { renameDynamicFields(set); },
+				clickElem: '.mpcf-repeater-row-move'
+			});
 
-			reorder();
+			renameDynamicFields(set);
 			loader.classList.remove('mpcf-loading-active');
 			checkCheckableElements(rowsWrapper);
 			registerAsyncElements(rowsWrapper);
 
 			updateLoadingElements(repeater, true);
 		});
+
 
 		// prefetch blank row
 
@@ -345,7 +323,9 @@ var repeaterField = function(parent = null) {
 
 			dragDropHandler.addElements(newRow);
 
-			reorder();
+			emtpyField.removeAttribute('name');
+
+			renameDynamicFields(set);
 			registerAsyncElements(newRow);
 		});
 
@@ -359,48 +339,31 @@ var repeaterField = function(parent = null) {
 			removeQTranslateX(el);
 
 			while ((el = el.parentElement) && !el.classList.contains('mpcf-repeater-row'));
-			el.parentElement.removeChild(el);
 
-			reorder();
-		}
+			// find and also remove attached panels, if there are conditional panels
+			var panelSelects = [].slice.call(el.querySelectorAll('.mpcf-conditionalpanels-input'));
+			panelSelects.forEach(function(select) {
+				var id       = select.dataset.panelId,
+					set      = select.closest('.mpcf-panels'),
+					panel    = set.querySelector('.mpcf-panel[data-id="' + id + '"]'),
+					menuItem = set.querySelector('li.mpcf-panel-item[data-id="' + id + '"]');
 
+				panelSwitchers.forEach(function(switcher) {
+					if (switcher.set !== set) return;
 
-		// reorder rows and assign new indices
-
-		var reorder = function() {
-			var rows = rowsWrapper.querySelectorAll('.mpcf-repeater-row');
-
-			[].forEach.call(rows, function(row, rowIndex) {
-				var fields = row.querySelectorAll('.mpcf-field-option');
-
-				[].forEach.call(fields, function(field, fieldIndex) {
-					var inputs = field.querySelectorAll('[name], [id], [for]'),
-						valids = ['input', 'button', 'label', 'textarea', 'select', 'datalist', 'keygen', 'fieldset', 'option'];
-
-					inputs = [].filter.call(inputs, function(input) {
-						return valids.indexOf(input.tagName.toLowerCase()) > -1;
-					});
-
-					inputs.forEach(function(input) {
-						if (!input.dataset.name)
-							input.dataset.name = input.name || input.getAttribute('for');
-
-						let type    = input.getAttribute('type'),
-							newID   = generateID(input),
-							newName = generateName(input);
-
-						input.dataset.baseName = newName;
-
-						if (type === 'button' || type === 'submit') return;
-
-						if (input.hasAttribute('id'))	input.setAttribute('id', newID);
-						if (input.hasAttribute('for'))	input.setAttribute('for', newID);
-						if (input.hasAttribute('name'))	input.setAttribute('name', newName);
-					});
+					switcher.removePanel(panel, menuItem);
 				});
+			
 			});
 
-			rowsWrapper.classList.toggle('empty', rowsWrapper.childElementCount === 0);
+			el.parentElement.removeChild(el);
+
+		//	if there are no rows, "activate" the empty field so there is an empty value posted on submit
+			if (rowsWrapper.children.length == 0) {
+				emtpyField.setAttribute('name', emtpyField.dataset.name);
+			}
+
+			renameDynamicFields(set);
 		}
 	});
 }
@@ -477,7 +440,7 @@ var generateID = function(elem) {
 }
 
 var renameDynamicFields = function(parent) {
-	var rows = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel')),
+	var rows        = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel')),
 		validInputs = ['input', 'textarea', 'select', 'fieldset'],
 		valids      = validInputs.concat(['button', 'label', 'datalist', 'keygen', 'option']);
 
@@ -524,6 +487,18 @@ var renameDynamicFields = function(parent) {
 					newName = generateName(input);
 					input.setAttribute('name', newName);
 				}
+
+			//	propagate conditional panel name and update panel base name
+				if (field.classList.contains('mpcf-conditionalpanels-input')) {
+					var panelID = field.dataset.panelId,
+						set     = field.closest('.mpcf-panels'),
+						panel   = set.querySelector('.mpcf-panel[data-id="' + panelID + '"]');
+					
+					if (panel) {
+						panel.dataset.basename = newName.replace(/(\[type\]$)/g, '');
+					}
+				}
+
 			});
 		});
 	});
@@ -629,7 +604,7 @@ var conditionalPanelsField = function(parent = null) {
 			tabs     = set.querySelector('.mpcf-panels-tabs'),
 			select   = field.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
 			wrapper  = field.querySelector('.mpcf-conditional-wrapper'),			
-			baseName = select.dataset.baseName,
+			baseName = select.dataset.basename,
 			options  = JSON.parse(select.dataset.options),
 			values   = JSON.parse(select.dataset.values),
 			isSingle = select.tagName.toLowerCase() === 'input',
@@ -638,6 +613,7 @@ var conditionalPanelsField = function(parent = null) {
 			id       = Math.floor(Math.random() * Math.pow(10,10));
 
 		field.dataset.registered = 1;
+		field.setAttribute('data-panel-id', id);
 		select.removeAttribute('data-options');
 		select.removeAttribute('data-values');
 		
