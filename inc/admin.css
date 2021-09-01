@@ -1039,7 +1039,7 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-conditional-choice input[type="checkbox"] + label {
 	position: relative;
-	top: 32px;
+	top: -3px;
 }
 
 
