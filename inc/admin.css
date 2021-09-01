@@ -914,7 +914,7 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-repeater-wrapper li:before {
 	content: counter(section) ". ";
 	position: absolute;
-	top: 18px;
+	top: 13px;
 	left: 16px;
 	counter-increment: section;
 	z-index: 2;
@@ -1035,6 +1035,11 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-conditional-wrapper:not(:empty) {
 	border-top: 1px solid #DDD;
+}
+
+.mpcf-conditional-choice input[type="checkbox"] + label {
+	position: relative;
+	top: 32px;
 }
 
 
