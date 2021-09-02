@@ -53,12 +53,21 @@ class MPCFGridField extends MPCFModule {
 		return __('Grid field', 'mpcf');
 	}
 
+	function get_default() {
+		return array('startrow' => 0, 'endrow' => 0, 'startcol' => 0, 'endcol' => 0);
+	}
+
+	function display_before($post_id, $field, $value) {
+		return json_decode(wp_specialchars_decode(htmlspecialchars_decode($value)), true);
+	}
+
+
 	function build_field($args = array()) {
 		$params = mpcf_list_input_params($this, array('required', 'min', 'max'));
 		$value  = json_decode(wp_specialchars_decode($args['value']), true);
 
 		if (empty($value))
-			$value = array('startrow' => 0, 'endrow' => 0, 'startcol' => 0, 'endcol' => 0);
+			$value = $this->get_default();
 
 		$valueJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
 
