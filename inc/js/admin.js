@@ -20,6 +20,7 @@ window.addEventListener('load', function() {
 	registerColorPicker();
 	repeaterField();
 	conditionalField();
+	gridField();
 	conditionalPanelsField();
 	addQTranslateX();
 	dragDropLists();
@@ -151,6 +152,7 @@ var registerAsyncElements = function(parent) {
 	registerColorPicker(parent);
 	conditionalField(parent);
 	conditionalPanelsField(parent);
+	gridField(parent);
 	repeaterField(parent);
 
 	checkHTML5Support(parent);
@@ -688,6 +690,78 @@ var conditionalPanelsField = function(parent = null) {
 
 		switchContent();
 		select.addEventListener('change', switchContent);
+	});
+}
+
+
+
+
+
+
+/**************************************************************
+	Grid fields
+ **************************************************************/
+
+var gridField = function(parent) {
+	parent = parent || document;
+	var fields = [].slice.call(parent.querySelectorAll('.mpcf-grid-input'));
+	if (!fields) return;
+
+	fields.forEach(function(field) {
+		var grid      = field.querySelector('.grid-field-grid'),
+			cells     = [].slice.call(grid.querySelectorAll('.grid-cell')),
+			input     = field.querySelector('.grid-field-input'),
+			value     = JSON.parse(input.value),
+			isClicked = false;
+
+		var onMouseDown = function(e) {
+			if (!e.target.classList.contains('grid-cell')) return;
+
+			isClicked = true;
+			value.startrow = value.endrow = e.target.dataset.row;
+			value.startcol = value.endcol = e.target.dataset.col;
+			paintCells();
+		};
+
+		var onMouseMove = function(e) {
+			if (!isClicked || !e.target.classList.contains('grid-cell')) return;
+			var rows = [value.startrow, value.endrow, e.target.dataset.row],
+				cols = [value.startcol, value.endcol, e.target.dataset.col],
+				unique = function(value, index, self) {
+					return self.indexOf(value) === index;
+				};
+
+			rows = rows.map(val => parseInt(val)).filter(unique).sort((a,b) => a-b);
+			cols = cols.map(val => parseInt(val)).filter(unique).sort((a,b) => a-b);
+
+			value = {
+				startrow: rows[0],
+				endrow:   rows[rows.length - 1],
+				startcol: cols[0],
+				endcol:   cols[cols.length - 1],
+			};
+
+			paintCells();
+		};
+
+		var onMouseUp = function(e) {
+			if (!isClicked) return;
+			isClicked = false;
+			input.value = JSON.stringify(value);
+		};
+
+		var paintCells = function() {
+			cells.forEach(function(cell) {
+				var toPaint = cell.dataset.row >= value.startrow && cell.dataset.row <= value.endrow &&
+							  cell.dataset.col >= value.startcol && cell.dataset.col <= value.endcol;
+
+				cell.classList.toggle('selected', toPaint);
+			})
+		};
+
+		grid.addEventListener('mousedown', onMouseDown);
+		grid.addEventListener('mousemove', onMouseMove);
+		grid.addEventListener('mouseup',   onMouseUp);
 	});
 }
 
