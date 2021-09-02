@@ -1151,4 +1151,42 @@ body.no-js .mpcf-file-picker + label {
 
 
 
+/******************************
+	Flex grid
+ ******************************/
+
+.mpcf-grid-input {
+	align-items: flex-start;
+}
+
+.mpcf-grid-input .grid-field-grid .row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.mpcf-grid-input .grid-field-grid .row + .row {
+	margin-top: 4px;
+}
+
+.mpcf-grid-input .grid-field-grid .grid-cell {
+	width: 100%;
+	background-color: #E5E5E5;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.mpcf-grid-input .grid-field-grid .grid-cell.selected {
+	background-color: #0073AA;
+}
+
+.mpcf-grid-input .grid-field-grid .grid-cell:after {
+	content: '';
+	display: block;
+	padding-bottom: 100%;
+}
+
+.mpcf-grid-input .grid-field-grid .grid-cell + .grid-cell {
+	margin-left: 4px;
+}
 
