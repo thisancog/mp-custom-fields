@@ -20,8 +20,8 @@ window.addEventListener('load', function() {
 	registerColorPicker();
 	repeaterField();
 	conditionalField();
-	gridField();
 	conditionalPanelsField();
+	gridField();
 	addQTranslateX();
 	dragDropLists();
 	paintImageButtonGroup();
@@ -197,31 +197,23 @@ var focusInvalids = function(elem) {
 var registerEditors = function(parent) {
 	parent = parent || document;
 
-	var fields = parent.querySelectorAll('.mpcf-editor-input .mpcf-field'),
-		defaultSettings = wp.editor.getDefaultSettings(),
-		options = { 
-			tinymce: { 
-				wpautop: true,
-				plugins : 'charmap colorpicker compat3x directionality fullscreen hr image lists media paste tabfocus textcolor wordpress wpautoresize wpdialogs wpeditimage wpemoji wpgallery wplink wptextpattern wpview', 
-				toolbar1: 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker',
-			},
-			mediaButtons: true,
-			quicktags: true 
-		};
+	var fields = [].slice.call(parent.querySelectorAll('.mpcf-editor-input .mpcf-field'));
 
-	[].forEach.call(fields, function(field) {
-		var editor          = field.querySelector('.mpcf-input-editor'),
+	fields.forEach(function(field) {
+		var inner           = field.querySelector('.mpcf-editor-inner'),
+			editor          = field.querySelector('.mpcf-input-editor'),
 			description     = field.querySelector('.mpcf-description'),
 			textarea        = editor.cloneNode(),
 			id              = editor.id,
 			idShort         = id.split('-').pop(),
 			oldContent      = wp.editor.getContent(id),
-			oldContentAutop = wp.editor.autop(oldContent);
+			oldContentAutop = wp.editor.autop(oldContent),
+			settings        = JSON.parse(inner.dataset.settings);
 
 		textarea.innerText = oldContentAutop || '';
 		wp.editor.remove(idShort);
 		field.appendChild(textarea);
-		wp.editor.initialize(id, options);
+		wp.editor.initialize(id, settings);
 
 		if (description)
 			field.appendChild(description);
@@ -764,6 +756,11 @@ var gridField = function(parent) {
 		grid.addEventListener('mouseup',   onMouseUp);
 	});
 }
+
+
+
+
+
 
 
 
