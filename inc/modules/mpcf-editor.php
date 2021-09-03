@@ -86,6 +86,11 @@ class MPCFEditorField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$id = str_replace(array('-', '_'), '', strtolower($args['name']));
+		$defaultTinyMCE = array(
+			'wpautop'	=> true,
+			'plugins' 	=> 'charmap colorpicker compat3x directionality fullscreen hr image lists media paste tabfocus textcolor wordpress wpautoresize wpdialogs wpeditimage wpemoji wpgallery wplink wptextpattern wpview',
+			'toolbar1'	=> 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker'
+		);
 
 		$editorargs = array(
 			'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
@@ -93,30 +98,31 @@ class MPCFEditorField extends MPCFModule {
 			'editor_css'		=> isset($args['css']) ? '<style>' . $args['css'] . '</style>' : null,
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
+			'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : $defaultTinyMCE,
 			'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
 		);
 
 		if      (isset($args['rows']))		$editorargs['textarea_rows'] = $args['rows'];
 		else if (isset($args['height']))	$editorargs['editor_height'] = $args['height'];
 		else 								$editorargs['editor_height'] = 200;
-		/* ?>
 
-		<textarea 	class="<?php echo mpcf_get_input_class($this); ?>"
-					id="<?php echo $id; ?>"
-					name="<?php echo $args['name']; ?>"
-					data-settings="<?php echo esc_attr(json_encode($editorargs, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>"
-					rows=""><?php echo mpcf_mknice($args['value']); ?></textarea>
+		$editorArgsJS = $editorargs;
+		$editorArgsJS['mediaButtons'] = $editorArgsJS['media_buttons'];
+		$editorArgsJS['quicktags']    = true;
+		unset($editorArgsJS['media_buttons']);
 
-<?php 	*/
+		$settings = esc_attr(json_encode($editorArgsJS, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>
+		
+		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>">
+<?php		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
 
-		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
+			// @ Wordpress Bug: editor_height is not honored
+			$minHeight = isset($editorargs['editor_height'])
+					   ? $editorargs['editor_height']
+					   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
 
-		// @ Wordpress Bug: editor_height is not honored
-		$minHeight = isset($editorargs['editor_height'])
-				   ? $editorargs['editor_height']
-				   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
-
-		<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
+			<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
+		</div>
 <?php	
 	}
 
