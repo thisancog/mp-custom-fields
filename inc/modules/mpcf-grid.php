@@ -72,7 +72,7 @@ class MPCFGridField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$params = mpcf_list_input_params($this, array('required', 'min', 'max'));
-		$value  = json_decode(wp_specialchars_decode($args['value']), true);
+		$value  = json_decode(wp_specialchars_decode(stripslashes($args['value'])), true);
 
 		if (empty($value))
 			$value = $this->get_default(null, $args, $args['value']);
