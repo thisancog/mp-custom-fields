@@ -53,8 +53,16 @@ class MPCFGridField extends MPCFModule {
 		return __('Grid field', 'mpcf');
 	}
 
-	function get_default() {
-		return array('startrow' => 0, 'endrow' => 0, 'startcol' => 0, 'endcol' => 0);
+	function get_default($post_id = null, $field = array(), $value = array()) {
+		$defaults = array('startrow' => 0, 'endrow' => 0, 'startcol' => 0, 'endcol' => 0);
+		if (isset($field['default'])) {
+			array_walk(array_keys($defaults), function($key) use (&$defaults, $field) {
+				if (isset($field['default'][$key]))
+					$defaults[$key] = $field['default'][$key];
+			});
+		}
+
+		return $defaults;
 	}
 
 	function display_before($post_id, $field, $value) {
@@ -67,7 +75,7 @@ class MPCFGridField extends MPCFModule {
 		$value  = json_decode(wp_specialchars_decode($args['value']), true);
 
 		if (empty($value))
-			$value = $this->get_default();
+			$value = $this->get_default(null, $args, $args['value']);
 
 		$valueJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
 
