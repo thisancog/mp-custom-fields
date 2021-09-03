@@ -85,9 +85,11 @@ class MPCFEditorField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$id = str_replace(array('-', '_'), '', strtolower($args['name']));
+		$id      = str_replace(array('-', '_'), '', strtolower($args['name']));
+		$wpautop = isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true;
+
 		$defaultTinyMCE = array(
-			'wpautop'	=> true,
+			'wpautop'	=> $wpautop,
 			'plugins' 	=> 'charmap colorpicker compat3x directionality fullscreen hr image lists media paste tabfocus textcolor wordpress wpautoresize wpdialogs wpeditimage wpemoji wpgallery wplink wptextpattern wpview',
 			'toolbar1'	=> 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker'
 		);
@@ -99,7 +101,7 @@ class MPCFEditorField extends MPCFModule {
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
 			'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : $defaultTinyMCE,
-			'wpautop'			=> isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true,
+			'wpautop'			=> $wpautop,
 		);
 
 		if      (isset($args['rows']))		$editorargs['textarea_rows'] = $args['rows'];
