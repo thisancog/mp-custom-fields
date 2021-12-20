@@ -56,7 +56,8 @@ class MPCFGridField extends MPCFModule {
 	function get_default($post_id = null, $field = array(), $value = array()) {
 		$defaults = array('startrow' => 0, 'endrow' => 0, 'startcol' => 0, 'endcol' => 0);
 		if (isset($field['default'])) {
-			array_walk(array_keys($defaults), function($key) use (&$defaults, $field) {
+			$keys = array_keys($defaults);
+			array_walk($keys, function($key) use (&$defaults, $field) {
 				if (isset($field['default'][$key]))
 					$defaults[$key] = $field['default'][$key];
 			});
