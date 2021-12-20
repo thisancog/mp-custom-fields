@@ -397,6 +397,9 @@ function mpcf_ajax_enqueue_editors($fields) {
 
 
 function mpcf_ajax_get_conditional_fields() {
+	if (!isset($_POST['fields']))
+		return '';
+	
 	$fields = json_decode(stripcslashes($_POST['fields']), true);
 	$values = array();
 
