@@ -46,7 +46,7 @@ class MPCFCheckbox extends MPCFModule {
 
 	function build_field($args = array()) {
 		$label = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
-		$value = $args['value'] === 'checked' || $args['value'] === '1'; ?>
+		$value = $args['value'] === 'checked' || $args['value'] == 1; ?>
 
 		<input  type="checkbox"
 				name="<?php echo $args['name']; ?>"
