@@ -173,6 +173,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$field = mpcf_sanitize_args($field);
 		$actions = isset($field['actions']) ? $field['actions'] : array();
 
+		$field['post_id'] = $id;
 		$field['value'] = isset($field['value']) ? $field['value'] : null;
 
 		if ($field['value'] === null || empty($field['value'])) {
@@ -348,6 +349,10 @@ function mpcf_save_meta_boxes($post_id) {
  *****************************************************/
 
 function mpcf_ajax_get_repeater_row() {
+	global $post;
+
+	$post = get_post($_POST['id']);
+
 	$fields = json_decode(stripcslashes($_POST['fields']), true);
 
 	$values = array();
