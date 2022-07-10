@@ -304,7 +304,7 @@ var repeaterField = function(parent = null) {
 
 		// prefetch blank row
 
-		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'id': id }, function(response) {
 			rowHTML = response;
 		});
 
