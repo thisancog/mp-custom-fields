@@ -251,7 +251,9 @@ var checkHTML5Support = function(parent = false) {
 var repeaterField = function(parent = null) {
 	parent = parent || document;
 
-	var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
+	var repeaters = parent.querySelectorAll('.mpcf-repeater-input'),
+		id		  = document.querySelector('#post_ID').value;
+			
 	[].forEach.call(repeaters, function(repeater) {
 		if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
@@ -280,7 +282,7 @@ var repeaterField = function(parent = null) {
 
 		// populate repeater
 
-		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values, 'id': id }, function(response) {
 			rowsWrapper.innerHTML = response;
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
