@@ -251,9 +251,7 @@ var checkHTML5Support = function(parent = false) {
 var repeaterField = function(parent = null) {
 	parent = parent || document;
 
-	var repeaters = parent.querySelectorAll('.mpcf-repeater-input'),
-		id		  = document.querySelector('#post_ID').value;
-			
+	var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
 	[].forEach.call(repeaters, function(repeater) {
 		if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
@@ -282,14 +280,17 @@ var repeaterField = function(parent = null) {
 
 		// populate repeater
 
-		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values, 'id': id }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'values': values }, function(response) {
 			rowsWrapper.innerHTML = response;
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
 			});
 
 			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
-				cbEnd: function() { renameDynamicFields(set); },
+				cbEnd: function() {
+					renameDynamicFields(set);
+					checkCheckableElements();
+				},
 				clickElem: '.mpcf-repeater-row-move'
 			});
 
@@ -304,7 +305,7 @@ var repeaterField = function(parent = null) {
 
 		// prefetch blank row
 
-		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields, 'id': id }, function(response) {
+		$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
 			rowHTML = response;
 		});
 
@@ -505,7 +506,8 @@ var renameDynamicFields = function(parent) {
 
 // bugfix for Chrome
 var checkCheckableElements = function(parent) {
-	var fields = [].slice.call(parent.querySelectorAll('input[type="checkbox"], input[type="radio"]'));
+	parent = parent || document;
+	var fields = [].slice.call(parent.querySelectorAll('.mpcf-field input[type="checkbox"], .mpcf-field input[type="radio"]'));
 	fields.forEach(field => field.checked = field.getAttribute('checked') !== null);
 }
 
