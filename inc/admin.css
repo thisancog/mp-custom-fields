@@ -1070,6 +1070,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-drag-drop-list-column-header {
+	padding-left: 11px;
 	font-weight: bold;
 }
 
