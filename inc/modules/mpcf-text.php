@@ -75,12 +75,7 @@ class MPCFTextField extends MPCFModule {
 		$listItems = $hasList ? $args['list'] : '';
 		$listId    = $args['name'] . '-list'; ?>
 
-		<input
-			type="text"
-			name="<?php echo $args['name']; ?>"
-			value="<?php echo mpcf_mknice($value); ?>"<?php echo $params; ?>
-			<?php echo $hasList ? 'list="' . $listId . '"' : '';?>>
-
+		<input type="text" value="<?php echo mpcf_mknice($value); ?>"<?php echo $params . ($hasList ? 'list="' . $listId . '"' : '');?>>
 <?php 	if ($hasList) {
 			$listItems = explode(',', $listItems); ?>
 

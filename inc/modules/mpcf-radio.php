@@ -70,19 +70,14 @@ class MPCFRadioField extends MPCFModule {
 		$params  = mpcf_list_input_params($this, 'required');
 		$default = mpcf_get_input_param($this, 'default'); ?>
 
-		<fieldset name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo $params; ?>>
+		<fieldset <?php echo mpcf_input_name($this) . mpcf_input_id($this); ?>"<?php echo $params; ?>>
 <?php 		foreach ($options as $name => $title) {
 				$id = $args['name'] . '-' . $name;
 				if ($default && $default === $name)
 					$title .= __(' (default)', 'mpcf'); ?>
 
 			<div class="mpcf-radio-option">
-				<input
-					type="radio"
-					name="<?php echo $args['name']; ?>"
-					id="<?php echo $id; ?>"
-					value="<?php echo $name; ?>"
-					<?php echo ($args['value'] == $name ? ' checked' : ''); ?>>
+				<input type="radio"<?php echo mpcf_input_name($this); ?> id="<?php echo $id; ?>" value="<?php echo $name; ?>" <?php echo ($args['value'] == $name ? ' checked' : ''); ?>>
 				<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 			</div>
 

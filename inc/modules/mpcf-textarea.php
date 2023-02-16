@@ -75,7 +75,7 @@ class MPCFTextareaField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<textarea name="<?php echo $args['name']; ?>" id="<?php echo $args['name']; ?>"<?php echo mpcf_list_input_params($this); ?>><?php echo mpcf_mknice($args['value']); ?></textarea>
+		<textarea<?php echo mpcf_list_input_params($this); ?>><?php echo mpcf_mknice($args['value']); ?></textarea>
 <?php
 	}
 }

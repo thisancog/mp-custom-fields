@@ -64,11 +64,7 @@ class MPCFMonthField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="month"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo mpcf_list_input_params($this); ?>>
-
+		<input type="month" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-mm (e.g. %s)', 'mpcf'), current_time('Y-m')); ?></div>
 <?php
 	}

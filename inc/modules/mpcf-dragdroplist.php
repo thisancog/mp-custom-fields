@@ -66,17 +66,18 @@ class MPCFDragDropList extends MPCFModule {
 		return __('Select', 'mpcf');
 	}
 
-	function render_list($options, $namebase) {
+	function render_list($options, $withNameBase = true) {
 		$i = 0;
 
 		foreach ($options as $option) {
-			$id = $option['id'];
-			$title = $option['title'];
-			$name = $namebase !== false ? $namebase . '[' . $i . ']' : ''; ?>
+			$value   = $option['id'];
+			$title   = $option['title'];
+			$name    = $withNameBase ? mpcf_get_input_name($this, $i) : '';
+			$ownName = $withNameBase ? $i : ''; ?>
 
 			<li class="mpcf-drag-drop-list-item">
 				<div class="title"><?php echo $title; ?></div>
-				<input type="hidden" value="<?php echo $id; ?>" name="<?php echo $name; ?>" />
+				<input type="hidden" value="<?php echo $value; ?>" name="<?php echo $name; ?>" data-own-name="<?php echo $ownName; ?>" />
 			</li>
 
 <?php		$i++;
@@ -84,7 +85,7 @@ class MPCFDragDropList extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$value = !empty($args['value']) && !empty($args['value'][0]) ? $args['value'] : array();
+		$value = !empty($args['value']) ? $args['value'] : array();
 
 		$multiple = isset($args['multiple']) ? $args['multiple'] : false;
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
@@ -110,7 +111,7 @@ class MPCFDragDropList extends MPCFModule {
 		<div class="mpcf-drag-drop-list-container" id="<?php echo $args['name']; ?>" data-basename="<?php echo $args['name']; ?>" data-multiple="<?php echo $multiple; ?>">
 			<div class="mpcf-drag-drop-list-column">
 				<div class="mpcf-drag-drop-list-column-header"><?php _e('Selection', 'mpcf'); ?></div>
-				<ul class="mpcf-drag-drop-list-sublist mpcf-drag-drop-list-selection"><?php $this->render_list($selection, $args['name']) ?></ul>
+				<ul class="mpcf-drag-drop-list-sublist mpcf-drag-drop-list-selection"><?php $this->render_list($selection) ?></ul>
 			</div>
 
 			<div class="mpcf-drag-drop-list-column">

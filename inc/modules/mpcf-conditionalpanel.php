@@ -35,7 +35,10 @@ class MPCFConditionalPanelField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$value   = isset($args['value']) && !empty($args['value']) ? $args['value'] : array();
+		$name    = $args['name'];
+
+		$value   = isset($args['value']) ? $args['value'] : array();
+		$value   = isset($value[$name])  ? $value[$name]  : $value;
 
 		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
@@ -46,7 +49,11 @@ class MPCFConditionalPanelField extends MPCFModule {
 		}
 
 		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
-		$valuesJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
+		$valuesJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+
+		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . ' data-own-name="type"'
+					 . ' data-basename="' . $args['name'] . '" data-options="' . $optionsJSON . '"'
+					 . ' data-values="' . $valuesJSON . '"'; ?>
 
 		<div class="mpcf-conditionalpanels-container" data-basename="<?php echo $args['name']; ?>">
 			<div class="mpcf-conditional-choice">
@@ -63,30 +70,17 @@ class MPCFConditionalPanelField extends MPCFModule {
 
 	 			$disabled = false;
 
-
-
 	 			$selected = isset($value['type']) && $value['type'] == $name;
 	 			$disabled = isset($disabled) && $disabled ? ' disabled' : '';
 			 ?>
 
-			<input	type="checkbox"
-					name="<?php echo $args['name']; ?>[type]"
-					id="<?php echo $args['name']; ?>-type"
-					value="<?php echo $name; ?>"
-					<?php echo ($selected ? ' checked' : '') . $disabled; ?>
-					data-basename="<?php echo $args['name']; ?>"
-					data-options="<?php echo $optionsJSON; ?>">
-					data-values="<?php echo $valuesJSON; ?>">
+			<input type="checkbox"<?php echo $attrs; ?> value="<?php echo $name; ?>"
+					<?php echo ($selected ? ' checked' : '') . $disabled; ?>>
 			<label for="<?php echo $args['name']; ?>-type"><?php echo $title; ?></label>
 
 <?php		} else { ?>
 
-				<select name="<?php echo $args['name']; ?>[type]"
-						id="<?php echo $args['name']; ?>-type"
-						data-basename="<?php echo $args['name']; ?>"
-						data-options="<?php echo $optionsJSON; ?>"
-						data-values="<?php echo $valuesJSON; ?>">
-
+				<select<?php echo $attrs; ?>>
 					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
 <?php 			foreach ($options as $name => $params) {

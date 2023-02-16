@@ -87,7 +87,7 @@ class MPCFImageButtonGroupField extends MPCFButtonGroupField {
 
 				<div class="mpcf-buttongroup-option mpcf-imagebuttongroup-option">
 					<input  type="radio"
-							name="<?php echo $args['name']; ?>"
+							<?php echo mpcf_input_name($this); ?>
 							id="<?php echo $id; ?>"
 							value="<?php echo $name; ?>"
 							<?php echo ($args['value'] == $name ? ' checked' : ''); ?>>

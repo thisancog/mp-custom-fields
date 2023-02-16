@@ -64,12 +64,7 @@ class MPCFTimeField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="time"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				pattern="[0-9]{2}:[0-9]{2}"
-				<?php echo mpcf_list_input_params($this); ?>>
-
+		<input type="time" value="<?php echo $args['value']; ?>" pattern="[0-9]{2}:[0-9]{2}"<?php echo mpcf_list_input_params($this); ?>>
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: hh:mm:ss (e.g. %s)', 'mpcf'), current_time('H:i:s')); ?></div>
 <?php
 	}

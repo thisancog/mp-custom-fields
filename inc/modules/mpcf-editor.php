@@ -85,7 +85,8 @@ class MPCFEditorField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$id      = str_replace(array('-', '_'), '', strtolower($args['name']));
+		$name    = mpcf_get_input_name($this);
+		$id      = str_replace(array('-', '_', '[', ']'), '', strtolower($name)) . uniqid();
 		$wpautop = isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true;
 
 		$defaultTinyMCE = array(
@@ -102,6 +103,7 @@ class MPCFEditorField extends MPCFModule {
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
 			'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : $defaultTinyMCE,
 			'wpautop'			=> $wpautop,
+			'textarea_name'		=> $name
 		);
 
 		if      (isset($args['rows']))		$editorargs['textarea_rows'] = $args['rows'];
@@ -113,16 +115,13 @@ class MPCFEditorField extends MPCFModule {
 		$editorArgsJS['quicktags']    = true;
 		unset($editorArgsJS['media_buttons']);
 
-		$settings = esc_attr(json_encode($editorArgsJS, JSON_HEX_QUOT | JSON_HEX_APOS)); ?>
+		$settings = esc_attr(json_encode($editorArgsJS, JSON_HEX_QUOT | JSON_HEX_APOS));
+	// 	@ Wordpress Bug: editor_height is not honored
+		$minHeight = isset($editorargs['editor_height']) ? $editorargs['editor_height']
+				   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
 		
 		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>">
-<?php		wp_editor(mpcf_mknice($args['value']), $id, $editorargs);
-
-			// @ Wordpress Bug: editor_height is not honored
-			$minHeight = isset($editorargs['editor_height'])
-					   ? $editorargs['editor_height']
-					   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
-
+<?php		wp_editor(mpcf_mknice($args['value']), $id, $editorargs); ?>
 			<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
 		</div>
 <?php	

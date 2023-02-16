@@ -48,6 +48,11 @@ class MPCFEmailField extends MPCFModule {
 				'type'	=> 'truefalse'
 			),
 			array(
+				'name'	=> 'autocomplete',
+				'title'	=> __('Auto-complete', 'mpcf'),
+				'type'	=> 'truefalse'
+			),
+			array(
 				'name'	=> 'placeholder',
 				'title' => __('Placeholder', 'mpcf'),
 				'type'	=> $this->name,
@@ -66,10 +71,7 @@ class MPCFEmailField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="email"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo mpcf_list_input_params($this); ?>>
+		<input type="email" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }

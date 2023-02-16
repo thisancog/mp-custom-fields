@@ -50,16 +50,12 @@ class MPCFTrueFalseField extends MPCFModule {
 
 		<div class="mpcf-truefalse-wrapper mpcf-buttongroup-wrapper">
 <?php 		foreach ($options as $name => $title) {
-				$id = $args['name'] . '-' . $name;
+				$id = mpcf_get_input_id($this, $name);
 				$checked = ($name === 'true'  &&  $args['value']) ||
 						   ($name === 'false' && !$args['value']); ?>
 
 				<div class="mpcf-truefalse-option mpcf-buttongroup-option">
-					<input  type="radio"
-							name="<?php echo $args['name']; ?>"
-							id="<?php echo $id; ?>"
-							value="<?php echo $name; ?>"
-							<?php echo $class . ($checked ? ' checked' : ''); ?>>
+					<input type="radio" id="<?php echo $id; ?>"<?php echo mpcf_input_name($this) . mpcf_input_own_name($this); ?> value="<?php echo $name; ?>" <?php echo $class . ($checked ? ' checked' : ''); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>
 

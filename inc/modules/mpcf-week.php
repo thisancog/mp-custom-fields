@@ -64,12 +64,7 @@ class MPCFWeekField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-
-		<input  type="week"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo mpcf_list_input_params($this); ?>>
-
+		<input type="week" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 		<div class="mpcf-nohtml5-description"><?php echo sprintf(__('format: yyyy-Www (e.g. %s)', 'mpcf'), current_time('Y-\WW')); ?></div>
 <?php
 	}

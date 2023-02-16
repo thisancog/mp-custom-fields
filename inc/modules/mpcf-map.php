@@ -56,10 +56,10 @@ class MPCFMapField extends MPCFModule {
 		$zoom = isset($args['zoom']) && !empty($args['zoom']) ? ' zoom="' . $args['zoom'] . '"' : '';
 		$class 	= mpcf_input_class($this, 'mpcf-mapcoords'); ?>
 
-		<input type="hidden"<?php echo $class; ?>" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php mpcf_input_id($this); ?>>
+		<input type="hidden"<?php echo $class; ?> value="<?php echo $args['value']; ?>"<?php echo mpcf_input_name($this) . mpcf_input_id($this); ?>>
 		<input type="text" class="mpcf-mapsearch" placeholder="<?php _e('Search for address or place…', 'mpcf'); ?>">
 
-		<div class="mpcf-map"<?php echo $center . $zoom . $height; ?>>
+		<div class="mpcf-map mpcf-map-inactive"<?php echo $center . $zoom . $height; ?>>
 			 <div class="mpcf-nomap">
 			 	<span><?php echo sprintf(__('No map showing up? Generate a free Google Maps API key and enter it <a href="%s" target="_blank">here</a>.', 'mpcf'), menu_page_url('mpcf-options', false)); ?></span>
 			 </div>

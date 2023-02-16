@@ -58,7 +58,7 @@ class MPCFMediaSelector extends MPCFModule {
 				</video>
 			</div>
 			<div class="mpcf-content-buttons">
-				<input type="hidden"<?php echo $class; ?> name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>">
+				<input type="hidden" value="<?php echo $args['value']; ?>"<?php echo $class . mpcf_input_name($this) . mpcf_input_own_name($this); ?>>
 				<input type="button" class="mpcf-changemedia mpcf-button" id="<?php echo $id; ?>" value="<?php echo $caption; ?>">
 				<input type="button" class="mpcf-clearmedia mpcf-button <?php echo $clearclass; ?>" value="<?php _e('Remove', 'mpcf'); ?>" />
 			</div>

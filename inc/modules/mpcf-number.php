@@ -64,10 +64,7 @@ class MPCFNumberField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="number"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo mpcf_list_input_params($this); ?>>
+		<input type="number" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 
 <?php
 	}

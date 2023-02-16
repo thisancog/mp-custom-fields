@@ -84,13 +84,10 @@ class MPCFSelectField extends MPCFModule {
 		if (is_string($options) && function_exists($options))
 			$options = $options($args);
 
-		$params = mpcf_list_input_params($this, array('required', 'size'));
+		$params = mpcf_list_input_params($this, array('required', 'size', 'multiple'), true);
 		$required = $args['required']; ?>
 
-		<select
-			name="<?php echo $args['name']; ?><?php echo (!empty($multiple) ? '[]' : ''); ?>"
-			id="<?php echo $args['name']; ?>"
-			<?php echo $params . $multiple; ?>>
+		<select<?php echo mpcf_input_name($this, (!empty($multiple) ? '' : null)) . mpcf_input_own_name($this) . mpcf_input_id($this) . $params; ?>>
 
 <?php 	if (!empty($required)) { ?>
 			<option value="" disabled<?php echo (empty($value) ? ' selected' : ''); ?>>-----</option>

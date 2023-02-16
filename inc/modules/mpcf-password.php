@@ -52,7 +52,7 @@ class MPCFPasswordField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input type="password" name="<?php echo $args['name']; ?>" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
+		<input type="password" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }

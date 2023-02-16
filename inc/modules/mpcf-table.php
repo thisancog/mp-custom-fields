@@ -93,18 +93,14 @@ class MPCFTableField extends MPCFModule {
 <?php	}
 
 		for ($r = 0; $r < $rows; $r++) { ?>
+			
 			<tr>
-
 <?php 		for ($c = 0; $c < $cols; $c++) {
 				$val = isset($value[$r]) && isset($value[$r][$c]) ? $value[$r][$c] : ''; ?>
-
-				<td><input type="text"
-						   name="<?php echo $args['name']; ?>[<?php echo $r; ?>][<?php echo $c; ?>]"
-						   value="<?php echo $val; ?>"></td>
-
+				<td><input type="text" value="<?php echo $val; ?>"<?php echo mpcf_input_name($this, [$r, $c]); ?> data-own-name="<?php echo $args['name']; ?>[<?php echo $r; ?>][<?php echo $c; ?>]"></td>
 <?php 		} ?>
-
 			</tr>
+			
 <?php 	} ?>
 		</table>
 
