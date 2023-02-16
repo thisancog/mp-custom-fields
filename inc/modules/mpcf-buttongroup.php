@@ -76,11 +76,7 @@ class MPCFButtonGroupField extends MPCFModule {
 					$title .= __(' (default)', 'mpcf'); ?>
 
 				<div class="mpcf-buttongroup-option">
-					<input  type="radio"
-							name="<?php echo $args['name']; ?>"
-							id="<?php echo $id; ?>"
-							value="<?php echo $name; ?>"
-							<?php echo ($args['value'] == $name ? ' checked' : ''); ?>>
+					<input type="radio" id="<?php echo $id; ?>" value="<?php echo $name; ?>"<?php echo ($args['value'] == $name ? ' checked' : '') . mpcf_input_name($this) . mpcf_input_class($this) . mpcf_input_own_name($this); ?>>
 					<label for="<?php echo $id; ?>"><?php echo $title; ?></label>
 				</div>
 
