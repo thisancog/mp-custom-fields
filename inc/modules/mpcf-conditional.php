@@ -45,8 +45,12 @@ class MPCFConditionalField extends MPCFModule {
 			$value[$prop] = mpcf_mknice($val); 
 		}
 
+		$type        = isset($value['type']) ? $value['type'] : null;
+		$selected    = null;
 		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
-		$valuesJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
+
+		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . mpcf_input_own_name($this)
+					 . ' data-basename="' . $args['name'] . '" data-options="' . $optionsJSON . '"'; ?>
 
 		<div class="mpcf-conditional-container" data-basename="<?php echo $args['name']; ?>">
 			<div class="mpcf-conditional-choice">
@@ -63,30 +67,19 @@ class MPCFConditionalField extends MPCFModule {
 
 	 			$disabled = false;
 
-
-
-	 			$selected = isset($value['type']) && $value['type'] == $name;
+	 			$selected = $type && $value['type'] == $name;
 	 			$disabled = isset($disabled) && $disabled ? ' disabled' : '';
 			 ?>
 
-			<input	type="checkbox"
-					name="<?php echo $args['name']; ?>[type]"
-					id="<?php echo $args['name']; ?>-type"
-					value="<?php echo $name; ?>"
-					<?php echo ($selected ? ' checked' : '') . $disabled; ?>
-					data-basename="<?php echo $args['name']; ?>"
-					data-options="<?php echo $optionsJSON; ?>"
-					data-values="<?php echo $valuesJSON; ?>">
+			<input type="checkbox"
+				   <?php echo $attrs; ?>
+				   value="<?php echo $name; ?>"
+				   <?php echo ($selected ? ' checked' : '') . $disabled; ?>>
 			<label for="<?php echo $args['name']; ?>-type"><?php echo $title; ?></label>
 
 <?php		} else { ?>
 
-				<select name="<?php echo $args['name']; ?>[type]"
-						id="<?php echo $args['name']; ?>-type"
-						data-basename="<?php echo $args['name']; ?>"
-						data-options="<?php echo $optionsJSON; ?>"
-						data-values="<?php echo $valuesJSON; ?>">
-
+				<select<?php echo $attrs; ?>>
 					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
 <?php 			foreach ($options as $name => $params) {
@@ -95,7 +88,7 @@ class MPCFConditionalField extends MPCFModule {
 					if (is_array($params['title']))	extract($params['title']);
 	 				else 							$title = $params['title'];
 
-					$selected = isset($value['type']) && $value['type'] == $name;
+					$selected = $type && $value['type'] == $name;
 					$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
 					<option value="<?php echo $name; ?>" <?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
 <?php			} ?>
@@ -103,10 +96,17 @@ class MPCFConditionalField extends MPCFModule {
 <?php 		} ?>
 			</div>
 
-			<div class="mpcf-conditional-wrapper"></div>
+			<div class="mpcf-conditional-wrapper">
+<?php			if ($type !== null && $type != -1)
+					$this->get_conditional_fields($options[$type]['fields'], $value); ?>
+			</div>
 			<div class="mpcf-loading-container"></div>
 		</div>
 <?php
+	}
+
+	function get_conditional_fields($fields, $values = array()) {
+		mpcf_build_gui_from_fields($fields, $values, false);
 	}
 }
 
