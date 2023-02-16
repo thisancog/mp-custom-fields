@@ -54,7 +54,7 @@ function mpcf_admin_init() {
 	$dependencies = array('jquery', 'jquery-ui-sortable');
 	$language = array (
 		'addFile' 			=> __('Add file', 'mpcf'),
-		'addMedia' 			=> __('Add media', 'mpcf'),
+		'addMedia' 			=> __('Add', 'mpcf'),
 		'change' 			=> __('Change', 'mpcf'),
 		'changeMedia' 		=> __('Change media', 'mpcf'),
 		'chooseMedia' 		=> __('Choose media', 'mpcf'),
