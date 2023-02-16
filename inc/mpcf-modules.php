@@ -301,16 +301,41 @@ function mpcf_input_class($field, $append = '') {
 	return ' class="' . mpcf_get_input_class($field, $append) . '"';
 }
 
-function mpcf_get_input_id($field) {
+function mpcf_get_input_id($field, $suffix = null) {
 	$id			= uniqid('mpcf-input-' . $field->name . '-');
 	$fieldArgs	= $field->args;
 	$paramId	= (isset($fieldArgs['inputId']) && !empty($fieldArgs['inputId']) ? ' ' . $fieldArgs['inputId'] : '');
 
-	return $id . $paramId;
+	$id = $id . $paramId;
+	return $suffix !== null ? $id . '-' . $suffix : $id;
 }
 
-function mpcf_input_id($field) {
-	return ' id="' . mpcf_get_input_id($field) . '"';
+function mpcf_input_id($field, $suffix = null) {
+	$id = mpcf_get_input_id($field);
+	
+	return ' id="' . $id . '"';
+}
+
+function mpcf_get_input_name($field, $suffix = null) {
+	$name = isset($field->args['baseName'])
+	      ? $field->args['baseName'] . '[' . $field->args['name'] . ']'
+	      : $field->args['name'];
+
+	if ($suffix == null)
+		return $name;
+
+	if (!is_array($suffix))
+		$suffix = [$suffix];
+
+	return $name . implode('', array_map(function($s) { return '[' . $s . ']'; }, $suffix));
+}
+
+function mpcf_input_name($field, $suffix = null) {
+	return ' name="' . mpcf_get_input_name($field, $suffix) . '"';
+}
+
+function mpcf_input_own_name($field) {	
+	return ' data-own-name="' . $field->args['name'] . '"';
 }
 
 function mpcf_get_input_param($field, $param) {
@@ -326,6 +351,9 @@ function mpcf_input_param($field, $param) {
 	if (mpcf_is_simple_param($param)) {
 		$output = $value ? ' ' . $paramName : '';
 	} else {
+		if ($paramName == 'autocomplete')
+			$value = $value == '' ? 'off' : 'on';
+
 		$output = $value ? ' ' . $paramName . '="' . $value . '"' : '';
 	}
 
@@ -349,8 +377,8 @@ function mpcf_is_simple_param($param) {
 	return in_array($paramName, $simples);
 }
 
-function mpcf_list_input_params($field, $params = array()) {
-	$output = mpcf_input_class($field) . mpcf_input_id($field);
+function mpcf_list_input_params($field, $params = array(), $withoutStandards = false) {
+	$output = $withoutStandards ? '' : mpcf_input_name($field) . mpcf_input_class($field) . mpcf_input_id($field) . mpcf_input_own_name($field);
 	if ($params === false) return $output;
 
 	if (empty($params)) {
