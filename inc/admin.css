@@ -1,5 +1,5 @@
 /******************************
-	General GUI
+	Panels and tabs
  ******************************/
 
  .mpcf-active #edittag {
@@ -71,7 +71,7 @@
 
 .mpcf-options .mpcf-panels-menu,
 .mpcf-tax-box .mpcf-panels-menu {
-	margin-bottom: 0;
+	margin-bottom: -1px;
 }
 
 .mpcf-panels-menu li:not(:empty) {
@@ -79,7 +79,7 @@
 	display: flex;
 	align-items: center;
 	margin: 0;
-	padding: 12px 0 12px 12px;
+	padding: 12px;
 	cursor: pointer;
 	color: #666;
 	background: #F5F5F5;
@@ -118,6 +118,10 @@
 
 .mpcf-panels-menu li.active .mpcf-panel-icon {
 	color: #0073AA;
+}
+
+.mpcf-panels-menu li.active .mpcf-panel-icon-svg {
+	margin-left: -1px;
 }
 
 .mpcf-panels-menu li.active:before,
@@ -179,6 +183,7 @@
 .mpcf-panels-menu li.active .mpcf-panel-icon-svg:before {
 	content: '';
 	padding: 0;
+	left: -12px;
 }
 
 .mpcf-panel-icon img {
@@ -210,35 +215,42 @@
 	display: block;
 }
 
+@media (min-width: 1130px) {
+	.mpcf-panels-menu li:not(:empty) {
+		padding-right: 0;
+	}
+}
+
+@media (min-width: 1350px) {
+	.mpcf-panel.active-panel,
+	.mpcf-repeater-row,
+	.mpcf-conditional-wrapper {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		row-gap: 20px
+	}
+}
+
+
 
 /******************************
 	General fields
  ******************************/
 
-.mpcf-field-option,
-.mpcf-conditional-choice {
-	display: flex;
-	align-items: baseline;	
-	margin-bottom: 15px;
-	width: 100%;
+.mpcf-field-option {
+	margin-bottom: 18px;
 }
 
-.mpcf-field-option.mpcf-radio-input {
-	align-items: flex-start;
-}
-
-.mpcf-field-option.mpcf-textarea-input,
-.mpcf-field-option.mpcf-media-input,
-.mpcf-field-option.mpcf-repeater-input {
-	align-items: flex-start;
+.mpcf-field-option + .mpcf-field-option {
+	margin-top: 20px;
 }
 
 .mpcf-required {}
 
 .mpcf-title {
-	width: 15%;
-	min-width: 130px;
-	margin-right: 20px;
+	grid-column: 1;
+	margin: 0 0 10px;
+	font-weight: bold;
 }
 
 .mpcf-required .mpcf-title label:after {
@@ -247,21 +259,7 @@
 }
 
 .mpcf-field {
-	width: calc(82% - 20px);
-}
-
-.mpcf-text-input .mpcf-field,
-.mpcf-number-input .mpcf-field,
-.mpcf-date-input .mpcf-field,
-.mpcf-datetime-input .mpcf-field,
-.mpcf-time-input .mpcf-field,
-.mpcf-email-input .mpcf-field {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.mpcf-field .mpcf-field {
-	width: 100%;
+	grid-column: 2;
 }
 
 .mpcf-subfield {
@@ -271,18 +269,16 @@
 
 .mpcf-field input[type="text"],
 .mpcf-field input[type="number"],
-.mpcf-field input[type="date"],
-.mpcf-field input[type="datetime"],
-.mpcf-field input[type="time"],
-.mpcf-field input[type="email"] {
+.mpcf-field input[type="email"],
+.mpcf-field input[type="password"] {
 	width: auto;
-	min-width: calc(100% - 151px);
+	min-width: calc(100% - 131px);
 	flex-grow: 1;
-	margin-right: 20px;
+	border-radius: 3px;
 }
 
-.mpcf-field textarea {
-	width: calc(100% - 20px);
+.mpcf-field input[type="time"] {
+	border-radius: 3px;
 }
 
 .mpcf-description {
@@ -292,22 +288,13 @@
 	line-height: 1.3;
 }
 
+.mpcf-description:last-child {
+	margin-bottom: 0;
+}
+
 .mpcf-description em,
 .mpcf-description i {
 	font-style: normal;
-}
-
-.mpcf-text-input .mpcf-description,
-.mpcf-number-input .mpcf-description,
-.mpcf-date-input .mpcf-description,
-.mpcf-datetime-input .mpcf-description,
-.mpcf-time-input .mpcfdescription,
-.mpcf-email-input .mpcfdescription {
-	position: relative;
-	top: 6px;
-	min-width: 130px;
-	margin: 0 0 10px;
-	flex-shrink: 0;
 }
 
 .mpcf-nohtml5-description {
@@ -471,22 +458,6 @@
 	opacity: 1;
 }
 
-@media (max-width: 1349px) {
-	.mpcf-field-option {
-		flex-direction: column;
-	}
-
-	.mpcf-title {
-		width: 100%;
-		margin: 0 0 20px;
-		font-weight: bold;
-	}
-
-	.mpcf-field {
-		width: 100%;
-	}
-}
-
 @media (max-width: 1129px) {
 	.mpcf-panels {
 		flex-direction: column;
@@ -547,17 +518,96 @@
 	}
 }
 
+@media (min-width: 1350px) {
+	.mpcf-field-option {
+		display: contents;
+		margin-bottom: 0;
+	}
+
+	.mpcf-title {
+		margin: 0 50px 0 0;
+		font-weight: normal;
+	}
+}
+
 
 
 
 /******************************
-	Specific fields
+	Text, number, email, password
  ******************************/
 
-.mpcf-textarea textarea {
+.mpcf-text-input .mpcf-field,
+.mpcf-number-input .mpcf-field,
+.mpcf-email-input .mpcf-field,
+.mpcf-password-input .mpcf-field {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: -4px;
+}
+
+.mpcf-text-input .mpcf-description,
+.mpcf-number-input .mpcf-description,
+.mpcf-email-input .mpcf-description,
+.mpcf-password-input .mpcf-description {
+	position: relative;
+	top: 6px;
+	min-width: 130px;
+	margin: 0 0 10px;
+	flex-shrink: 0;
+}
+
+
+
+/******************************
+	Textarea
+ ******************************/
+
+.mpcf-textarea-input {
+	align-items: flex-start;
+}
+
+.mpcf-field textarea {
+	width: 100%;
+}
+
+.mpcf-textarea-input textarea {
 	resize: vertical;
 	min-height: 75px;
+	border-radius: 3px;
 }
+
+
+
+/******************************
+	Date, datetime, time and month
+ ******************************/
+
+.mpcf-date-input .mpcf-field,
+.mpcf-datetime-input .mpcf-field,
+.mpcf-time-input .mpcf-field,
+.mpcf-month-input .mpcf-field {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: -4px;
+}
+
+.mpcf-date-input .mpcf-description,
+.mpcf-datetime-input .mpcf-description,
+.mpcf-time-input .mpcf-description,
+.mpcf-month-input .mpcf-description {
+	position: relative;
+	top: 6px;
+	min-width: 130px;
+	margin: 0 0 10px;
+	flex-shrink: 0;
+}
+
+
+
+/******************************
+	Editor
+ ******************************/
 
 .mpcf-editor {
 	padding-top: 10px;
@@ -567,18 +617,47 @@
 	display: none;
 }
 
+
+
+/******************************
+	Radio button
+ ******************************/
+
+.mpcf-radio-input {
+	align-items: flex-start;
+}
+
 .mpcf-radio-option + .mpcf-radio-option {
 	margin-top: 5px;
 }
+
+.mpcf-radio-input label {
+	position: relative;
+	top: -2px;
+	vertical-align: middle;
+}
+
+
+
+
+/******************************
+	Hidden field
+ ******************************/
 
 .mpcf-hidden-input {
 	margin-bottom: 0;
 }
 
 
+
+
 /******************************
 	Media picker
  ******************************/
+
+.mpcf-media-input {
+	align-items: flex-start;
+}
 
 .mpcf-mediapicker {
 	display: flex;
@@ -669,22 +748,23 @@
 	Map
  ******************************/
 
+.mpcf-map-input.mpcf-field-option .mpcf-mapsearch {
+	width: 100%;
+}
+
 .mpcf-map {
 	width: 100%;
-	height: 300px;
 	margin-top: 10px;
 }
 
-.mpcf-inactive .mpcf-nomap {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	border: 1px dotted #DDD;
-	box-sizing: border-box;
+.mpcf-map:not(.mpcf-map-inactive) {
+	height: 300px;
+}
+
+.mpcf-nomap {
 	font-style: oblique;
 }
+
 
 
 /******************************
@@ -724,6 +804,18 @@ body.no-js .mpcf-file-picker + label {
 }
 
 
+
+
+/******************************
+	Color
+ ******************************/
+
+.mpcf-color-input .mpcf-field {
+	margin-top: -4px;
+}
+
+
+
 /******************************
 	Checkbox
  ******************************/
@@ -748,6 +840,7 @@ body.no-js .mpcf-file-picker + label {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
+	margin-top: -5px;
 }
 
 .mpcf-buttongroup-option input {
@@ -798,6 +891,8 @@ body.no-js .mpcf-file-picker + label {
 	border-color: #5B9DD9;
 	box-shadow: 0 0 2px rgba(30,140,190,.8);
 }
+
+
 
 /*** Image button group ***/
 
@@ -882,9 +977,8 @@ body.no-js .mpcf-file-picker + label {
 	Repeater
  ******************************/
 
-.mpcf-repeater-input .mpcf-field {
-	margin-left: 0px;
-	width: 100%;
+.mpcf-repeater-input {
+	border-bottom: 1px solid #DDD;
 }
 
 .mpcf-repeater-input .mpcf-repeater-input {
@@ -903,24 +997,29 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-row {
 	position: relative;
-	width: calc(100% - 60px);
-	left: -1px;
-	padding: 11px 40px 16px 38px;
+	top: 7px;
+	left: 20px;
+
+	padding: 11px 40px 16px 10px;
+	border-radius: 3px;
 	margin-bottom: 0;
-	border-bottom: 1px solid #DDD;
 	list-style-type: none;
 }
 
-.mpcf-repeater-wrapper li:before {
+.mpcf-repeater-row + .mpcf-repeater-row {
+	margin-top: 10px;
+}
+
+.mpcf-repeater-row:before {
 	content: counter(section) ". ";
 	position: absolute;
-	top: 13px;
-	left: 16px;
+	top: 7px;
+	left: -20px;
 	counter-increment: section;
 	z-index: 2;
 }
 
-.mpcf-repeater-wrapper .mpcf-repeater-wrapper li:before {
+.mpcf-repeater-row .mpcf-repeater-row:before {
 	content: counter(subsection) ". ";
 	counter-increment: subsection;
 }
@@ -979,7 +1078,8 @@ body.no-js .mpcf-file-picker + label {
 	height: 20px;
 	border: 1px solid #DDD;
 	border-radius: 50%;
-	cursor: pointer
+	background-color: #FFF;
+	cursor: pointer;
 }
 
 .mpcf-repeater-row-controls div + div {
@@ -994,7 +1094,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-controls {
-	margin: 16px 0 0 38px;
+	margin: 16px 0 0 17px;
 }
 
 .mpcf-repeater-controls:last-child {
@@ -1002,20 +1102,27 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-repeater-wrapper.empty ~ .mpcf-repeater-controls {
-	margin-left: 10px;
+	margin-left: 0;
 }
 
-.mpcf-repeater-input > .mpcf-field > .mpcf-description {
-	margin-left: 38px;
+.mpcf-repeater-wrapper:not(.empty) ~ .mpcf-description {
+	margin-left: 18px;
 }
 
-@media (max-width: 1349px) {
+
+@media (min-width: 1350px) {
+	.mpcf-repeater-input {
+		border-bottom: none;
+	}
+
 	.mpcf-repeater-row {
-		padding-left: 0;
+		left: -21px;
+		padding-left: 38px;
 	}
 
 	.mpcf-repeater-wrapper li:before {
-		left: -20px;
+		top: 12px;
+		left: 16px;
 	}
 }
 
@@ -1025,8 +1132,14 @@ body.no-js .mpcf-file-picker + label {
 	Conditional
  ******************************/
 
-.mpcf-conditional-wrapper {
-	padding-top: 32px;
+.mpcf-repeater-row > .mpcf-conditional-input:first-child {
+	position: relative;
+	top: -6px;
+}
+
+.mpcf-repeater-row > .mpcf-conditionalpanels-input:first-child {
+	position: relative;
+	top: -3px;
 }
 
 .mpcf-conditional-wrapper:empty {
@@ -1035,20 +1148,34 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-conditional-wrapper:not(:empty) {
 	border-top: 1px solid #DDD;
+	margin-top: 15px;
+	padding-top: 15px;
+}
+
+.mpcf-conditional-wrapper .mpcf-field-option:last-child {
+	margin-bottom: 0;
 }
 
 .mpcf-conditional-choice {
-	position: relative;
-	top: 4px;
-	margin-bottom: 0;
+	display: flex;
+	align-items: baseline;	
+	width: 100%;
+}
+
+.mpcf-conditional-choice select {
+	margin: -5px 0;
 }
 
 .mpcf-conditional-choice input[type="checkbox"] + label {
 	position: relative;
 	top: -3px;
-	left: 3px;
 }
 
+@media (min-width: 1350px) {
+	.mpcf-repeater-row > .mpcf-conditional-input:first-child {
+		top: -5px;
+	}
+}
 
 
 /******************************
@@ -1070,7 +1197,6 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-drag-drop-list-column-header {
-	padding-left: 11px;
 	font-weight: bold;
 }
 
@@ -1123,8 +1249,8 @@ body.no-js .mpcf-file-picker + label {
  ******************************/
 
 .mpcf-select-input select {
-	padding: 5px;
-	width: calc(100% - 21px);
+	margin: -5px 0;
+	width: 100%;
 }
 
 .mpcf-select-input option {
@@ -1179,6 +1305,7 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-grid-input .grid-field-grid .grid-cell {
 	width: 100%;
+	max-width: 50px;
 	background-color: #E5E5E5;
 	border-radius: 3px;
 	cursor: pointer;
