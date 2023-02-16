@@ -42,10 +42,7 @@ class MPCFColorField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input  type="text"
-				name="<?php echo $args['name']; ?>"
-				value="<?php echo $args['value']; ?>"
-				<?php echo mpcf_list_input_params($this); ?>>
+		<input type="text" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
 <?php
 	}
 }
