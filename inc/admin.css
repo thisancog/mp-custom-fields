@@ -1325,3 +1325,91 @@ body.no-js .mpcf-file-picker + label {
 	margin-left: 4px;
 }
 
+
+
+
+/******************************
+	Color select
+ ******************************/
+
+.mpcf-colorselect-inner {
+	position: relative;
+	font-size: 14px;
+	line-height: 2;
+}
+
+.mpcf-colorselect-select {
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	width: auto;
+	min-width: calc(100% - 131px);
+	min-height: 30px;
+	flex-grow: 1;
+	padding: 0 8px;
+	border: 1px solid #8C8F94;
+	border-radius: 3px;
+	color: #2C3338;
+	cursor: pointer;
+}
+
+.mpcf-colorselect-select:after {
+	content: '';
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%) rotate(-45deg);
+
+	width: 6px;
+	height: 6px;
+	border-left: 2px solid #555555;
+	border-bottom: 2px solid #555555;
+	pointer-events: none;
+}
+
+.mpcf-colorselect-select:focus {
+	border-color: #2271B1;
+	box-shadow: 0 0 0 1px #2271B1;
+	outline: 2px solid transparent;
+}
+
+.mpcf-colorselect-list {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+
+	border: 1px solid #8C8F94;
+	background-color: #FFF;
+	border-radius: 3px;
+
+	opacity: 0;
+	pointer-events: none;
+}
+
+.mpcf-colorselect-list.visible {
+	opacity: 1;
+	pointer-events: all;
+}
+
+.mpcf-colorselect-option {
+	display: flex;
+	align-items: center;
+	padding: 2px 8px;
+	cursor: pointer;
+}
+
+.mpcf-colorselect-option:hover {
+	background-color: #2271B1;
+	color: #FFF;
+}
+
+.mpcf-colorselect-color {
+	display: block;
+	width: 20px;
+	height: 15px;
+	margin-right: 8px;
+	background-color: var(--color);
+	border-radius: 2px;
+}
