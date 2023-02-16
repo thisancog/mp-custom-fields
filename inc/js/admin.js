@@ -6,6 +6,7 @@
 		conditionalFields = null,
 		conditionalPanels = null,
 		mediaPickers      = null,
+		colorSelects      = null,
 		painterColors = {
 			icons: {
 				base:    '#666666',
@@ -24,6 +25,7 @@
 		conditionalFields = new ConditionalFields();
 		conditionalPanels = new ConditionalPanelsFields();
 		mediaPickers      = new MediaPickers();
+		colorSelects      = new ColorSelects();
 
 		goToInvalids();
 		checkHTML5Support();
@@ -52,6 +54,7 @@
 		registerColorPicker(parent);
 		conditionalFields.registerNew(parent);
 		conditionalPanels.registerNew(parent);
+		colorSelects.registerNew(parent);
 		gridField(parent);
 		repeaterField(parent);
 
@@ -1377,6 +1380,69 @@
 			});
 
 		});
+	}
+
+
+
+	/**************************************************************
+		Color selects
+	 **************************************************************/
+
+	class ColorSelects {
+		constructor() {
+			this.fields = {};
+			this.registerNew();
+		}
+
+		registerNew(parent = null) {
+			parent = parent || document;
+
+			let fields = [].slice.call(parent.querySelectorAll('.mpcf-colorselect-input:not([data-registered])'));
+			if (fields.length == 0) return;
+
+			fields.forEach((element => {
+				let id      = this.generateID(),
+					select  = element.querySelector('.mpcf-colorselect-select'),
+					list    = element.querySelector('.mpcf-colorselect-list'),
+					options = [].slice.call(list.querySelectorAll('.mpcf-colorselect-option')),
+					field   = element.querySelector('.mpcf-colorselect-hidden');
+
+				element.dataset.registered = 1;
+
+				select.addEventListener('click', (() => this.toggleList(id)).bind(this));
+				options.forEach((option => option.addEventListener('click', (e => this.change(id, e)).bind(this))).bind(this));
+				document.addEventListener('click', (e => this.hideList(id, e)).bind(this));
+
+				this.fields[id] = {
+					element: element,
+					select:  select,
+					list:    list,
+					options: options,
+					field:   field
+				};
+			}).bind(this));
+		}
+
+		toggleList(id) {
+			this.fields[id].list.classList.toggle('visible');
+		}
+
+		hideList(id, e) {
+			if (e.target.classList.contains('mpcf-colorselect-input') || e.target.closest('.mpcf-colorselect-input')) return;
+			this.fields[id].list.classList.remove('visible');
+		}
+
+		change(id, e) {
+			let target = e.target.classList.contains('mpcf-colorselect-option') ? e.target : e.target.closest('.mpcf-colorselect-option');
+
+			this.fields[id].field.value = target.dataset.name;
+			this.fields[id].list.classList.remove('visible');
+			this.fields[id].select.innerHTML = target.innerHTML;
+		}
+
+		generateID() {
+			return Math.floor(Math.random() * Math.pow(10,10));
+		}
 	}
 
 
