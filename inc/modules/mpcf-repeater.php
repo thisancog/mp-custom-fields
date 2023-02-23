@@ -28,7 +28,13 @@ class MPCFRepeaterField extends MPCFModule {
 		// Parameters for the field which can be set by the user
 		// 'description' will be automatically added and ouput by the plugin
 		$this->parameters = array(
-			array('name' => 'fields')
+			array('name' => 'fields'),
+			array(
+				'name'		=> 'maxrows',
+				'title'		=> __('Max rows', 'mpcf'),
+				'type'		=> 'number',
+				'default'	=> 0
+			),
 		);
 	}
 
@@ -48,18 +54,26 @@ class MPCFRepeaterField extends MPCFModule {
 		});
 
 		$required = false;
+		$maxRows    = isset($args['maxrows']) && !empty($args['maxrows']) ? $args['maxrows'] : 0;
+		$showAddBtn = '';
+
+		if ($maxRows > 0 && $args['value'] !== false && !empty($args['value'])) {
+			$showAddBtn = $maxRows <= count($args['value']) ? ' hide' : '';
+		}
+
 		$baseName   = isset($args['baseName']) ? $args['baseName'] . '[' . $args['name'] . ']' : $args['name'];
 		$fieldsJSON = esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
 
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
-			data-fields="<?php echo $fieldsJSON; ?>">
+			data-fields="<?php echo $fieldsJSON; ?>"
+			data-maxrows="<?php echo $maxRows; ?>">
 <?php 			$this->get_repeater_row($baseName, $args['fields'], $args['value']); ?>
 			</ol>
 
 		<div class="mpcf-loading-container"></div>
 
 		<div class="mpcf-repeater-controls">
-			<input type="button" class="mpcf-repeater-add-row mpcf-button" value="<?php _e('Add', 'mpcf'); ?>" />
+			<input type="button" class="mpcf-repeater-add-row mpcf-button<?php echo $showAddBtn; ?>" value="<?php _e('Add', 'mpcf'); ?>" />
 			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo mpcf_get_input_name($this); ?>"<?php echo mpcf_input_own_name($this); ?> value="" />
 		</div>
 		

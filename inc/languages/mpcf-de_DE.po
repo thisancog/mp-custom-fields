@@ -1,78 +1,82 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2020-02-11 19:07+0900\n"
-"PO-Revision-Date: 2020-02-11 19:07+0900\n"
+"POT-Creation-Date: 2023-02-21 12:05+0100\n"
+"PO-Revision-Date: 2023-02-21 12:05+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
-"X-Poedit-Basepath: ../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2\n"
+"X-Poedit-Basepath: ../..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_x\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:64 inc/mpcf-admin.php:83
+#: inc/gui.php:63 inc/mpcf-admin.php:83
 #: inc/mpcf-register-archive-metaboxes.php:131
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:78 inc/mpcf-admin.php:212
+#: inc/gui.php:77 inc/mpcf-admin.php:212
 #: inc/mpcf-register-archive-metaboxes.php:155
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:405
+#: inc/gui.php:680
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:426
+#: inc/gui.php:701
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
 
 #: inc/modules.php:82 inc/modules/mpcf-buttongroup.php:38
-#: inc/modules/mpcf-dragdroplist.php:44 inc/modules/mpcf-radio.php:38
-#: inc/modules/mpcf-select.php:43 inc/mpcf-modules.php:82
+#: inc/modules/mpcf-colorselect.php:44 inc/modules/mpcf-dragdroplist.php:44
+#: inc/modules/mpcf-imagebuttongroup.php:38 inc/modules/mpcf-radio.php:38
+#: inc/modules/mpcf-select.php:43 inc/mpcf-modules.php:90
 msgid "Name"
 msgstr "Name"
 
 #: inc/modules.php:88 inc/modules/mpcf-buttongroup.php:44
-#: inc/modules/mpcf-dragdroplist.php:50 inc/modules/mpcf-radio.php:44
-#: inc/modules/mpcf-select.php:49 inc/modules/mpcf-table.php:56
-#: inc/mpcf-admin.php:120 inc/mpcf-admin.php:159 inc/mpcf-admin.php:366
-#: inc/mpcf-modules.php:88
+#: inc/modules/mpcf-colorselect.php:56 inc/modules/mpcf-dragdroplist.php:50
+#: inc/modules/mpcf-radio.php:44 inc/modules/mpcf-select.php:49
+#: inc/modules/mpcf-table.php:56 inc/mpcf-admin.php:120 inc/mpcf-admin.php:159
+#: inc/mpcf-admin.php:366 inc/mpcf-modules.php:96
 msgid "Title"
 msgstr "Titel"
 
-#: inc/modules.php:165 inc/mpcf-modules.php:165
+#: inc/modules.php:165 inc/mpcf-modules.php:173
 msgid "Base Class"
 msgstr "Grundmodul"
 
-#: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-dragdroplist.php:39
-#: inc/modules/mpcf-radio.php:33 inc/modules/mpcf-select.php:38
+#: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-colorselect.php:39
+#: inc/modules/mpcf-dragdroplist.php:39
+#: inc/modules/mpcf-imagebuttongroup.php:33 inc/modules/mpcf-radio.php:33
+#: inc/modules/mpcf-select.php:38
 msgid "Choices"
 msgstr "Optionen"
 
-#: inc/modules/mpcf-buttongroup.php:52 inc/modules/mpcf-radio.php:52
-#: inc/modules/mpcf-truefalse.php:33
+#: inc/modules/mpcf-buttongroup.php:52 inc/modules/mpcf-imagebuttongroup.php:52
+#: inc/modules/mpcf-radio.php:52 inc/modules/mpcf-truefalse.php:33
 msgid "Default"
 msgstr "Standardwert"
 
 #: inc/modules/mpcf-buttongroup.php:57 inc/modules/mpcf-color.php:33
-#: inc/modules/mpcf-custom.php:43 inc/modules/mpcf-date.php:34
-#: inc/modules/mpcf-datetime.php:34 inc/modules/mpcf-dragdroplist.php:58
-#: inc/modules/mpcf-email.php:57 inc/modules/mpcf-month.php:33
-#: inc/modules/mpcf-number.php:33 inc/modules/mpcf-password.php:33
-#: inc/modules/mpcf-radio.php:57 inc/modules/mpcf-range.php:33
-#: inc/modules/mpcf-select.php:57 inc/modules/mpcf-text.php:58
-#: inc/modules/mpcf-textarea.php:50 inc/modules/mpcf-time.php:33
-#: inc/modules/mpcf-week.php:33
+#: inc/modules/mpcf-colorselect.php:33 inc/modules/mpcf-custom.php:43
+#: inc/modules/mpcf-date.php:34 inc/modules/mpcf-datetime.php:34
+#: inc/modules/mpcf-dragdroplist.php:58 inc/modules/mpcf-email.php:62
+#: inc/modules/mpcf-grid.php:45 inc/modules/mpcf-imagebuttongroup.php:57
+#: inc/modules/mpcf-month.php:33 inc/modules/mpcf-number.php:33
+#: inc/modules/mpcf-password.php:33 inc/modules/mpcf-radio.php:57
+#: inc/modules/mpcf-range.php:33 inc/modules/mpcf-select.php:57
+#: inc/modules/mpcf-text.php:58 inc/modules/mpcf-textarea.php:50
+#: inc/modules/mpcf-time.php:33 inc/modules/mpcf-week.php:33
 msgid "Required"
 msgstr "Pflichtangabe"
 
@@ -96,9 +100,21 @@ msgstr "Checkbox"
 msgid "Color picker"
 msgstr "Farbauswahl"
 
+#: inc/modules/mpcf-colorselect.php:50
+msgid "Color code"
+msgstr "Farbcode"
+
+#: inc/modules/mpcf-colorselect.php:66
+msgid "Color select"
+msgstr "Farbauswahl"
+
 #: inc/modules/mpcf-conditional.php:34
 msgid "Conditional field"
 msgstr "Abh&auml;ngiges Feld"
+
+#: inc/modules/mpcf-conditionalpanel.php:34
+msgid "Conditional panels field"
+msgstr "Abh&auml;ngiges Panel"
 
 #: inc/modules/mpcf-custom.php:37
 msgid "Callback"
@@ -117,7 +133,7 @@ msgid "Text field"
 msgstr "Text"
 
 #: inc/modules/mpcf-date.php:40 inc/modules/mpcf-datetime.php:40
-#: inc/modules/mpcf-email.php:52 inc/modules/mpcf-month.php:39
+#: inc/modules/mpcf-email.php:57 inc/modules/mpcf-month.php:39
 #: inc/modules/mpcf-number.php:39 inc/modules/mpcf-text.php:53
 #: inc/modules/mpcf-textarea.php:44 inc/modules/mpcf-time.php:39
 #: inc/modules/mpcf-week.php:39
@@ -142,7 +158,7 @@ msgstr "H&ouml;chstwert"
 msgid "Date"
 msgstr "Datum"
 
-#: inc/modules/mpcf-date.php:63
+#: inc/modules/mpcf-date.php:62
 #, php-format
 msgid "format: yyyy-mm-dd (e.g. %s)"
 msgstr "Format: JJJJ-MM-TT (bspw. %s)"
@@ -156,6 +172,10 @@ msgstr "Datum und Zeit"
 msgid "format: yyyy-mm-ddThh:mm (e.g. %s)"
 msgstr "Format: JJJJ-MM-ttTHH:mm (bspw. %s)"
 
+#: inc/modules/mpcf-divider.php:38
+msgid "Divider"
+msgstr "Unterteilung"
+
 #: inc/modules/mpcf-dragdroplist.php:33 inc/modules/mpcf-email.php:47
 #: inc/modules/mpcf-select.php:33
 msgid "Multiple"
@@ -165,11 +185,11 @@ msgstr "Mehrfach"
 msgid "Select"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:110
+#: inc/modules/mpcf-dragdroplist.php:113
 msgid "Selection"
 msgstr "Auswahl"
 
-#: inc/modules/mpcf-dragdroplist.php:115
+#: inc/modules/mpcf-dragdroplist.php:118
 msgid "Available options"
 msgstr "Verf&uuml;gbare Optionen"
 
@@ -219,8 +239,8 @@ msgstr "ob Medienbuttons angezeigt werden sollen"
 msgid "Minimal editor"
 msgstr "Minimaler Editor"
 
-#: inc/modules/mpcf-editor.php:76 inc/modules/mpcf-table.php:37
-#: inc/modules/mpcf-textarea.php:57
+#: inc/modules/mpcf-editor.php:76 inc/modules/mpcf-grid.php:39
+#: inc/modules/mpcf-table.php:37 inc/modules/mpcf-textarea.php:57
 msgid "Rows"
 msgstr "Zeilen"
 
@@ -244,7 +264,11 @@ msgstr "Mindestl&auml;nge"
 msgid "Maximum length"
 msgstr "H&ouml;chstl&auml;nge"
 
-#: inc/modules/mpcf-email.php:65
+#: inc/modules/mpcf-email.php:52
+msgid "Auto-complete"
+msgstr "automatisch ausfüllen"
+
+#: inc/modules/mpcf-email.php:70
 msgid "Email"
 msgstr "Email"
 
@@ -253,12 +277,12 @@ msgid "File picker"
 msgstr "Dateiauswahl"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: mp-custom-fields.php:57
+#: mp-custom-fields.php:58
 msgid "Change"
 msgstr "&Auml;ndern"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: inc/modules/mpcf-repeater.php:60
+#: inc/modules/mpcf-repeater.php:62 mp-custom-fields.php:57
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
@@ -267,13 +291,29 @@ msgid "0b"
 msgstr "0b"
 
 #: inc/modules/mpcf-file.php:72 inc/modules/mpcf-media.php:63
-#: mp-custom-fields.php:64
+#: mp-custom-fields.php:65
 msgid "Remove"
 msgstr "Entfernen"
+
+#: inc/modules/mpcf-grid.php:33 inc/modules/mpcf-table.php:44
+msgid "Columns"
+msgstr "Spalten"
+
+#: inc/modules/mpcf-grid.php:53
+msgid "Grid field"
+msgstr "Gitterfeld"
 
 #: inc/modules/mpcf-hidden.php:34
 msgid "Hidden field"
 msgstr "Verstecktes Feld"
+
+#: inc/modules/mpcf-imagebuttongroup.php:44
+msgid "Image"
+msgstr "Bild"
+
+#: inc/modules/mpcf-imagebuttongroup.php:65
+msgid "Image button group"
+msgstr "Bild-Button-Gruppe"
 
 #: inc/modules/mpcf-map.php:33
 msgid "Center coordinates"
@@ -324,7 +364,7 @@ msgstr "Gr&ouml;&szlig;e der Schritte zwischen den m&ouml;glichen Werten"
 msgid "Month"
 msgstr "Monat"
 
-#: inc/modules/mpcf-month.php:72
+#: inc/modules/mpcf-month.php:68
 #, php-format
 msgid "format: yyyy-mm (e.g. %s)"
 msgstr "Format: JJJJ-MM (bspw. %s)"
@@ -354,14 +394,8 @@ msgid "Size"
 msgstr "Gr&ouml;&szlig;e"
 
 #: inc/modules/mpcf-table.php:40
-#, fuzzy
-#| msgid "number of rows"
 msgid "Amount of rows"
 msgstr "Anzahl der Zeilen"
-
-#: inc/modules/mpcf-table.php:44
-msgid "Columns"
-msgstr "Spalten"
 
 #: inc/modules/mpcf-table.php:47
 msgid "Amount of columns"
@@ -401,7 +435,7 @@ msgstr "Mehrzeiliger Text"
 msgid "Time"
 msgstr "Zeit"
 
-#: inc/modules/mpcf-time.php:73
+#: inc/modules/mpcf-time.php:68
 #, php-format
 msgid "format: hh:mm:ss (e.g. %s)"
 msgstr "Format: HH:MM:SS (bspw. %s)"
@@ -422,7 +456,7 @@ msgstr "nein"
 msgid "Week"
 msgstr "Woche"
 
-#: inc/modules/mpcf-week.php:73
+#: inc/modules/mpcf-week.php:68
 #, php-format
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
@@ -448,7 +482,7 @@ msgstr "Metaboxen"
 msgid "Search"
 msgstr "Suche"
 
-#: inc/mpcf-admin.php:113 mp-custom-fields.php:61
+#: inc/mpcf-admin.php:113 mp-custom-fields.php:62
 #, php-format
 msgid "Panel: %s"
 msgstr "Panel: %s"
@@ -519,7 +553,7 @@ msgid "The priority within the context where the box should be displayed."
 msgstr ""
 "Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt wird."
 
-#: inc/mpcf-admin.php:200 mp-custom-fields.php:60
+#: inc/mpcf-admin.php:200 mp-custom-fields.php:61
 #, php-format
 msgid "Edit meta box: %s"
 msgstr "Metabox bearbeiten: %s"
@@ -607,29 +641,28 @@ msgstr ""
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
-#: mp-custom-fields.php:55
+#: mp-custom-fields.php:56
 msgid "Add file"
 msgstr "Datei hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:56
-msgid "Add media"
-msgstr "Medium hinzuf&uuml;gen"
-
-#: mp-custom-fields.php:58
+#: mp-custom-fields.php:59
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:59
+#: mp-custom-fields.php:60
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:62
+#: mp-custom-fields.php:63
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:63
+#: mp-custom-fields.php:64
 msgid "Upload file"
 msgstr "Datei hochladen"
+
+#~ msgid "Add media"
+#~ msgstr "Medium hinzuf&uuml;gen"
 
 #~ msgid "Change file"
 #~ msgstr "Datei &auml;ndern"
@@ -900,9 +933,6 @@ msgstr "Datei hochladen"
 
 #~ msgid "Case options"
 #~ msgstr "Referenzoptionen"
-
-#~ msgid "Image:"
-#~ msgstr "Bild:"
 
 #~ msgid "Link:"
 #~ msgstr "Link:"
@@ -1868,9 +1898,6 @@ msgstr "Datei hochladen"
 
 #~ msgid "Gallery type"
 #~ msgstr "Galerie-Typ"
-
-#~ msgid "Slider"
-#~ msgstr "Slider"
 
 #~ msgid "Full width carousel"
 #~ msgstr "Karussell in ganzer Breite"

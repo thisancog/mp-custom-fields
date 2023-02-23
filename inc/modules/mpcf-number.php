@@ -54,7 +54,7 @@ class MPCFNumberField extends MPCFModule {
 				'title' => __('Step', 'mpcf'),
 				'type'	=> 'number',
 				'description' => __('size of steps between possible values', 'mpcf'),
-				'default' => 1
+				'default' => 'any'
 			)
 		);
 	}
@@ -64,7 +64,7 @@ class MPCFNumberField extends MPCFModule {
 	}
 
 	function build_field($args = array()) { ?>
-		<input type="number" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this); ?>>
+		<input type="number" value="<?php echo $args['value']; ?>"<?php echo mpcf_list_input_params($this, array('min', 'max', 'step')); ?>>
 
 <?php
 	}

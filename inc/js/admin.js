@@ -299,6 +299,7 @@
 				emtpyField      = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-controls >.mpcf-repeater-empty'),
 				fields          = rowsWrapper.dataset.fields,
 				fieldsObj       = JSON.parse(fields),
+				maxRows         = parseInt(rowsWrapper.dataset.maxrows),
 				rowHTML         = null,
 				dragDropHandler = null;
 
@@ -326,7 +327,7 @@
 
 				el.parentElement.removeChild(el);
 
-			
+				addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 				checkIfEmpty();
 				renameDynamicFields(set);
 			};
@@ -377,6 +378,8 @@
 				let conditionalItems = [].slice.call(newRow.querySelectorAll('.mpcf-conditionalpanels-input'));
 				conditionalItems.forEach(item => item.setAttribute('data-panel-id', Math.floor(Math.random() * Math.pow(10,10))));
 				newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
+
+				addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 
 				dragDropHandler.addElements(newRow);
 				checkIfEmpty();
@@ -482,8 +485,6 @@
 						parent = input.parentElement,
 						newID, newName;
 
-					let toLog = input.getAttribute('data-own-name') == 'mediaspacing';
-
 					if (!input.dataset.name) {
 						var isLabel = input.getAttribute('for') && input.tagName.toLowerCase() == 'label';
 						isLabel = isLabel && (parent.classList.contains('mpcf-title') || parent.classList.contains('mpcf-buttongroup-option') || parent.classList.contains('mpcf-radio-option'));
@@ -564,7 +565,7 @@
 					wrapper  = element.querySelector('.mpcf-conditional-wrapper'),
 					parent   = furthestAncestor(wrapper, '.mpcf-conditional-input'),
 					baseName = select.dataset.basename,
-					options  = JSON.parse(select.dataset.options),
+					options  = JSON.parse(select.dataset.options || '[]'),
 					isSingle = select.tagName.toLowerCase() === 'input';
 
 				element.setAttribute('data-registered', 1);

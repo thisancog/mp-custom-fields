@@ -214,10 +214,13 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 		$boxes = mpcf_get_taxonomy_boxes($term->taxonomy);
 	}
 
+	if ($boxes == null)
+		mpcf_dump(123);
+
 	array_walk($boxes, function($box) use (&$registeredFields, $fieldName) {
 		array_walk($box['panels'], function($panelInBox) use (&$registeredFields, $fieldName) {
 			array_walk($panelInBox['fields'], function($fieldInPanel) use (&$registeredFields, $fieldName) {
-				if ($fieldInPanel['name'] === $fieldName)
+				if (isset($fieldInPanel['name']) && $fieldInPanel['name'] === $fieldName)
 					$registeredFields[] = $fieldInPanel;
 			});
 		});
@@ -321,7 +324,7 @@ function mpcf_get_input_name($field, $suffix = null) {
 	      ? $field->args['baseName'] . '[' . $field->args['name'] . ']'
 	      : $field->args['name'];
 
-	if ($suffix == null)
+	if ($suffix === null)
 		return $name;
 
 	if (!is_array($suffix))
@@ -340,7 +343,16 @@ function mpcf_input_own_name($field) {
 
 function mpcf_get_input_param($field, $param) {
 	$fieldArgs = $field->args;
-	return isset($fieldArgs[$param]) && !empty($fieldArgs[$param]) ? $fieldArgs[$param] : null;
+	if (isset($fieldArgs[$param]) && !empty($fieldArgs[$param]))
+		return $fieldArgs[$param];
+
+	$default = null;
+	array_walk($field->parameters, function($parameter) use (&$default, $param) {
+		if ($parameter['name'] == $param && isset($parameter['default']))
+			$default = $parameter['default'];
+	});
+
+	return $default;
 }
 
 function mpcf_input_param($field, $param) {
@@ -348,6 +360,7 @@ function mpcf_input_param($field, $param) {
 	if ($paramName === null) return;
 
 	$value = mpcf_get_input_param($field, $paramName);
+
 	if (mpcf_is_simple_param($param)) {
 		$output = $value ? ' ' . $paramName : '';
 	} else {

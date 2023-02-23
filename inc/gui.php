@@ -31,9 +31,12 @@ function mpcf_meta_box_init($post, $metabox) {
 function mpcf_build_admin_gui($panels, $optionName) {
 	if (isset($_POST['update_settings'])) {
 		$values = get_option($optionName);
+		$values = $values == '' ? array() : $values;
 
 		foreach ($panels as $panel) {
 			foreach ($panel['fields'] as $field) {
+				if (!isset($field['name'])) continue;
+
 				$name = $field['name'];
 				$type = $field['type'];
 				$field['context'] = 'option';
@@ -176,7 +179,6 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 
 	foreach ($fields as $field) {
 		if (!isset($field['type'])) continue;
-
 		$type             = $field['type'];
 		$field            = mpcf_sanitize_args($field);
 
@@ -609,7 +611,7 @@ function mpcf_ajax_enqueue_editors($fields) {
 		$hasEditors = $hasEditors || mpcf_ajax_enqueue_editors($fields[0]['fields']);
 
 	return $hasEditors || count(array_filter($fields, function($field) {
-		return $field['type'] === 'editor';
+		return isset($field['type']) && $field['type'] === 'editor';
 	})) > 0;
 }
 
