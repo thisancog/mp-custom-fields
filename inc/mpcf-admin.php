@@ -204,7 +204,6 @@ function mpcf_admin_edit_box($id) {
 <?php	} ?>
 
 	<?php mpcf_build_gui_as_panels($gui, $box); ?>
-	<pre><?php // var_dump($box['panels'][0]); ?></pre>
 
 	<div class="mpcf-options-inputs">
 		<input type="hidden" name="update_settings" id="update_settings" value="Y" />

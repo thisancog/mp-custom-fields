@@ -120,7 +120,7 @@ function mpcf_add_metaboxes() {
  *****************************************************/
 
 function mpcf_get_metaboxes_for_type($post_type = 'post') {
-	if (!post_type_exists($post_type)) return;
+	if (!post_type_exists($post_type)) return array();
 
 	$boxes = get_option('mpcf_meta_boxes', array());
 	$boxes = array_filter($boxes, function($box) use ($post_type) {

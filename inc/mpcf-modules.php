@@ -195,7 +195,8 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 
 	if ($context === 'post') {
 		$id = $id !== null && get_post_status($id) !== false ? $id : get_the_ID();
-		$value = get_post_meta($id, $fieldName, true);
+		if ($id !== null && $id !== false)
+			$value = get_post_meta($id, $fieldName, true);
 
 		$post_type = get_post_type($id);
 		$boxes = mpcf_get_metaboxes_for_type($post_type);
@@ -214,8 +215,6 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 		$boxes = mpcf_get_taxonomy_boxes($term->taxonomy);
 	}
 
-	if ($boxes == null)
-		mpcf_dump(123);
 
 	array_walk($boxes, function($box) use (&$registeredFields, $fieldName) {
 		array_walk($box['panels'], function($panelInBox) use (&$registeredFields, $fieldName) {
@@ -225,6 +224,7 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 			});
 		});
 	});
+
 
 	if (!empty($registeredFields)) {
 		$registeredField = $registeredFields[0];

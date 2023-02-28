@@ -52,6 +52,12 @@ class MPCFColorSelectField extends MPCFModule {
 						'required'	=> true
 					),
 					array(
+						'name'	=> 'class',
+						'title'	=> __('Class', 'mpcf'),
+						'type'	=> 'text',
+						'required'	=> false
+					),
+					array(
 						'name'	=> 'title',
 						'title'	=> __('Title', 'mpcf'),
 						'type'	=> 'text',
@@ -70,7 +76,11 @@ class MPCFColorSelectField extends MPCFModule {
 		$title = isset($option['title']) && !empty($option['title'])
 			   ? esc_html($option['title'])
 			   : $option['colorcode'];
-		return '<span class="mpcf-colorselect-color" style="--color: ' . $option['colorcode'] . ';"></span> <span class="mpcf-colorselect-title">' . $title . '</span>';
+		$class = isset($option['class']) && !empty($option['class']) ? ' ' . $option['class'] : '';
+		$color = isset($option['colorcode']) && !empty($option['colorcode'])
+			   ? ' style="--color: ' . $option['colorcode'] . ';"'
+			   : '';
+		return '<span class="mpcf-colorselect-color' . $class . '"' . $color . '></span> <span class="mpcf-colorselect-title">' . $title . '</span>';
 	}
 
 	function build_field($args = array()) {
