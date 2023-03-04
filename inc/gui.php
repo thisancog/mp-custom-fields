@@ -548,7 +548,7 @@ function mpcf_save_meta_boxes($post_id) {
 
 	foreach ($boxes as $id => $box) {
 		$nonce = 'mpcf_meta_box_nonce_' . $id;
-		if (!isset($_POST[$nonce]) || !wp_verify_nonce($_POST[$nonce], $nonce)) return;
+		if (!isset($_POST[$nonce]) || !wp_verify_nonce($_POST[$nonce], $nonce)) continue;
 
 		$fields = array();
 		if (isset($box['panels'])) {

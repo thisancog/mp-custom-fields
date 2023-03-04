@@ -1407,7 +1407,7 @@ body.no-js .mpcf-file-picker + label {
 	border: 1px solid #8C8F94;
 	background-color: #FFF;
 	border-radius: 3px;
-	z-index: 1;
+	z-index: 3;
 
 	opacity: 0;
 	pointer-events: none;
