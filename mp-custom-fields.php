@@ -5,6 +5,7 @@ Plugin Name: MP Custom Fields
 Plugin URI: http://www.matthias-planitzer.de/
 Description: A plugin to easily create a backend custom field interface.
 Author: Matthias Planitzer
+Version: 1.5
 */
 
 /*****************************************
