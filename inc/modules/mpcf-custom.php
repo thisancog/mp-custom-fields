@@ -52,7 +52,8 @@ class MPCFCustomField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$cb = $args['callback'];		
+		$cb = $args['callback'];
+
 		if (is_string($cb) && !function_exists($cb)) return;
 		if (is_array($cb) && !is_object($cb[0])) return;
 		if (is_array($cb) && !method_exists($cb[0], $cb[1])) return;
