@@ -19,13 +19,13 @@
 
 	var init = function() {
 		if (!wp || !('svgPainter' in wp))
-			return setTimeout(init, 30);	
+			return setTimeout(init, 30);
 
 		panelSwitchers    = new PanelSwitchers();
 		conditionalFields = new ConditionalFields();
 		conditionalPanels = new ConditionalPanelsFields();
 		mediaPickers      = new MediaPickers();
-		colorSelects      = new ColorSelects();
+		colorSelects      = new ColorSelects();		
 
 		goToInvalids();
 		checkHTML5Support();
@@ -284,8 +284,7 @@
 	 **************************************************************/
 
 	var repeaterField = function(parent = null) {
-		parent = parent || document;
-
+		parent = parent !== null ? parent : document;
 		var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
 		if (!repeaters.length) return;
 				
@@ -297,6 +296,7 @@
 				loader          = repeater.querySelector(':scope > .mpcf-field > .mpcf-loading-container'),
 				addBtn          = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-controls > .mpcf-repeater-add-row'),
 				emtpyField      = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-controls >.mpcf-repeater-empty'),
+				panels 			= repeater.closest('.mpcf-panels-tabs'),
 				fields          = rowsWrapper.dataset.fields,
 				fieldsObj       = JSON.parse(fields),
 				maxRows         = parseInt(rowsWrapper.dataset.maxrows),
@@ -329,7 +329,7 @@
 
 				addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 				checkIfEmpty();
-				renameDynamicFields(set);
+				renameDynamicFields(panels, repeater);
 			};
 
 
@@ -351,18 +351,16 @@
 			});
 
 			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
-				cbEnd: function() { renameDynamicFields(set); },
+				cbEnd: function() { renameDynamicFields(panels, repeater); },
 				clickElem: '.mpcf-repeater-row-move'
 			});
 
-			renameDynamicFields(set);
+		//	renameDynamicFields(panels, repeater);
 			checkCheckableElements(rowsWrapper);
 			registerAsyncElements(rowsWrapper);
 			updateLoadingElements(repeater, true);
 
-
-			// prefetch blank row
-
+		// 	prefetch blank row
 			$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
 				rowHTML = response;
 			});
@@ -383,7 +381,7 @@
 
 				dragDropHandler.addElements(newRow);
 				checkIfEmpty();
-				renameDynamicFields(set);
+				renameDynamicFields(panels, repeater);
 				registerAsyncElements(newRow);
 			});
 
@@ -462,8 +460,10 @@
 		return id;
 	}
 
-	var renameDynamicFields = function(parent) {
-		var rows        = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel')),
+	var renameDynamicFields = function(panels, parent) {
+		var rowsParent  = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container')),
+			rowsPanels  = [].slice.call(panels.querySelectorAll('.mpcf-conditionalpanel')),
+			rows        = rowsParent.concat(rowsPanels),
 			validInputs = ['input', 'textarea', 'select', 'fieldset'],
 			valids      = validInputs.concat(['button', 'label', 'datalist', 'keygen', 'option']);
 
@@ -558,11 +558,13 @@
 			let newFields = [].slice.call(parent.querySelectorAll('.mpcf-conditional-input:not([data-registered]'));
 			if (newFields.length == 0) return;
 
+
 			newFields.forEach((element => {
 				let id       = this.generateID(),
 					select   = element.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
 					loader   = element.querySelector('.mpcf-loading-container'),
 					wrapper  = element.querySelector('.mpcf-conditional-wrapper'),
+					panels   = element.closest('.mpcf-panels-tabs'),
 					parent   = furthestAncestor(wrapper, '.mpcf-conditional-input'),
 					baseName = select.dataset.basename,
 					options  = JSON.parse(select.dataset.options || '[]'),
@@ -574,14 +576,14 @@
 				select.removeAttribute('data-options');
 				select.removeAttribute('data-values');
 
-				renameDynamicFields(parent);
+			//	renameDynamicFields(panels, parent);
 				checkCheckableElements(wrapper);
 				registerAsyncElements(wrapper);
 
 				select.addEventListener('change', (() => this.switchContent(id)).bind(this));
 
 				this.fields[id] = {
-					element, select, loader, wrapper, parent, baseName, options, isSingle
+					element, select, loader, wrapper, parent, baseName, options, isSingle, panels
 				};
 			}).bind(this));
 		}
@@ -607,7 +609,7 @@
 			$.post(ajaxurl, request, response => {
 				removeQTranslateX(field.wrapper);
 				field.wrapper.innerHTML = response;
-				renameDynamicFields(field.parent);
+				renameDynamicFields(field.panels, field.parent);
 
 				field.loader.classList.remove('mpcf-loading-active');
 				updateLoadingElements(field.element, true);
@@ -643,6 +645,7 @@
 
 			newFields = newFields.map((field => {
 				let id       = field.dataset.panelId || this.generateID(),
+					panels   = field.closest('.mpcf-panels-tabs'),
 					set      = field.closest('.mpcf-panels'),
 					menu     = set.querySelector('.mpcf-panels-menu'),
 					menuItem = menu.querySelector('.mpcf-panel-item[data-panel-id="' + id + '"]'),
@@ -675,7 +678,7 @@
 					this.switchContent(id);
 				}).bind(this));
 
-				renameDynamicFields(set);
+			//	renameDynamicFields(panels, set);
 				checkCheckableElements(tab);
 				registerAsyncElements(tab);
 
@@ -736,13 +739,14 @@
 				field.tab.setAttribute('data-basename', field.baseName);
 				field.tab.classList.add('mpcf-conditionalpanel');
 
-				let boxID = field.element.closest('.postbox').id;
+				let boxID  = field.element.closest('.postbox').id,
+					panels = field.element.closest('.mpcf-panels-tabs');
 
 				panelSwitchers.registerMenuItem(boxID, field.menuItem);
 				panelSwitchers.registerPanel(boxID, field.tab);
 				panelSwitchers.activatePreactivatedPanel(boxID);
 
-				renameDynamicFields(field.set);
+				renameDynamicFields(panels, field.set);
 				updateLoadingElements(field.element, true);
 				checkCheckableElements(field.tab);
 				registerAsyncElements(field.tab);
