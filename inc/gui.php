@@ -24,6 +24,8 @@ function mpcf_meta_box_init($post, $metabox) {
 
 
 
+
+
 /*****************************************************
 	Build graphical user interface for admin pages
  *****************************************************/
@@ -95,8 +97,9 @@ function mpcf_build_admin_gui($panels, $optionName) {
 
 function mpcf_build_gui_as_panels($id, $panels, $values) {
 	$updated = mpcf_add_conditional_panels($panels, $values);
-	$panels = $updated['panels'];
-	$values = $updated['values'];
+	$updated = mpcf_add_bulk_copypaste_panels($id, $updated['panels'], $updated['values']);
+	$panels  = $updated['panels'];
+	$values  = $updated['values'];
 
 	$panels = array_map(function($panel) {
 		$panel['panel_id']       = isset($panel['panel_id'])       ? $panel['panel_id']       : uniqid();
@@ -170,7 +173,7 @@ function mpcf_build_panel_tab($panel, $values, $i) {
 }
 
 
-function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
+function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true, $baseName = '') {
 	$o = get_option('mpcf_options');
 	setlocale(LC_TIME, get_locale());
 	$required = false;
@@ -207,7 +210,9 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $classes; ?>" id="mpcf-field-<?php echo $field['name']; ?>"<?php echo $attrs; ?>>
 				<?php mpcf_insert_field_title($field); ?>
 				<div class="mpcf-field<?php echo $wrapperClasses; ?>">
-<?php				$module->args = $field;
+<?php				if ($baseName !== '')
+						$field['name'] = $baseName . '[' . $field['name'] . ']';
+					$module->args = $field;
 					$result = $module->build_field($field);
 					$hasRequireds = $hasRequireds || $result;
 					mpcf_insert_field_description($field); ?>
@@ -391,7 +396,9 @@ Class MPCFRecursiveConditionalPanelsAdder {
 			$chosenOption                   = $layer['options'][$type]['panel'];
 			$chosenOption['class_name']     = 'mpcf-conditionalpanel';
 			$chosenOption['panel_id']       = $id;
-			$chosenOption['panel_basename'] = count($args['name']) > 1 ? $args['name'][1] : $args['name'][0];
+
+		//	$chosenOption['panel_basename'] = count($args['name']) > 1 ? $args['name'][1] : $args['name'][0];
+			$chosenOption['panel_basename'] = count($args['name']) > 0 ? $baseNameConcat : '';
 
 			$chosenOption['fields']         = array_map(function($field) use ($value, $baseNameConcat, $chosenOption) {
 				if (!is_array($field)) return $field;
@@ -552,7 +559,9 @@ function mpcf_save_meta_boxes($post_id) {
 
 		$fields = array();
 		if (isset($box['panels'])) {
-			array_walk($box['panels'], function($panel) use (&$fields) {
+			$result = mpcf_add_bulk_copypaste_panels($id, $box['panels']);
+
+			array_walk($result['panels'], function($panel) use (&$fields) {
 				$fields = array_merge($fields, $panel['fields']);
 			});
 		}

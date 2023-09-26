@@ -107,7 +107,6 @@ function mpcf_add_metaboxes() {
 		}
 
 		if ($registerThisBox) {
-			
 			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
 		}
 	}
@@ -129,5 +128,78 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
 
 	return $boxes;
 }
+
+
+
+
+
+/*****************************************************
+	Copy-paste bulk
+ *****************************************************/
+
+function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array()) {
+	if (!current_user_can('manage_options')) return array('panels' => $panels, 'values' => $values);
+
+	$bulkPanel = array(
+		'title'		=> __('Bulk copy-paste', 'mpcf'),
+		'icon'		=> 'dashicons-admin-tools',
+		'fields'	=> array(
+			array(
+				'name'			=> 'mpcfbulkcopy',
+				'title'			=> __('Page metadata', 'mpcf'),
+				'type'			=> 'custom',
+				'callback'		=> 'mpcf_bulk_copy_field',
+				'description'	=> __('Copy this page&rsquo;s entire metadata to another page. This does not include any changes made since the last save.', 'mpcf')
+			),
+			array(
+				'name'			=> 'mpcfbulkpaste-' . $id,
+				'title'			=> ' ',
+				'type'			=> 'custom',
+				'callback'		=> 'mpcf_bulk_paste_field',
+				'actions'		=> array(
+					'save_before'		=> 'mpcf_bulk_paste_values'
+				),
+				'description'	=> __('Paste another page&rsquo;s entire metadata here.', 'mpcf')
+			)
+		)
+	);
+
+	$allValues = $values;
+	$toRemove = array('_edit_last', '_edit_lock', 'mpcfbulkcopy');
+	foreach ($toRemove as $key) {
+		if (isset($allValues[$key])) unset($allValues[$key]);
+	}
+
+	$panels[] = $bulkPanel;
+	$values['mpcfbulkcopy'] = $allValues;
+
+	return array('panels' => $panels, 'values' => $values);
+}
+
+function mpcf_bulk_copy_field($module, $field) {
+	$value = json_encode($field['value'], JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP); ?>
+	<textarea rows="6" readonly><?php echo $value; ?></textarea>
+<?php
+}
+
+function mpcf_bulk_paste_field($module, $field) { ?>
+	<textarea name="<?php echo $field['name']; ?>" rows="6"></textarea>
+<?php
+}
+
+function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
+	$values = mpcf_mknice($values);
+	$values = json_decode($values, JSON_OBJECT_AS_ARRAY);
+
+	foreach ($values as $key => $value) {
+		$value = is_array($value) && count($value) == 1 ? $value[0] : $value;
+		error_log(json_encode($value));
+		update_post_meta($post_id, $key, $value);
+	}
+
+	return '';
+}
+
+
 
 ?>
