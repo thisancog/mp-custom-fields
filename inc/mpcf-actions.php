@@ -52,7 +52,6 @@ function mpcf_before_save($field, $post_id, $value) {
 	}
 
 	if (isset($field['actions']) && isset($field['actions']['save_before'])) {
-		error_log('1 ' . $field['actions']['save_before']);
 		$value = call_user_func($field['actions']['save_before'], $post_id, $field['name'], $value);
 	}
 

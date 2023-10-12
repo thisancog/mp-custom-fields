@@ -146,6 +146,11 @@ function mpcf_get_all_registered_modules_options() {
 class MPCFModule {
 	public $name = 'base';
 	public $args = array();
+	public $category;
+	public $html5;
+	public $translatable;
+	public $wrapperClasses;
+	public $parameters;
 
 	function __construct() {
 		// Supply a category for the field selection menu

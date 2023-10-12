@@ -72,6 +72,7 @@ function mpcf_add_metaboxes() {
 	$boxes           = get_option('mpcf_meta_boxes', array());
 	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
 	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
+	$isPostsPage     = get_option('page_for_posts') && get_option('page_for_posts') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
 		$post_type     = $box['post_type'];
@@ -87,9 +88,10 @@ function mpcf_add_metaboxes() {
 
 			$page_template = array_map('trim', $page_template);
 			$onFrontpage = in_array('frontpage', $page_template);
+			$onPostspage = in_array('postspage', $page_template);
 
 			$valids = array_filter($page_template, function($template) {
-				return substr($template, 0, 1) !== '-' && $template !== 'frontpage';
+				return substr($template, 0, 1) !== '-' && $template !== 'frontpage' && $template !== 'postspage';
 			});
 
 			$invalids = array_filter($page_template, function($template) {
@@ -104,9 +106,13 @@ function mpcf_add_metaboxes() {
 
 			if (($onFrontpage && !$isFrontpage) || ($isFrontpage && in_array('-frontpage', $invalids)))
 				$registerThisBox = false;
+
+			if (($onPostspage && !$isPostsPage) || ($isPostsPage && in_array('-postspage', $invalids)))
+				$registerThisBox = false;
 		}
 
 		if ($registerThisBox) {
+			
 			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
 		}
 	}
