@@ -7,7 +7,8 @@
 function mpcf_default_settings() {
 	$options = array(
 		'googlemapskey'		=> '',
-		'multilingualclass'	=> 'mpcf-multilingual'
+		'multilingualclass'	=> 'mpcf-multilingual',
+		'showcopypastebulk'	=> true
 	);
 
 	return $options;
@@ -44,9 +45,15 @@ function mpcf_settings() {
 					'title'			=> __('Google Maps API Key', 'mpcf'),
 					'description'	=> sprintf(__('Generate a free API key <a href="%s" target="_blank" rel="noopener">here</a> to use Google Maps for the map picker and enter it here.', 'mpcf'), 'https://developers.google.com/maps/documentation/javascript/get-api-key'),
 					'notranslate'	=> true
+				),
+				array(
+					'name'		=> 'showcopypastebulk',
+					'type'		=> 'checkbox',
+					'title'		=> __('Bulk copy-paste', 'mpcf'),
+					'label'		=> __('show bulk copy-paste panel for admin users', 'mpcf')
 				)
 			)
-		)
+		),
 	);
 
 	?>
