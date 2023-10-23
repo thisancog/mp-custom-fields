@@ -106,7 +106,8 @@ class MPCFConditionalField extends MPCFModule {
 	}
 
 	function get_conditional_fields($fields, $values = array()) {
-		mpcf_build_gui_from_fields($fields, $values, false);
+		$baseName = $this->args['name'];
+		mpcf_build_gui_from_fields($fields, $values, false, $baseName);
 	}
 }
 
