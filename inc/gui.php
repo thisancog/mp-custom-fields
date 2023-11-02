@@ -24,8 +24,6 @@ function mpcf_meta_box_init($post, $metabox) {
 
 
 
-
-
 /*****************************************************
 	Build graphical user interface for admin pages
  *****************************************************/
@@ -97,9 +95,8 @@ function mpcf_build_admin_gui($panels, $optionName) {
 
 function mpcf_build_gui_as_panels($id, $panels, $values) {
 	$updated = mpcf_add_conditional_panels($panels, $values);
-	$updated = mpcf_add_bulk_copypaste_panels($id, $updated['panels'], $updated['values']);
-	$panels  = $updated['panels'];
-	$values  = $updated['values'];
+	$panels = $updated['panels'];
+	$values = $updated['values'];
 
 	$panels = array_map(function($panel) {
 		$panel['panel_id']       = isset($panel['panel_id'])       ? $panel['panel_id']       : uniqid();
@@ -173,7 +170,7 @@ function mpcf_build_panel_tab($panel, $values, $i) {
 }
 
 
-function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true, $baseName = '') {
+function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	$o = get_option('mpcf_options');
 	setlocale(LC_TIME, get_locale());
 	$required = false;
@@ -182,12 +179,14 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true, $bas
 
 	foreach ($fields as $field) {
 		if (!isset($field['type'])) continue;
+
 		$type             = $field['type'];
 		$field            = mpcf_sanitize_args($field);
 
 		$field['post_id'] = $id;
 		$field['value']   = mpcf_get_field_value($field, $values);
 		$field            = mpcf_resolve_deep_fields($field);
+
 
 		$required         = !$required && $field['required'] ? true : $required;
 		$hasRequireds     = false;
@@ -210,9 +209,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true, $bas
 			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $classes; ?>" id="mpcf-field-<?php echo $field['name']; ?>"<?php echo $attrs; ?>>
 				<?php mpcf_insert_field_title($field); ?>
 				<div class="mpcf-field<?php echo $wrapperClasses; ?>">
-<?php				if ($baseName !== '')
-						$field['name'] = $baseName . '[' . $field['name'] . ']';
-					$module->args = $field;
+<?php				$module->args = $field;
 					$result = $module->build_field($field);
 					$hasRequireds = $hasRequireds || $result;
 					mpcf_insert_field_description($field); ?>
@@ -235,7 +232,16 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true, $bas
 function mpcf_get_field_value($field, $values) {
 	$value = isset($field['value']) ? $field['value'] : null;
 
-	if ($value === null || empty($value)) {
+	if ($field['type'] == 'checkbox') {
+		if (isset($values[$field['name']])) {
+			$value = is_array($values[$field['name']]) ? $values[$field['name']][0] : $values[$field['name']];
+			$value = $value === 'checked' ? true : $value;
+			$value = $value === '0' || $value === '1' ? boolval($value) : $value;
+		}
+
+		if ($value === null && isset($field['default']) && $field['default'] !== '')
+			$value = $field['default'];
+	} else if ($value === null || empty($value)) {
 		$value = isset($values[$field['name']]) ? $values[$field['name']] : $field['default'];
 		$value = mpcf_resolve_sanitized_fields($value);
 	}
@@ -299,7 +305,7 @@ function mpcf_resolve_sanitized_fields($var) {
 
 function mpcf_resolve_deep_fields($field) {
 	$type = $field['type'];
-	$deepFields = array('repeater', 'conditional', 'dragdroplist', 'table');
+	$deepFields = array('repeater', 'conditional', 'dragdroplist', 'table', 'buttongroup');
 	$isDeep = in_array($type, $deepFields);
 
 	if ($type === 'select' && isset($field['multiple']) && $field['multiple'] === true)
@@ -396,9 +402,7 @@ Class MPCFRecursiveConditionalPanelsAdder {
 			$chosenOption                   = $layer['options'][$type]['panel'];
 			$chosenOption['class_name']     = 'mpcf-conditionalpanel';
 			$chosenOption['panel_id']       = $id;
-
-		//	$chosenOption['panel_basename'] = count($args['name']) > 1 ? $args['name'][1] : $args['name'][0];
-			$chosenOption['panel_basename'] = count($args['name']) > 0 ? $baseNameConcat : '';
+			$chosenOption['panel_basename'] = count($args['name']) > 1 ? $args['name'][1] : $args['name'][0];
 
 			$chosenOption['fields']         = array_map(function($field) use ($value, $baseNameConcat, $chosenOption) {
 				if (!is_array($field)) return $field;
@@ -559,9 +563,7 @@ function mpcf_save_meta_boxes($post_id) {
 
 		$fields = array();
 		if (isset($box['panels'])) {
-			$result = mpcf_add_bulk_copypaste_panels($id, $box['panels']);
-
-			array_walk($result['panels'], function($panel) use (&$fields) {
+			array_walk($box['panels'], function($panel) use (&$fields) {
 				$fields = array_merge($fields, $panel['fields']);
 			});
 		}
@@ -570,9 +572,8 @@ function mpcf_save_meta_boxes($post_id) {
 			$field['context'] = 'post';
 			$actions = isset($field['actions']) ? $field['actions'] : array();
 
-			$value   = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
+			$value   = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;;
 			$value   = mpcf_before_save($field, $post_id, $value);
-
 			update_post_meta($post_id, $field['name'], $value);
 			mpcf_after_save($field, $post_id, $value);
 		}
