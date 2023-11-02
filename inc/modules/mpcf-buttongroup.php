@@ -81,7 +81,7 @@ class MPCFButtonGroupField extends MPCFModule {
 				$id      = uniqid('mpcf-input-buttongroup-' . $name . '-');
 				$tag     = $multiple ? 'checkbox' : 'radio';
 				$suffix  = $multiple ? '' : null;
-				$checked = $args['value'] == $name || in_array($name, $args['value']) ? ' checked' : '';
+				$checked = $args['value'] == $name || (is_array($args['value']) && in_array($name, $args['value'])) ? ' checked' : '';
 				if ($default && $default === $name)
 					$title .= __(' (default)', 'mpcf'); ?>
 
