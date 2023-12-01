@@ -593,7 +593,7 @@ function mpcf_save_meta_boxes($post_id) {
 
 function mpcf_ajax_get_repeater_row() {
 	$fields = json_decode(stripcslashes($_POST['fields']), true);
-	$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div><div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div></div>';
+	$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-move-up dashicons-before dashicons-arrow-up"></div><div class="mpcf-repeater-row-move-down dashicons-before dashicons-arrow-down"></div><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div></div>';
 
 	$enqueueEditor = false;
 
