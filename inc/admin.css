@@ -1274,6 +1274,7 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-select-input select {
 	margin: -5px 0;
 	width: 100%;
+	max-width: initial;
 }
 
 .mpcf-select-input option {
