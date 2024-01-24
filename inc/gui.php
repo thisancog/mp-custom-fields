@@ -42,7 +42,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 				$field['context'] = 'option';
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
-				if (isset($_POST[$name]) || $type === 'checkbox' || $type === 'conditional') {
+				if (isset($_POST[$name]) || $type === 'checkbox' || $type === 'conditional' || $type == 'custom') {
 					$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
 					$value = mpcf_before_save($field, $name, $value);
 					$values[$name] = $value;
