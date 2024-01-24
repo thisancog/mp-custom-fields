@@ -412,6 +412,10 @@
 	100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
 }
 
+.mpcf-field *[disabled] + label {
+	opacity: 0.5;
+}
+
 
 
 .mpcf-tooltip {
@@ -898,7 +902,8 @@ body.no-js .mpcf-file-picker + label {
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup-input .mpcf-field input:checked + label {
+.mpcf-buttongroup-input .mpcf-field input:checked + label,
+.mpcf-buttongroup-input .mpcf-field input:focus + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
@@ -1274,7 +1279,6 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-select-input select {
 	margin: -5px 0;
 	width: 100%;
-	max-width: initial;
 }
 
 .mpcf-select-input option {
