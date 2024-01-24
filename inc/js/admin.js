@@ -305,6 +305,34 @@
 
 			repeater.dataset.registered = 1;
 
+		//	move row up
+			var moveRowUp = function(e) {
+				let target    = e.target.classList.contains('mpcf-repeater-row-move-up')
+						      ? e.target
+						      : e.target.querySelector('.mpcf-repeater-row-move-up'),
+					row       = target.closest('.mpcf-repeater-row'),
+					rowBefore = row.previousElementSibling;
+
+				if (!rowBefore) return;
+
+				row.parentNode.insertBefore(row, rowBefore);
+				renameDynamicFields(set);
+			}
+
+		//	move row down
+			var moveRowDown = function(e) {
+				let target    = e.target.classList.contains('mpcf-repeater-row-move-down')
+						      ? e.target
+						      : e.target.querySelector('.mpcf-repeater-row-move-down'),
+					row       = target.closest('.mpcf-repeater-row'),
+					rowAfter  = row.nextElementSibling;
+
+				if (!rowAfter) return;
+
+				rowAfter.parentNode.insertBefore(rowAfter, row);
+				renameDynamicFields(set);
+			}
+
 		//	remove Row
 			var removeRow = function(e) {
 				var el = e.target;
@@ -346,6 +374,15 @@
 
 
 			// populate repeater
+
+			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-move-up'), function(btn) {
+				btn.addEventListener('click', moveRowUp);
+			});
+
+			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-move-down'), function(btn) {
+				btn.addEventListener('click', moveRowDown);
+			});
+
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
 			});
