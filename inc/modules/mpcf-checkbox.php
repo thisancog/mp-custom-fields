@@ -45,11 +45,12 @@ class MPCFCheckbox extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$label = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
-		$value = $args['value'] === 'checked' || $args['value'] == 1; ?>
+		$label    = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
+		$value    = $args['value'] === 'checked' || $args['value'] == 1;
+		$disabled = isset($args['disabled']) && $args['disabled'] === true ? ' disabled' : ''; ?>
 
-		<input type="checkbox" value="checked"<?php echo mpcf_list_input_params($this, false) . ($value ? ' checked' : ''); ?>>
-			<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
+		<input type="checkbox" value="checked"<?php echo mpcf_list_input_params($this, false) . ($value ? ' checked' : '') . $disabled; ?>>
+		<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
 <?php
 	}
 }
