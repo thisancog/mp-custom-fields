@@ -1197,6 +1197,7 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-conditional-choice input[type="checkbox"] + label {
 	position: relative;
 	top: -3px;
+	left: 5px;
 }
 
 @media (min-width: 1350px) {
