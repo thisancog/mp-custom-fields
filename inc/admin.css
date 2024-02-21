@@ -902,8 +902,7 @@ body.no-js .mpcf-file-picker + label {
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup-input .mpcf-field input:checked + label,
-.mpcf-buttongroup-input .mpcf-field input:focus + label {
+.mpcf-buttongroup-input .mpcf-field input:checked + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
@@ -952,8 +951,7 @@ body.no-js .mpcf-file-picker + label {
 	opacity: 0.5;
 }
 
-.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon),
-.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:not(.mpcf-has-svg-icon) {
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon) {
 	border-bottom: 2px solid #007CBA;
 }
 
@@ -966,8 +964,7 @@ body.no-js .mpcf-file-picker + label {
 	transition: 0.2s ease color;
 }
 
-.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon):before,
-.mpcf-imagebuttongroup-input .mpcf-field input:focus + label:not(.mpcf-has-svg-icon):before {
+.mpcf-imagebuttongroup-input .mpcf-field input:checked + label:not(.mpcf-has-svg-icon):before {
 	color: #007CBA;
 	border-bottom-color: currentColor;
 }
@@ -978,16 +975,14 @@ body.no-js .mpcf-file-picker + label {
 	True/false button
  ******************************/
 
-.mpcf-buttongroup-input .mpcf-truefalse-option:first-child input:checked + label,
-.mpcf-buttongroup-input .mpcf-truefalse-option:first-child input:focus + label {
+.mpcf-buttongroup-input .mpcf-truefalse-option:first-child input:checked + label {
 	border-color: #46B450 #42A94A #42A94A;
 	background-color: #46B450;
 	color: #FFF;
 	text-shadow: 0 -1px 1px #42A94A, 1px 0 1px #42A94A, 0 1px 1px #42A94A, -1px 0 1px #42A94A;
 }
 
-.mpcf-buttongroup-input .mpcf-truefalse-option:last-child input:checked + label,
-.mpcf-buttongroup-input .mpcf-truefalse-option:last-child input:focus + label {
+.mpcf-buttongroup-input .mpcf-truefalse-option:last-child input:checked + label {
 	border-color: #DC3232 #AA0000 #AA0000;
 	background-color: #DC3232;
 	color: #FFF;
