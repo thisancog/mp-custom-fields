@@ -92,7 +92,7 @@ class MPCFRepeaterField extends MPCFModule {
 
 	function get_repeater_row($baseName, $fields, $values = array()) {
 		global $post;
-		$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div><div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div></div>';
+		$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-move-up dashicons-before dashicons-arrow-up"></div><div class="mpcf-repeater-row-move-down dashicons-before dashicons-arrow-down"></div><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div></div>';
 
 		$enqueueEditor = false;
 
@@ -115,6 +115,72 @@ class MPCFRepeaterField extends MPCFModule {
 			\_WP_Editors::enqueue_scripts();
 			print_footer_scripts();
 			\_WP_Editors::editor_js();
+		}
+	}
+
+
+
+
+
+	/*****************************************************
+		Attach media to post
+ 	*****************************************************/
+
+	function save_after($post_id, $field, $value, $oldValue) {
+		$this->attach_media_to_post($post_id, $field, $value, $oldValue);
+	}
+
+	function attach_media_to_post($post_id, $field, $values, $oldValues) {
+		if ($post_id == null) return;
+
+		$fields = isset($field['fields']) && !empty($field['fields']) ? $field['fields'] : array();
+		if (empty($fields)) return;
+
+		$o           = get_option('mpcf_options');
+		$mediaFields = mpcf_get_media_storing_fields();
+
+		$i = 0;
+
+		foreach ($values as $value) {
+			$j = 0;
+			if (!is_array($value)) continue;
+
+			foreach ($value as $subValueKey => $subValueInfo) {
+				$currentField = null;
+
+				array_walk($fields, function($field) use (&$currentField, $subValueKey) {
+					if ($field == null || $field['name'] !== $subValueKey) return;
+					$currentField = $field;
+				});
+
+				if ($currentField == null) {
+					$j++;
+					continue;
+				}
+
+				$type = $currentField['type'];
+				if (!in_array($type, $mediaFields)) {
+					$j++;
+					continue;
+				}
+
+				$oldValue = is_array($oldValues) && !empty($oldValues)
+						  ? array_slice($oldValues, $i, 1, false) : '';
+				$oldValue = !empty($oldValue) ? $oldValue : '';
+				$oldValue = !empty($oldValue) ? $oldValue[0] : '';
+
+				$oldValue = is_array($oldValue) && isset($oldValue[$subValueKey])
+						  ? $oldValue[$subValueKey] : '';
+
+				$classname = $o['modules'][$type]['name'];
+				$module    = new $classname();
+				$module->attach_media_to_post($post_id, $currentField, $subValueInfo, $oldValue);
+				unset($module);
+
+				$j++;
+			}
+
+			$i++;
 		}
 	}
 }

@@ -43,11 +43,12 @@ function mpcf_build_admin_gui($panels, $optionName) {
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
 				if (isset($_POST[$name]) || $type === 'checkbox' || $type === 'conditional' || $type == 'custom') {
-					$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
-					$value = mpcf_before_save($field, $name, $value);
+					$oldValue      = isset($values[$name]) ? $values[$name] : null;
+					$value         = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+					$value         = mpcf_before_save($field, $name, $value);
 					$values[$name] = $value;
 
-					mpcf_after_save($field, null, $value);
+					mpcf_after_save($field, null, $value, $oldValue);
 				}
 			}
 		}
@@ -95,6 +96,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 
 function mpcf_build_gui_as_panels($id, $panels, $values) {
 	$updated = mpcf_add_conditional_panels($panels, $values);
+	$updated = mpcf_add_bulk_copypaste_panels($id, $updated['panels'], $updated['values']);
 	$panels = $updated['panels'];
 	$values = $updated['values'];
 
@@ -563,6 +565,8 @@ function mpcf_save_meta_boxes($post_id) {
 
 		$fields = array();
 		if (isset($box['panels'])) {
+			$result = mpcf_add_bulk_copypaste_panels($id, $box['panels']);
+			
 			array_walk($box['panels'], function($panel) use (&$fields) {
 				$fields = array_merge($fields, $panel['fields']);
 			});
@@ -570,12 +574,14 @@ function mpcf_save_meta_boxes($post_id) {
 
 		foreach ($fields as $field) {
 			$field['context'] = 'post';
-			$actions = isset($field['actions']) ? $field['actions'] : array();
+			$actions = isset($field['actions']) ? $field['actions'] : array();			
 
-			$value   = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;;
-			$value   = mpcf_before_save($field, $post_id, $value);
+			$oldValue = get_post_meta($post_id, $field['name'], true);
+			$value    = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
+			$value    = mpcf_before_save($field, $post_id, $value);
 			update_post_meta($post_id, $field['name'], $value);
-			mpcf_after_save($field, $post_id, $value);
+
+			mpcf_after_save($field, $post_id, $value, $oldValue);
 		}
 	}
 
@@ -699,6 +705,16 @@ function mpcf_update_edit_form() {
 	echo ' enctype="multipart/form-data"';
 }
 
+
+
+
+/*****************************************************
+	Get modules that store media or have subfields that do so
+ *****************************************************/
+
+function mpcf_get_media_storing_fields() {
+	return [ 'media', 'file', 'conditionalpanels', 'repeater', 'conditional' ];
+}
 
 
 /*****************************************************

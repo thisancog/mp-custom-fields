@@ -63,7 +63,7 @@ function mpcf_before_save($field, $post_id, $value) {
 	Fire 'after_save' function of module
  *****************************************************/
 
-function mpcf_after_save($field, $post_id, $value) {
+function mpcf_after_save($field, $post_id, $value, $oldValue) {
 	if (!isset($field['type'])) return $value;
 	$modules = mpcf_get_all_registered_modules();
 	$type = $field['type'];
@@ -73,11 +73,11 @@ function mpcf_after_save($field, $post_id, $value) {
 		$module = new $classname();
 
 		if (method_exists($module, 'save_after'))
-			$module->save_after($post_id, $field, $value);
+			$module->save_after($post_id, $field, $value, $oldValue);
 	}
 
 	if (isset($field['actions']) && isset($field['actions']['save_after'])) {
-		$value = call_user_func($field['actions']['save_after'], $post_id, $field['name'], $value);
+		$value = call_user_func($field['actions']['save_after'], $post_id, $field['name'], $value, $oldValue);
 	}
 }
 

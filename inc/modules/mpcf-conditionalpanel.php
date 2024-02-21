@@ -49,7 +49,7 @@ class MPCFConditionalPanelField extends MPCFModule {
 		}
 
 		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
-		$valuesJSON = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+		$valuesJSON  = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
 
 		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . ' data-own-name="type"'
 					 . ' data-basename="' . $args['name'] . '" data-options="' . $optionsJSON . '"'
@@ -98,6 +98,49 @@ class MPCFConditionalPanelField extends MPCFModule {
 			</div>
 		</div>
 <?php
+	}
+
+
+	/*****************************************************
+		Attach media to post
+ 	*****************************************************/
+
+	function save_after($post_id, $field, $value, $oldValue) {
+		$this->attach_media_to_post($post_id, $field, $value, $oldValue);
+	}
+
+	function attach_media_to_post($post_id, $field, $values, $oldValues) {
+		if ($post_id == null) return;
+
+		$options = isset($field['options']) && !empty($field['options']) ? $field['options'] : array();
+		if (empty($options)) return;
+
+		$o           = get_option('mpcf_options');
+		$mediaFields = mpcf_get_media_storing_fields();
+
+		if (!isset($values['type'])) return;
+		$option = $values['type'];
+
+		$currentOption = $options[$option];
+		$fields        = $currentOption['panel']['fields'];
+
+		foreach ($fields as $field) {
+			if (empty($field)) continue;
+
+			$type = $field['type'];
+			if (!in_array($type, $mediaFields)) continue;
+
+			if (!isset($values[$field['name']])) continue;
+
+			$value    = $values[$field['name']];
+			$oldValue = $oldValues[$field['name']];
+			$oldValue = !empty($oldValue) ? $oldValue : '';
+
+			$classname = $o['modules'][$type]['name'];
+			$module    = new $classname();
+			$module->attach_media_to_post($post_id, $field, $value, $oldValue);
+			unset($module);
+		}
 	}
 }
 

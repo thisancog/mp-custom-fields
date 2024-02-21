@@ -35,10 +35,10 @@ class MPCFConditionalField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$value   = isset($args['value']) && !empty($args['value']) ? $args['value'] : array();
+		$value       = isset($args['value']) && !empty($args['value']) ? $args['value'] : array();
 
-		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
-		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
+		$label       = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
+		$options     = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
 		$noSelection = !isset($value['type']) ? ' selected' : '';
 
 		foreach ($value as $prop => $val) {
@@ -108,6 +108,67 @@ class MPCFConditionalField extends MPCFModule {
 	function get_conditional_fields($fields, $values = array()) {
 		$baseName = $this->args['name'];
 		mpcf_build_gui_from_fields($fields, $values, false, $baseName);
+	}
+
+
+	/*****************************************************
+		Attach media to post
+ 	*****************************************************/
+
+	function save_after($post_id, $field, $value, $oldValue) {
+		$this->attach_media_to_post($post_id, $field, $value, $oldValue);
+	}
+
+	function attach_media_to_post($post_id, $field, $values, $oldValues) {
+		// if ($post_id == null) return;
+
+		// $options = isset($field['options']) && !empty($field['options']) ? $field['options'] : array();
+		// if (empty($options)) return;
+
+		// $o           = get_option('mpcf_options');
+		// $mediaFields = mpcf_get_media_storing_fields();
+
+		// $i = 0;
+
+		// foreach ($values as $value) {
+		// 	$j = 0;
+		// 	if (!is_array($value)) continue;
+
+		// 	foreach ($value as $subValueKey => $subValueInfo) {
+		// 		$currentField     = null;
+
+		// 		array_walk($options, function($f) use (&$currentField, $subValueKey) {
+		// 			if ($f['name'] !== $subValueKey) return;
+		// 			$currentField = $f;
+		// 		});
+
+		// 		if ($currentField == null) {
+		// 			$j++;
+		// 			continue;
+		// 		}
+
+		// 		$type = $currentField['type'];
+		// 		if (!in_array($type, $mediaFields)) {
+		// 			$j++;
+		// 			continue;
+		// 		}
+
+
+		// 		$oldValue = is_array($oldValues) && !empty($oldValues)
+		// 				  ? array_slice($oldValues, $i, 1, false) : '';
+		// 		$oldValue = is_array($oldValue) && !empty($oldValue) ? $oldValue[0] : '';
+		// 		$oldValue = !empty($oldValue) ? $oldValue : '';
+
+		// 		$classname = $o['modules'][$type]['name'];
+		// 		$module    = new $classname();
+		// 		$module->attach_media_to_post($post_id, $currentField, $subValueInfo, $oldValue);
+		// 		unset($module);
+
+		// 		$j++;
+		// 	}
+
+		// 	$i++;
+		// }
 	}
 }
 

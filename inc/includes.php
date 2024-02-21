@@ -7,6 +7,7 @@ require_once('mpcf-register-taxonomy-metaboxes.php');
 require_once('mpcf-register-archive-metaboxes.php');
 require_once('mpcf-revisions.php');
 require_once('gui.php');
+require_once('mpcf-media-display.php');
 
 if (file_exists(__DIR__ . '/mpcf-pluginsettings.php'))
     require_once('mpcf-pluginsettings.php');

@@ -65,6 +65,39 @@ class MPCFMediaSelector extends MPCFModule {
 		</div>
 <?php
 	}
+
+
+
+	/*****************************************************
+		Attach media to post
+ 	*****************************************************/
+
+	function save_after($post_id, $field, $value, $oldValue) {
+		$this->attach_media_to_post($post_id, $field, $value, $oldValue);
+	}
+
+	function attach_media_to_post($post_id, $field, $value, $oldValue) {
+		if ($post_id == null) return;
+
+		$attID = null;
+
+		if ($value !== '') {
+			$attID  = $value;
+			$atts   = get_post_meta($attID, 'mpcf-attached-media', true);
+			$atts   = !is_array($atts) ? [] : $atts;
+			$atts[] = $post_id;
+			$atts   = array_unique($atts);
+		} else {
+			$attID  = $oldValue;
+			$atts   = get_post_meta($attID, 'mpcf-attached-media', true);
+			$atts   = !is_array($atts) ? [] : $atts;
+			$atts   = array_filter($atts, function($v) use ($post_id) { return $v !== $post_id; });
+		}
+
+		if ($attID == null) return;
+
+		update_post_meta($attID, 'mpcf-attached-media', $atts);
+	}
 }
 
 
