@@ -151,14 +151,14 @@ function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array(
 		'icon'		=> 'dashicons-admin-tools',
 		'fields'	=> array(
 			array(
-				'name'			=> 'mpcfbulkcopy',
+				'name'			=> 'mpcf-bulkcopy',
 				'title'			=> __('Page metadata', 'mpcf'),
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_copy_field',
 				'description'	=> __('Copy this page&rsquo;s entire metadata to another page. This does not include any changes made since the last save.', 'mpcf')
 			),
 			array(
-				'name'			=> 'mpcfbulkpaste-' . $id,
+				'name'			=> 'mpcf-bulkpaste-' . $id,
 				'title'			=> ' ',
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_paste_field',
@@ -170,14 +170,21 @@ function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array(
 		)
 	);
 
-	$allValues = $values;
-	$toRemove = array('_edit_last', '_edit_lock', 'mpcfbulkcopy');
-	foreach ($toRemove as $key) {
-		if (isset($allValues[$key])) unset($allValues[$key]);
+	$allValues = [];
+	$toRemove = array('_edit_last', '_edit_lock', 'mpcf-bulkcopy');
+
+	foreach ($panels as $panel) {
+		foreach ($panel['fields'] as $field) {
+			if (!isset($field['name'])) continue;
+
+			$key = $field['name'];
+			if (isset($values[$key]) && !in_array($key, $toRemove))
+				$allValues[$key] = $values[$key];
+		}
 	}
 
 	$panels[] = $bulkPanel;
-	$values['mpcfbulkcopy'] = $allValues;
+	$values['mpcf-bulkcopy'] = $allValues;
 
 	return array('panels' => $panels, 'values' => $values);
 }
@@ -194,12 +201,12 @@ function mpcf_bulk_paste_field($module, $field) { ?>
 }
 
 function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
+	error_log($values);
 	$values = mpcf_mknice($values);
 	$values = json_decode($values, JSON_OBJECT_AS_ARRAY);
 
 	foreach ($values as $key => $value) {
 		$value = is_array($value) && count($value) == 1 ? $value[0] : $value;
-		error_log(json_encode($value));
 		update_post_meta($post_id, $key, $value);
 	}
 

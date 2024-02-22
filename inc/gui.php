@@ -235,6 +235,7 @@ function mpcf_get_field_value($field, $values) {
 	$value = isset($field['value']) ? $field['value'] : null;
 
 	if ($field['type'] == 'checkbox') {
+
 		if (isset($values[$field['name']])) {
 			$value = is_array($values[$field['name']]) ? $values[$field['name']][0] : $values[$field['name']];
 			$value = $value === 'checked' ? true : $value;
@@ -567,14 +568,16 @@ function mpcf_save_meta_boxes($post_id) {
 		if (isset($box['panels'])) {
 			$result = mpcf_add_bulk_copypaste_panels($id, $box['panels']);
 			
-			array_walk($box['panels'], function($panel) use (&$fields) {
+			array_walk($result['panels'], function($panel) use (&$fields) {				
 				$fields = array_merge($fields, $panel['fields']);
 			});
 		}
 
 		foreach ($fields as $field) {
+			if (!isset($field['name'])) continue;
+			
 			$field['context'] = 'post';
-			$actions = isset($field['actions']) ? $field['actions'] : array();			
+			$actions = isset($field['actions']) ? $field['actions'] : array();		
 
 			$oldValue = get_post_meta($post_id, $field['name'], true);
 			$value    = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
