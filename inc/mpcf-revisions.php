@@ -54,16 +54,25 @@ function mpcf_has_meta_changed($post_has_changed, $last_revision, $post) {
 
 
 
+function mpcf_revisions_enabled() {
+	$option = mpcf_get_option('includerevisions', 'mpcf_options');
+	return $option == 'checked' || $option == true || $option == 1;
+}
+
+
 /*****************************************************
 	Revisions screen
  *****************************************************/
 
 function mpcf_create_new_revision_field($fields) {
+	if (!mpcf_revisions_enabled()) return $fields;
 	$fields['custom_fields'] = __('Custom Fields', 'mpcf');
 	return $fields;
 }
 
 function mpcf_fill_revision_field($value, $field, $revision) {
+	if (!mpcf_revisions_enabled()) return '';
+
 	$meta = mpcf_get_cleaned_revision_meta($revision->ID);
 
 	$html = "";
