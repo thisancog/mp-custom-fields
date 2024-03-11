@@ -46,6 +46,17 @@ function mpcf_init() {
 	mpcf_register_modules();
 }
 
+function mpcf_default_settings() {
+	$options = array(
+		'googlemapskey'		=> '',
+		'multilingualclass'	=> 'mpcf-multilingual',
+		'showcopypastebulk'	=> true,
+		'includerevisions'	=> true,
+	);
+
+	return $options;
+}
+
 
 function mpcf_deactivate() {
 	flush_rewrite_rules();
