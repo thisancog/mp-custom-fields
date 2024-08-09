@@ -204,6 +204,7 @@ function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
 	error_log($values);
 	$values = mpcf_mknice($values);
 	$values = json_decode($values, JSON_OBJECT_AS_ARRAY);
+	if (!is_array($values)) return '';
 
 	foreach ($values as $key => $value) {
 		$value = is_array($value) && count($value) == 1 ? $value[0] : $value;
