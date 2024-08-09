@@ -902,8 +902,7 @@ body.no-js .mpcf-file-picker + label {
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup-input .mpcf-field input:checked + label,
-.mpcf-buttongroup-input .mpcf-field input:focus + label {
+.mpcf-buttongroup-input .mpcf-field input:checked + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
@@ -911,8 +910,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-buttongroup-input .mpcf-field input:focus + label {
-	border-color: #5B9DD9;
-	box-shadow: 0 0 2px rgba(30,140,190,.8);
+	outline: 1px solid #006799;
 }
 
 
