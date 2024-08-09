@@ -88,8 +88,13 @@ function mpcf_get_taxonomy_boxes($tax) {
 		return $box['taxonomy'] === $tax;
 	});
 
-	usort($boxes, function($a, $b) {
-		return $a['priority'] - $b['priority'];
+	$priorities = [ 'high', 'sorted', 'core', 'default', 'low' ];
+
+	usort($boxes, function($a, $b) use ($priorities) {
+		$a = isset($priorities[$a['priority']]) ? array_search($a['priority'], $priorities) : 99999;
+		$b = isset($priorities[$b['priority']]) ? array_search($b['priority'], $priorities) : 99999;
+		
+		return $a - $b;
 	});
 
 	return $boxes;

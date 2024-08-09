@@ -7,10 +7,8 @@
 function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
-	$boxes = get_option('mpcf_meta_boxes', array());
-
 	$defaults = array(
-		'post_type'		=> 'post',
+		'post_type'		=> $type,
 		'page_template'	=> '',
 		'title'			=> '',
 		'context'		=> 'normal',
@@ -20,18 +18,17 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	);
 
 	$newbox = array_merge($defaults, $arguments);
-	$newbox['post_type'] = $type;
 
 //	Give generic title if needed
 	if (empty($newbox['title'])) {
-		$obj = get_post_type_object($type);
+		$obj             = get_post_type_object($type);
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-
+	$boxes = get_option('mpcf_meta_boxes', array());
 	$boxes[$id] = $newbox;
-
 	update_option('mpcf_meta_boxes', $boxes);
+
 	return $newbox;
 }
 
@@ -69,16 +66,18 @@ function mpcf_remove_all_custom_fields() {
 
 function mpcf_add_metaboxes() {
 	global $post;
+
 	$boxes           = get_option('mpcf_meta_boxes', array());
-	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
-	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
-	$isPostsPage     = get_option('page_for_posts') && get_option('page_for_posts') == $post->ID;
+	$currentTemplate = $post !== null ? get_post_meta($post->ID, '_wp_page_template', true)                       : null;
+	$isFrontpage     = $post !== null ? get_option('page_on_front')  && get_option('page_on_front')  == $post->ID : null;
+	$isPostsPage     = $post !== null ? get_option('page_for_posts') && get_option('page_for_posts') == $post->ID : null;
 
 	foreach ($boxes as $id => $box) {
 		$post_type     = $box['post_type'];
+		$screen        = $post_type;
 		$page_template = isset($box['page_template']) ? $box['page_template'] : '';
-		$context       = isset($box['context']) ? $box['context'] : 'normal';
-		$priority      = isset($box['priority']) ? $box['priority'] : 'high';
+		$context       = isset($box['context'])       ? $box['context']       : 'normal';
+		$priority      = isset($box['priority'])      ? $box['priority']      : 'high';
 
 		$registerThisBox = true;
 
@@ -112,8 +111,7 @@ function mpcf_add_metaboxes() {
 		}
 
 		if ($registerThisBox) {
-			
-			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
+			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $screen, $context, $priority);
 		}
 	}
 }
@@ -145,6 +143,8 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
 
 function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array()) {
 	if (!current_user_can('manage_options')) return array('panels' => $panels, 'values' => $values);
+
+	$values = is_array($values) ? $values : [];
 
 	$bulkPanel = array(
 		'title'		=> __('Bulk copy-paste', 'mpcf'),
