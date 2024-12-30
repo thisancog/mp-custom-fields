@@ -298,7 +298,7 @@ function mpcf_resolve_sanitized_fields($var) {
 
 		if (count($var) == 1 && isset($var[0]) && is_array($var[0]))
 			$var = $var[0];
-	} else if (is_string($var)) {
+	} else if (is_string($var) && is_serialized($var)) {
 		$data = @unserialize($var);
 		if ($data !== false) $var = $data;
 	}
