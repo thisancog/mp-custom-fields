@@ -142,7 +142,11 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
  *****************************************************/
 
 function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array()) {
-	if (!current_user_can('manage_options')) return array('panels' => $panels, 'values' => $values);
+	$isEnabled = current_user_can('manage_options');
+	$isEnabled = apply_filters('mpcf_enable_bulk_copypaste_panels', $isEnabled);
+
+	if (!$isEnabled)
+		return array('panels' => $panels, 'values' => $values);
 
 	$values = is_array($values) ? $values : [];
 
