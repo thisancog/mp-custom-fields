@@ -205,7 +205,6 @@ function mpcf_bulk_paste_field($module, $field) { ?>
 }
 
 function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
-	error_log($values);
 	$values = mpcf_mknice($values);
 	$values = json_decode($values, JSON_OBJECT_AS_ARRAY);
 	if (!is_array($values)) return '';
