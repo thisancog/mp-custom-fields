@@ -833,6 +833,10 @@ body.no-js .mpcf-file-picker + label {
 	flex-wrap: wrap;
 }
 
+.mpcf-checkbox-inner {
+	display: flex;
+}
+
 .mpcf-checkbox-input .mpcf-field input {
 	position: relative;
 	top: 5px;
@@ -902,7 +906,8 @@ body.no-js .mpcf-file-picker + label {
 	border-bottom-right-radius: 5px;
 }
 
-.mpcf-buttongroup-input .mpcf-field input:checked + label {
+.mpcf-buttongroup-input .mpcf-field input:checked + label,
+.mpcf-buttongroup-input .mpcf-field input:focus + label {
 	border-color: #0073AA #006799 #006799;
 	background-color: #0073AA;
 	color: #FFF;
@@ -910,7 +915,8 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-buttongroup-input .mpcf-field input:focus + label {
-	outline: 1px solid #006799;
+	border-color: #5B9DD9;
+	box-shadow: 0 0 2px rgba(30,140,190,.8);
 }
 
 
@@ -1020,9 +1026,9 @@ body.no-js .mpcf-file-picker + label {
 	position: relative;
 	top: 7px;
 	left: 20px;
-	width: calc(100% - 116px);
+	width: calc(100% - 83px);
 
-	padding: 11px 10px 16px 10px;
+	padding: 12px 10px;
 	border-radius: 3px;
 	margin-bottom: 0;
 	list-style-type: none;
@@ -1083,8 +1089,8 @@ body.no-js .mpcf-file-picker + label {
 
 .mpcf-repeater-row-controls {
 	position: absolute;
-	top: 3px;
-	right: -86px;
+	top: 0;
+	right: -59px;
 	padding: 3px 3px 3px 10px;
 	display: flex;
 	align-items: center;
@@ -1097,20 +1103,32 @@ body.no-js .mpcf-file-picker + label {
 	opacity: 1;
 }
 
-.mpcf-repeater-row-controls div {
+.mpcf-repeater-row-controls .mpcf-repeater-row-move-up,
+.mpcf-repeater-row-controls .mpcf-repeater-row-move-down,
+.mpcf-repeater-row-controls .mpcf-repeater-row-move,
+.mpcf-repeater-row-controls .mpcf-repeater-row-remove {
+	cursor: pointer;
+}
+
+.mpcf-repeater-row-controls-move {
+	display: flex;
+	flex-direction: column;
+}
+
+
+.mpcf-repeater-row-controls-move div {
+	cursor: pointer;
+}
+
+.mpcf-repeater-row-remove {
 	width: 20px;
 	height: 20px;
-	border: 1px solid #DDD;
-	border-radius: 50%;
+	margin-left: 4px;
 	background-color: #FFF;
 	cursor: pointer;
 }
 
-.mpcf-repeater-row-controls div + div {
-	margin-left: 4px;
-}
-
-.mpcf-repeater-row-controls div:before {
+.mpcf-repeater-row-remove:before {
 	vertical-align: middle;
 	color: #888;
 	font-size: 15px;
@@ -1156,7 +1174,7 @@ body.no-js .mpcf-file-picker + label {
 	}
 
 	.mpcf-repeater-wrapper li:before {
-		top: 12px;
+		top: 14px;
 		left: 16px;
 	}
 }
@@ -1292,6 +1310,29 @@ body.no-js .mpcf-file-picker + label {
 .mpcf-select-input option {
 	padding: 0 10px;
 }
+
+
+
+/******************************
+	Post Select
+ ******************************/
+
+.mpcf-postselect-input .mpcf-field {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 20px;
+}
+
+.mpcf-postselect-input.hide-edit-link .postselect-edit-link {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.mpcf-postselect-input .postselect-edit-link a {
+	text-decoration: none;
+}
+
 
 
 
