@@ -31,6 +31,7 @@
 		checkHTML5Support();
 		registerColorPicker();
 		repeaterField();
+		postSelectField()
 
 		gridField();
 		addQTranslateX();
@@ -57,6 +58,7 @@
 		colorSelects.registerNew(parent);
 		gridField(parent);
 		repeaterField(parent);
+		postSelectField()
 
 		checkHTML5Support(parent);
 		focusInvalids(parent);
@@ -89,7 +91,7 @@
 					panels    = [].slice.call(newSet.querySelectorAll('.mpcf-panels-tabs .mpcf-panel'));
 
 				this.sets[id] = {
-					element: newSet,
+					element:   newSet,
 					activeTab: newSet.querySelector('.activetab'),
 					menuItems: [],
 					panels:    []
@@ -191,6 +193,18 @@
 				set.menuItems.forEach(item => item.querySelector('.mpcf-panel-title').style.minWidth = minWidth + 'px');
 			}
 		}
+
+		reorder(set, newOrder) {
+			if (!Array.isArray(newOrder)) return;
+
+			let currentSetKey = Object.keys(this.sets).find((s => this.sets[s].element == set).bind(this));
+			if (typeof currentSetKey == 'undefined') return;
+
+			let currentSet = this.sets[currentSetKey],
+				menu       = currentSet.element.querySelector('.mpcf-panels-menu');
+
+			newOrder.forEach(elem => menu.appendChild(elem));
+		}
 	}
 
 
@@ -288,6 +302,8 @@
 
 		var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
 		if (!repeaters.length) return;
+
+		var postIDField = document.querySelector('#post_ID');
 				
 		[].forEach.call(repeaters, function(repeater) {
 			if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
@@ -300,6 +316,7 @@
 				fields          = rowsWrapper.dataset.fields,
 				fieldsObj       = JSON.parse(fields),
 				maxRows         = parseInt(rowsWrapper.dataset.maxrows),
+				hasMoveBtn      = repeater.querySelector('.mpcf-repeater-row-controls .mpcf-repeater-row-move'),
 				rowHTML         = null,
 				dragDropHandler = null;
 
@@ -307,9 +324,25 @@
 
 		// 	prefetch blank row
 
-			$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
+			let data = {
+				'action': 	'mpcf_get_repeater_row',
+				'fields': 	fields,
+				'post_id': 	postIDField ? postIDField.value : null
+			};
+
+			$.post(ajaxurl, data, function(response) {
 				rowHTML = response;
 			});
+
+			if (hasMoveBtn) {
+				dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
+					cbEnd: function() {
+						renameDynamicFields(set);
+						updateConditionalPanelsOrder();
+					},
+					clickElem: '.mpcf-repeater-row-move'
+				});
+			}
 
 		//	move row up
 			var moveRowUp = function(e) {
@@ -323,6 +356,7 @@
 
 				row.parentNode.insertBefore(row, rowBefore);
 				renameDynamicFields(set);
+				updateConditionalPanelsOrder();
 			}
 
 		//	move row down
@@ -337,13 +371,13 @@
 
 				rowAfter.parentNode.insertBefore(rowAfter, row);
 				renameDynamicFields(set);
+				updateConditionalPanelsOrder();
 			}
 
 		//	remove Row
 			var removeRow = function(e) {
 				var el = e.target;
 				el.removeEventListener('click', removeRow);
-
 				removeQTranslateX(el);
 
 				while ((el = el.parentElement) && !el.classList.contains('mpcf-repeater-row'));
@@ -351,7 +385,7 @@
 				// find and also remove attached panels, if there are conditional panels
 				var panelSelects = [].slice.call(el.querySelectorAll('.mpcf-conditionalpanels-input'));
 				panelSelects.forEach(function(select) {
-					var panelId       = select.dataset.panelId,
+					var panelId  = select.dataset.panelId,
 						set      = select.closest('.mpcf-panels'),
 						panel    = set.querySelector('.mpcf-panel[data-panel-id="' + panelId + '"]'),
 						menuItem = set.querySelector('li.mpcf-panel-item[data-panel-id="' + panelId + '"]');
@@ -364,6 +398,7 @@
 				addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 				checkIfEmpty();
 				renameDynamicFields(set);
+				updateConditionalPanelsOrder();
 			};
 
 
@@ -376,6 +411,25 @@
 				} else {
 					emtpyField.removeAttribute('name');
 				}
+			};
+
+		//	if there are conditional panels, update the order of the corresponding tabs
+			var updateConditionalPanelsOrder = function() {
+				let panelSelects = [].slice.call(repeater.querySelectorAll('.mpcf-conditionalpanels-input'));
+				if (panelSelects.length == 0) return;
+
+				let menuItemsAll      = [].slice.call(set.querySelectorAll('li.mpcf-panel-item')),
+					ids               = panelSelects.map(panel => panel.dataset.panelId),
+					menuItemsNewOrder = panelSelects.map(panel => set.querySelector('li.mpcf-panel-item[data-panel-id="' + panel.dataset.panelId + '"]'));
+
+				menuItemsAll.forEach((item, i) => {
+					if (item.dataset && item.dataset.panelId === 'undefined') return;
+					if (ids.includes(item.dataset.panelId)) return;
+					
+					menuItemsNewOrder.splice(i, 0, item);
+				});
+				
+				panelSwitchers.reorder(set, menuItemsNewOrder);
 			};
 
 
@@ -391,11 +445,6 @@
 
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
 				btn.addEventListener('click', removeRow);
-			});
-
-			dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
-				cbEnd: function() { renameDynamicFields(set); },
-				clickElem: '.mpcf-repeater-row-move'
 			});
 
 			renameDynamicFields(set);
@@ -422,15 +471,21 @@
 
 					addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 
-					dragDropHandler.addElements(newRow);
+					if (hasMoveBtn) dragDropHandler.addElements(newRow);
 					checkIfEmpty();
 					renameDynamicFields(set);
 					registerAsyncElements(newRow);
 				}
 
+				let data = {
+					'action': 	'mpcf_get_repeater_row',
+					'fields': 	fields,
+					'post_id': 	postIDField ? postIDField.value : null
+				};
+
 				
 				if (rowHTML == null) {
-					$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
+					$.post(ajaxurl, data, function(response) {
 						rowHTML = response;
 						populateRow();
 					});
@@ -537,6 +592,8 @@
 						parent = input.parentElement,
 						newID, newName;
 
+					let isTable = input.closest('.mpcf-table-inner');
+
 					if (!input.dataset.name) {
 						var isLabel = input.getAttribute('for') && input.tagName.toLowerCase() == 'label';
 						isLabel = isLabel && (parent.classList.contains('mpcf-title') || parent.classList.contains('mpcf-buttongroup-option') || parent.classList.contains('mpcf-radio-option'));
@@ -544,8 +601,10 @@
 						if (isLabel) {
 							var labelFor = parent.closest('.mpcf-field-option, .mpcf-buttongroup-option, .mpcf-radio-option').querySelector(validInputs.join(','));
 							newID = labelFor ? generateID(labelFor) : '';
+						} else if (isTable) {
+							input.dataset.name = input.dataset.ownName;
 						} else {
-							let name  = input.name || '',
+							let name  = input.name || input.dataset.ownName || '',
 								split = name.split('][').slice(-1)[0];							
 
 							if ((split.match(/\]/g) || []).length > (split.match(/\[/g) || []).length)
@@ -601,7 +660,8 @@
 
 	class ConditionalFields {
 		constructor() {
-			this.fields = {};
+			this.fields      = {};
+			this.postIDField = document.querySelector('#post_ID');
 		}
 
 		registerNew(parent = null) {
@@ -642,6 +702,7 @@
 			if (!this.fields[id]) return;
 
 			let field = this.fields[id];
+
 			field.wrapper.innerHTML = '';
 
 		//	no option with this value available, i.e. no option selected
@@ -649,8 +710,9 @@
 				return;
 
 			let request = {
-				'action': 'mpcf_get_conditional_fields',
-				'fields': JSON.stringify(field.options[field.select.value].fields)
+				'action': 	'mpcf_get_conditional_fields',
+				'fields': 	JSON.stringify(field.options[field.select.value].fields),
+				'post_id': 	this.postIDField ? this.postIDField.value : null
 			};
 
 			updateLoadingElements(field.element);
@@ -683,8 +745,9 @@
 
 	class ConditionalPanelsFields {
 		constructor() {
-			this.fields     = {};
-			this.fieldClass = 'mpcf-conditionalpanels-input';
+			this.fields      = {};
+			this.postIDField = document.querySelector('#post_ID');
+			this.fieldClass  = 'mpcf-conditionalpanels-input';
 		}
 
 		registerNew(parent = null) {
@@ -765,9 +828,10 @@
 			updateLoadingElements(field.element);
 
 			let request = {
-				'action': 'mpcf_get_conditional_panels_fields',
-				'panel':  JSON.stringify(field.options[field.select.value].panel),
-				'values': field.values
+				'action': 	'mpcf_get_conditional_panels_fields',
+				'panel':  	JSON.stringify(field.options[field.select.value].panel),
+				'values': 	field.values,
+				'post_id': 	this.postIDField ? this.postIDField.value : null
 			};
 
 			$.post(ajaxurl, request, (response => {
@@ -894,6 +958,37 @@
 
 
 
+	/**************************************************************
+		Post select fields
+	 **************************************************************/
+
+	var postSelectField = function(wrapper) {
+		wrapper = wrapper || document;
+
+		let fields = [].slice.call(wrapper.querySelectorAll('.mpcf-postselect-input'));
+
+		fields.forEach(field => {
+			let select = field.querySelector('select'),
+				link   = field.querySelector('.postselect-edit-link a');
+
+			let update = function() {
+				let currentValue = select.value;
+
+				if (!Number.isNaN(currentValue) && currentValue > 0) {
+					link.setAttribute('href', link.dataset.baseuri + currentValue);
+					field.classList.remove('hide-edit-link');
+				} else {
+					link.setAttribute('href', '');
+					field.classList.add('hide-edit-link');
+				}
+			};
+
+			select.removeEventListener('change', update);
+			select.addEventListener('change', update);
+
+			update();
+		});
+	}
 
 
 
