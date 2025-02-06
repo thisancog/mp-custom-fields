@@ -260,7 +260,7 @@
 
 			textarea.innerText = oldContentAutop || '';
 			wp.editor.remove(idShort);
-			editor.parentElement.removeChild(editor);
+			inner.parentElement.removeChild(inner);
 			field.appendChild(textarea);
 			wp.editor.initialize(id, settings);
 
