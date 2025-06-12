@@ -111,6 +111,7 @@ function mpcf_add_metaboxes() {
 		}
 
 		if ($registerThisBox) {
+			
 			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $screen, $context, $priority);
 		}
 	}
@@ -142,27 +143,21 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
  *****************************************************/
 
 function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array()) {
-	$isEnabled = current_user_can('manage_options');
-	$isEnabled = apply_filters('mpcf_enable_bulk_copypaste_panels', $isEnabled);
-
-	if (!$isEnabled)
-		return array('panels' => $panels, 'values' => $values);
-
-	$values = is_array($values) ? $values : [];
+	if (!current_user_can('manage_options')) return array('panels' => $panels, 'values' => $values);
 
 	$bulkPanel = array(
 		'title'		=> __('Bulk copy-paste', 'mpcf'),
 		'icon'		=> 'dashicons-admin-tools',
 		'fields'	=> array(
 			array(
-				'name'			=> 'mpcf-bulkcopy',
+				'name'			=> 'mpcfbulkcopy',
 				'title'			=> __('Page metadata', 'mpcf'),
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_copy_field',
 				'description'	=> __('Copy this page&rsquo;s entire metadata to another page. This does not include any changes made since the last save.', 'mpcf')
 			),
 			array(
-				'name'			=> 'mpcf-bulkpaste-' . $id,
+				'name'			=> 'mpcfbulkpaste-' . $id,
 				'title'			=> ' ',
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_paste_field',
@@ -174,21 +169,14 @@ function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array(
 		)
 	);
 
-	$allValues = [];
-	$toRemove = array('_edit_last', '_edit_lock', 'mpcf-bulkcopy');
-
-	foreach ($panels as $panel) {
-		foreach ($panel['fields'] as $field) {
-			if (!isset($field['name'])) continue;
-
-			$key = $field['name'];
-			if (isset($values[$key]) && !in_array($key, $toRemove))
-				$allValues[$key] = $values[$key];
-		}
+	$allValues = $values;
+	$toRemove = array('_edit_last', '_edit_lock', 'mpcfbulkcopy');
+	foreach ($toRemove as $key) {
+		if (isset($allValues[$key])) unset($allValues[$key]);
 	}
 
 	$panels[] = $bulkPanel;
-	$values['mpcf-bulkcopy'] = $allValues;
+	$values['mpcfbulkcopy'] = $allValues;
 
 	return array('panels' => $panels, 'values' => $values);
 }
@@ -207,11 +195,23 @@ function mpcf_bulk_paste_field($module, $field) { ?>
 function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
 	$values = mpcf_mknice($values);
 	$values = json_decode($values, JSON_OBJECT_AS_ARRAY);
+
 	if (!is_array($values)) return '';
+
+	$isOption = is_string($post_id);
+	$post_id  = $isOption ? str_replace('mpcfbulkpaste-', '', $post_id) : $post_id;
 
 	foreach ($values as $key => $value) {
 		$value = is_array($value) && count($value) == 1 ? $value[0] : $value;
-		update_post_meta($post_id, $key, $value);
+
+		if (!$isOption) {
+			update_post_meta($post_id, $key, $value);
+		} else {
+			$options = get_option($post_id, true);
+			$options = is_array($options) ? $options : [];
+			$options[$key] = $value;
+			update_option($post_id, $options);
+		}
 	}
 
 	return '';
