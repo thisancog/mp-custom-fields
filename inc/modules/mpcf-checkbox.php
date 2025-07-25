@@ -49,8 +49,10 @@ class MPCFCheckbox extends MPCFModule {
 		$value    = $args['value'] === 'checked' || $args['value'] == 1;
 		$disabled = isset($args['disabled']) && $args['disabled'] === true ? ' disabled' : ''; ?>
 
-		<input type="checkbox" value="checked"<?php echo mpcf_list_input_params($this, false) . ($value ? ' checked' : '') . $disabled; ?>>
-		<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
+		<div class="mpcf-checkbox-inner">
+			<input type="checkbox" value="checked"<?php echo mpcf_list_input_params($this, false) . ($value ? ' checked' : '') . $disabled; ?>>
+			<label for="<?php echo $args['name']; ?>"><?php echo $args['label']; ?></label>
+		</div>
 <?php
 	}
 }

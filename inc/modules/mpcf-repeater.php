@@ -63,18 +63,18 @@ class MPCFRepeaterField extends MPCFModule {
 
 		$baseName   = isset($args['baseName']) ? $args['baseName'] . '[' . $args['name'] . ']' : $args['name'];
 		$fieldsJSON = esc_attr(json_encode($args['fields'], JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
-
 		<ol class="mpcf-repeater-wrapper" data-basename="<?php echo $args['name']; ?>"
 			data-fields="<?php echo $fieldsJSON; ?>"
-			data-maxrows="<?php echo $maxRows; ?>">
+			data-maxrows="<?php echo $maxRows; ?>"
+			data-uniqid="<?php echo $args['uniqid']; ?>">
 <?php 			$this->get_repeater_row($baseName, $args['fields'], $args['value']); ?>
 			</ol>
 
-		<div class="mpcf-loading-container"></div>
+		<div class="mpcf-loading-container" data-uniqid="<?php echo $args['uniqid']; ?>"></div>
 
-		<div class="mpcf-repeater-controls">
-			<input type="button" class="mpcf-repeater-add-row mpcf-button<?php echo $showAddBtn; ?>" value="<?php _e('Add', 'mpcf'); ?>" />
-			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo mpcf_get_input_name($this); ?>"<?php echo mpcf_input_own_name($this); ?> value="" />
+		<div class="mpcf-repeater-controls" data-uniqid="<?php echo $args['uniqid']; ?>">
+			<input type="button" class="mpcf-repeater-add-row mpcf-button<?php echo $showAddBtn; ?>" value="<?php _e('Add', 'mpcf'); ?>" data-uniqid="<?php echo $args['uniqid']; ?>" />
+			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo mpcf_get_input_name($this); ?>"<?php echo mpcf_input_own_name($this); ?> data-uniqid="<?php echo $args['uniqid']; ?>" value="" />
 		</div>
 		
 <?php	foreach ($args['fields'] as $field => $data) {
@@ -92,9 +92,7 @@ class MPCFRepeaterField extends MPCFModule {
 
 	function get_repeater_row($baseName, $fields, $values = array()) {
 		global $post;
-		$buttons = '<div class="mpcf-repeater-row-controls"><div class="mpcf-repeater-row-move-up dashicons-before dashicons-arrow-up"></div><div class="mpcf-repeater-row-move-down dashicons-before dashicons-arrow-down"></div><div class="mpcf-repeater-row-remove dashicons-before dashicons-trash"></div></div>';
-
-		$enqueueEditor = false;
+		$buttons = mpcf_get_repeater_buttons();
 
 		if ($values !== false && !empty($values) && !(count($values) === 1 && empty($values[0]))) {
 			foreach ($values as $i => $row) {
@@ -105,16 +103,9 @@ class MPCFRepeaterField extends MPCFModule {
 		 ?>
 				<li class="mpcf-repeater-row">
 	<?php 			mpcf_build_gui_from_fields($fields, $row, false);
-					$enqueueEditor = $enqueueEditor || mpcf_ajax_enqueue_editors($fields);
 					echo $buttons; ?>
 				</li>
 	<?php	}
-		}
-
-		if ($enqueueEditor) {
-			\_WP_Editors::enqueue_scripts();
-			print_footer_scripts();
-			\_WP_Editors::editor_js();
 		}
 	}
 
@@ -167,14 +158,16 @@ class MPCFRepeaterField extends MPCFModule {
 				$oldValue = is_array($oldValues) && !empty($oldValues)
 						  ? array_slice($oldValues, $i, 1, false) : '';
 				$oldValue = !empty($oldValue) ? $oldValue : '';
-				$oldValue = !empty($oldValue) ? $oldValue[0] : '';
+				$oldValue = is_array($oldValue) && isset($oldValue[0]) ? $oldValue[0] : '';
 
 				$oldValue = is_array($oldValue) && isset($oldValue[$subValueKey])
 						  ? $oldValue[$subValueKey] : '';
 
 				$classname = $o['modules'][$type]['name'];
 				$module    = new $classname();
-				$module->attach_media_to_post($post_id, $currentField, $subValueInfo, $oldValue);
+
+				if (method_exists($module, 'attach_media_to_post'))
+					$module->attach_media_to_post($post_id, $currentField, $subValueInfo, $oldValue);
 				unset($module);
 
 				$j++;

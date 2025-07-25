@@ -7,8 +7,10 @@
 function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
+	$boxes = get_option('mpcf_meta_boxes', array());
+
 	$defaults = array(
-		'post_type'		=> $type,
+		'post_type'		=> 'post',
 		'page_template'	=> '',
 		'title'			=> '',
 		'context'		=> 'normal',
@@ -18,17 +20,18 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	);
 
 	$newbox = array_merge($defaults, $arguments);
+	$newbox['post_type'] = $type;
 
 //	Give generic title if needed
 	if (empty($newbox['title'])) {
-		$obj             = get_post_type_object($type);
+		$obj = get_post_type_object($type);
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-	$boxes = get_option('mpcf_meta_boxes', array());
-	$boxes[$id] = $newbox;
-	update_option('mpcf_meta_boxes', $boxes);
 
+	$boxes[$id] = $newbox;
+
+	update_option('mpcf_meta_boxes', $boxes);
 	return $newbox;
 }
 
@@ -66,18 +69,16 @@ function mpcf_remove_all_custom_fields() {
 
 function mpcf_add_metaboxes() {
 	global $post;
-
 	$boxes           = get_option('mpcf_meta_boxes', array());
-	$currentTemplate = $post !== null ? get_post_meta($post->ID, '_wp_page_template', true)                       : null;
-	$isFrontpage     = $post !== null ? get_option('page_on_front')  && get_option('page_on_front')  == $post->ID : null;
-	$isPostsPage     = $post !== null ? get_option('page_for_posts') && get_option('page_for_posts') == $post->ID : null;
+	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
+	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
+	$isPostsPage     = get_option('page_for_posts') && get_option('page_for_posts') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
 		$post_type     = $box['post_type'];
-		$screen        = $post_type;
 		$page_template = isset($box['page_template']) ? $box['page_template'] : '';
-		$context       = isset($box['context'])       ? $box['context']       : 'normal';
-		$priority      = isset($box['priority'])      ? $box['priority']      : 'high';
+		$context       = isset($box['context']) ? $box['context'] : 'normal';
+		$priority      = isset($box['priority']) ? $box['priority'] : 'high';
 
 		$registerThisBox = true;
 
@@ -112,7 +113,7 @@ function mpcf_add_metaboxes() {
 
 		if ($registerThisBox) {
 			
-			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $screen, $context, $priority);
+			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
 		}
 	}
 }
@@ -143,21 +144,27 @@ function mpcf_get_metaboxes_for_type($post_type = 'post') {
  *****************************************************/
 
 function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array()) {
-	if (!current_user_can('manage_options')) return array('panels' => $panels, 'values' => $values);
+	$isEnabled = current_user_can('manage_options');
+	$isEnabled = apply_filters('mpcf_enable_bulk_copypaste_panels', $isEnabled);
+
+	if (!$isEnabled)
+		return array('panels' => $panels, 'values' => $values);
+
+	$values = is_array($values) ? $values : [];
 
 	$bulkPanel = array(
 		'title'		=> __('Bulk copy-paste', 'mpcf'),
 		'icon'		=> 'dashicons-admin-tools',
 		'fields'	=> array(
 			array(
-				'name'			=> 'mpcfbulkcopy',
+				'name'			=> 'mpcf-bulkcopy',
 				'title'			=> __('Page metadata', 'mpcf'),
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_copy_field',
 				'description'	=> __('Copy this page&rsquo;s entire metadata to another page. This does not include any changes made since the last save.', 'mpcf')
 			),
 			array(
-				'name'			=> 'mpcfbulkpaste-' . $id,
+				'name'			=> 'mpcf-bulkpaste-' . $id,
 				'title'			=> ' ',
 				'type'			=> 'custom',
 				'callback'		=> 'mpcf_bulk_paste_field',
@@ -169,14 +176,21 @@ function mpcf_add_bulk_copypaste_panels($id, $panels = array(), $values = array(
 		)
 	);
 
-	$allValues = $values;
-	$toRemove = array('_edit_last', '_edit_lock', 'mpcfbulkcopy');
-	foreach ($toRemove as $key) {
-		if (isset($allValues[$key])) unset($allValues[$key]);
+	$allValues = [];
+	$toRemove = array('_edit_last', '_edit_lock', 'mpcf-bulkcopy');
+
+	foreach ($panels as $panel) {
+		foreach ($panel['fields'] as $field) {
+			if (!isset($field['name'])) continue;
+
+			$key = $field['name'];
+			if (isset($values[$key]) && !in_array($key, $toRemove))
+				$allValues[$key] = $values[$key];
+		}
 	}
 
 	$panels[] = $bulkPanel;
-	$values['mpcfbulkcopy'] = $allValues;
+	$values['mpcf-bulkcopy'] = $allValues;
 
 	return array('panels' => $panels, 'values' => $values);
 }
@@ -198,20 +212,9 @@ function mpcf_bulk_paste_values($post_id, $fieldName, $values) {
 
 	if (!is_array($values)) return '';
 
-	$isOption = is_string($post_id);
-	$post_id  = $isOption ? str_replace('mpcfbulkpaste-', '', $post_id) : $post_id;
-
 	foreach ($values as $key => $value) {
 		$value = is_array($value) && count($value) == 1 ? $value[0] : $value;
-
-		if (!$isOption) {
-			update_post_meta($post_id, $key, $value);
-		} else {
-			$options = get_option($post_id, true);
-			$options = is_array($options) ? $options : [];
-			$options[$key] = $value;
-			update_option($post_id, $options);
-		}
+		update_post_meta($post_id, $key, $value);
 	}
 
 	return '';

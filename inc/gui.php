@@ -107,8 +107,7 @@ function mpcf_build_gui_as_panels($id, $panels, $values) {
 	}, $panels);
 
 	$tab        = 'mpcf-activetab-' . $id;
-	$activetab  = isset($values[$tab]) ? $values[$tab][0] : 0;
-	$hasEditors = false; ?>
+	$activetab  = isset($values[$tab]) ? $values[$tab][0] : 0; ?>
 
 	<div class="mpcf-panels">
 		<input type="hidden" name="<?php echo $tab; ?>" class="activetab" value="<?php echo $activetab; ?>" />
@@ -120,8 +119,7 @@ function mpcf_build_gui_as_panels($id, $panels, $values) {
 
 		<div class="mpcf-panels-tabs">
 <?php	for ($i = 0; $i < count($panels); $i++) {
-			$hasThisTabEditors = mpcf_build_panel_tab($panels[$i], $values, $i);
-			$hasEditors        = $hasEditors || $hasThisTabEditors;
+			mpcf_build_panel_tab($panels[$i], $values, $i);
 		} ?>
 		</div>
 
@@ -129,14 +127,11 @@ function mpcf_build_gui_as_panels($id, $panels, $values) {
 
 <?php
 
-	// Preload editor as an instance for repeater fields
+	// Register TinyMCE editor scripts
 
-	if ($hasEditors) {
-		$screen = get_current_screen();
-		if ($screen->parent_base !== 'edit') { ?>
-			<div class="mpcf-editor-instance"><?php wp_editor('', 'mpcf-editor-instance'); ?></div>
-<?php	}
-	}
+	_WP_Editors::enqueue_scripts();
+	print_footer_scripts();
+	\_WP_Editors::editor_js();
 }
 
 
@@ -163,12 +158,9 @@ function mpcf_build_panel_menu_item($panel, $i) { ?>
 function mpcf_build_panel_tab($panel, $values, $i) {
 	$className = 'mpcf-panel' . (isset($panel['class_name']) ? ' ' . $panel['class_name'] : ''); ?>
 	<div class="<?php echo $className; ?>" data-index="<?php echo $i; ?>" data-panel-id="<?php echo $panel['panel_id']; ?>" data-basename="<?php echo $panel['panel_basename']; ?>">
-<?php 	mpcf_build_gui_from_fields($panel['fields'], $values);
-		$hasEditors = mpcf_ajax_enqueue_editors($panel['fields']); ?>
+		<?php mpcf_build_gui_from_fields($panel['fields'], $values); ?>
 	</div>
 <?php
-
-	return $hasEditors;
 }
 
 
@@ -187,8 +179,8 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 
 		$field['post_id'] = $id;
 		$field['value']   = mpcf_get_field_value($field, $values);
+		$field['uniqid']  = uniqid();
 		$field            = mpcf_resolve_deep_fields($field);
-
 
 		$required         = !$required && $field['required'] ? true : $required;
 		$hasRequireds     = false;
@@ -208,7 +200,7 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 
 			$wrapperClasses = isset($module->wrapperClasses) && !empty($module->wrapperClasses) ? ' ' . $module->wrapperClasses : ''; ?>
 
-			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $classes; ?>" id="mpcf-field-<?php echo $field['name']; ?>"<?php echo $attrs; ?>>
+			<div class="mpcf-<?php echo $type; ?>-input mpcf-field-option<?php echo $classes; ?>" id="mpcf-field-<?php echo $field['name']; ?>"<?php echo $attrs; ?> data-uniqid="<?php echo $field['uniqid']; ?>">
 				<?php mpcf_insert_field_title($field); ?>
 				<div class="mpcf-field<?php echo $wrapperClasses; ?>">
 <?php				$module->args = $field;
@@ -601,30 +593,13 @@ function mpcf_save_meta_boxes($post_id) {
  *****************************************************/
 
 function mpcf_ajax_get_repeater_row() {
-	global $wpdb, $post;
-
-	$fields  = json_decode(stripcslashes($_POST['fields']), true);
-	$post_id = isset($_POST['post_id']) &&  $_POST['post_id'] != null ? $_POST['post_id'] : null;
+	$fields = json_decode(stripcslashes($_POST['fields']), true);
 	$buttons = mpcf_get_repeater_buttons();
-	$enqueueEditor = false;
+
 
 	ob_start();
-
-	if ($post_id !== null) {
-		$posts = get_posts([ 'p' => $post_id, 'post_type' => 'any' ]);
-		$post  = !empty($posts) ? $posts[0] : $post;
-		setup_postdata($post_id);
-	}
-	
 	mpcf_build_gui_from_fields($fields, array(), false);
-	$enqueueEditor = $enqueueEditor || mpcf_ajax_enqueue_editors($fields);
 	echo $buttons;
-
-	if ($enqueueEditor) {
-		\_WP_Editors::enqueue_scripts();
-		print_footer_scripts();
-		\_WP_Editors::editor_js();
-	}
 
 	$components = ob_get_contents();
 	ob_end_clean();
@@ -633,26 +608,13 @@ function mpcf_ajax_get_repeater_row() {
 	wp_die();
 }
 
-function mpcf_ajax_enqueue_editors($fields) {
-	$hasEditors = false;
-	if (isset($fields[0]['fields']))
-		$hasEditors = $hasEditors || mpcf_ajax_enqueue_editors($fields[0]['fields']);
-
-	return $hasEditors || count(array_filter($fields, function($field) {
-		return isset($field['type']) && $field['type'] === 'editor';
-	})) > 0;
-}
-
 
 function mpcf_ajax_get_conditional_fields() {
 	if (!isset($_POST['fields']))
 		return '';
-
-	global $wpdb, $post;
 	
-	$fields  = json_decode(stripcslashes($_POST['fields']), true);
-	$post_id = isset($_POST['post_id']) &&  $_POST['post_id'] != null ? $_POST['post_id'] : null;
-	$values  = array();
+	$fields = json_decode(stripcslashes($_POST['fields']), true);
+	$values = array();
 
 	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
 		$values = $_POST['values'];
@@ -665,13 +627,6 @@ function mpcf_ajax_get_conditional_fields() {
 	}
 
 	ob_start();
-
-	if ($post_id !== null) {
-		$posts = get_posts([ 'p' => $post_id, 'post_type' => 'any' ]);
-		$post  = !empty($posts) ? $posts[0] : $post;
-		setup_postdata($post_id);
-	}
-
 	mpcf_build_gui_from_fields($fields, $values, false);
 
 	$components = ob_get_contents();
@@ -682,11 +637,8 @@ function mpcf_ajax_get_conditional_fields() {
 }
 
 function mpcf_ajax_get_conditional_panels_fields() {
-	global $wpdb, $post;
-	
-	$panel   = json_decode(stripcslashes($_POST['panel']), true);
-	$post_id = isset($_POST['post_id']) &&  $_POST['post_id'] != null ? $_POST['post_id'] : null;
-	$values  = array();
+	$panel  = json_decode(stripcslashes($_POST['panel']), true);
+	$values = array();
 
 	$panel['panel_id']       = isset($panel['panel_id'])       ? $panel['panel_id']       : uniqid();
 	$panel['panel_basename'] = isset($panel['panel_basename']) ? $panel['panel_basename'] : '';
@@ -696,12 +648,6 @@ function mpcf_ajax_get_conditional_panels_fields() {
 
 	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
 		$values = $_POST['values'];
-	}
-
-	if ($post_id !== null) {
-		$posts = get_posts([ 'p' => $post_id, 'post_type' => 'any' ]);
-		$post  = !empty($posts) ? $posts[0] : $post;
-		setup_postdata($post_id);
 	}
 
 	ob_start();

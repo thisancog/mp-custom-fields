@@ -36,6 +36,7 @@ class MPCFConditionalField extends MPCFModule {
 
 	function build_field($args = array()) {
 		$value       = isset($args['value']) && !empty($args['value']) ? $args['value'] : array();
+		$value       = is_array($value) ? $value : array($value);
 
 		$label       = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
 		$options     = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
@@ -66,7 +67,6 @@ class MPCFConditionalField extends MPCFModule {
 	 			else 							$title = $params['title'];
 
 	 			$disabled = false;
-
 	 			$selected = $type && $value['type'] == $name;
 	 			$disabled = isset($disabled) && $disabled ? ' disabled' : '';
 			 ?>

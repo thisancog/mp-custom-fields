@@ -95,16 +95,25 @@ class MPCFEditorField extends MPCFModule {
 			'toolbar1'	=> 'formatselect bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link unlink | wp_more | spellchecker'
 		);
 
+		$tinyMCE = isset($args['tinymce']) ? $args['tinymce'] : $defaultTinyMCE;
+		$additionalPlugins = null;
+
+		if (isset($tinyMCE['additionalPlugins'])) {
+			$additionalPlugins = $tinyMCE['additionalPlugins'];
+			unset($tinyMCE['additionalPlugins']);
+		}
+
 		$editorargs = array(
 			'drag_drop_upload'	=> isset($args['dragdrop']) ? $args['dragdrop'] : false,
 			'editor_class'		=> mpcf_get_input_class($this),
 			'editor_css'		=> isset($args['css']) ? '<style>' . $args['css'] . '</style>' : null,
 			'media_buttons'		=> isset($args['mediabuttons']) ? $args['mediabuttons'] : true,
 			'teeny'				=> isset($args['minimaleditor']) ? $args['minimaleditor'] : false,
-			'tinymce'			=> isset($args['tinymce']) ? $args['tinymce'] : $defaultTinyMCE,
+			'tinymce'			=> $tinyMCE,
 			'wpautop'			=> $wpautop,
 			'textarea_name'		=> $name
 		);
+
 
 		if      (isset($args['rows']))		$editorargs['textarea_rows'] = $args['rows'];
 		else if (isset($args['height']))	$editorargs['editor_height'] = $args['height'];
@@ -115,12 +124,14 @@ class MPCFEditorField extends MPCFModule {
 		$editorArgsJS['quicktags']    = true;
 		unset($editorArgsJS['media_buttons']);
 
+		if ($additionalPlugins)
+			$editorArgsJS['tinymce']['external_plugins'] = $additionalPlugins;
+
 		$settings = esc_attr(json_encode($editorArgsJS, JSON_HEX_QUOT | JSON_HEX_APOS));
 	// 	@ Wordpress Bug: editor_height is not honored
 		$minHeight = isset($editorargs['editor_height']) ? $editorargs['editor_height']
 				   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
-		
-		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>">
+		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>" data-is-registered="1">
 <?php		wp_editor(mpcf_mknice($args['value']), $id, $editorargs); ?>
 			<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
 		</div>

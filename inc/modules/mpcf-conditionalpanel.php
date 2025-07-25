@@ -122,7 +122,7 @@ class MPCFConditionalPanelField extends MPCFModule {
 		$option = $values['type'];
 
 		$currentOption = $options[$option];
-		$fields        = $currentOption['panel']['fields'];
+		$fields        = isset($currentOption['panel']['fields']) ? $currentOption['panel']['fields'] : [];
 
 		foreach ($fields as $field) {
 			if (empty($field)) continue;
@@ -133,7 +133,7 @@ class MPCFConditionalPanelField extends MPCFModule {
 			if (!isset($values[$field['name']])) continue;
 
 			$value    = $values[$field['name']];
-			$oldValue = $oldValues[$field['name']];
+			$oldValue = is_array($oldValues) && isset($oldValues[$field['name']]) ? $oldValues[$field['name']] : $oldValues;
 			$oldValue = !empty($oldValue) ? $oldValue : '';
 
 			$classname = $o['modules'][$type]['name'];

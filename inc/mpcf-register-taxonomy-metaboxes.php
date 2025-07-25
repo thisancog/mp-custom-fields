@@ -88,13 +88,8 @@ function mpcf_get_taxonomy_boxes($tax) {
 		return $box['taxonomy'] === $tax;
 	});
 
-	$priorities = [ 'high', 'sorted', 'core', 'default', 'low' ];
-
-	usort($boxes, function($a, $b) use ($priorities) {
-		$a = isset($priorities[$a['priority']]) ? array_search($a['priority'], $priorities) : 99999;
-		$b = isset($priorities[$b['priority']]) ? array_search($b['priority'], $priorities) : 99999;
-		
-		return $a - $b;
+	usort($boxes, function($a, $b) {
+		return $a['priority'] - $b['priority'];
 	});
 
 	return $boxes;
@@ -115,7 +110,7 @@ function mpcf_build_taxonomy_gui($tax = null, $term = null) {
 		<div class="mpcf-tax-box">
 			<h2 class="mpcf-tax-box-title"><?php echo $box['title']; ?></h2>
 			<div class="mpcf-parent">
-				<?php mpcf_build_gui_as_panels($panels, $values); ?>
+				<?php mpcf_build_gui_as_panels($id, $panels, $values); ?>
 			</div>
 		</div>
 <?php
@@ -142,11 +137,12 @@ function mpcf_save_custom_fields_taxonomy($term_id) {
 
 				$actions = isset($field['actions']) ? $field['actions'] : array();
 
-				$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
-				$value = mpcf_before_save($field, $term_id, $value);
+				$oldValue = mpcf_get_tax_field($name, $term_id);
+				$value    = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+				$value    = mpcf_before_save($field, $term_id, $value);
 
 				update_term_meta($term_id, $name, $value);
-				mpcf_after_save($field, $term_id, $value);
+				mpcf_after_save($field, $term_id, $value, $oldValue);
 			}
 		}
 	}

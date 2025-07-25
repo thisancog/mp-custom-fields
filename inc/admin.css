@@ -1314,29 +1314,6 @@ body.no-js .mpcf-file-picker + label {
 
 
 /******************************
-	Post Select
- ******************************/
-
-.mpcf-postselect-input .mpcf-field {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 10px 20px;
-}
-
-.mpcf-postselect-input.hide-edit-link .postselect-edit-link {
-	opacity: 0;
-	visibility: hidden;
-}
-
-.mpcf-postselect-input .postselect-edit-link a {
-	text-decoration: none;
-}
-
-
-
-
-/******************************
 	Table
  ******************************/
 

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2024-01-29 12:59+0100\n"
-"PO-Revision-Date: 2024-01-29 13:05+0100\n"
+"POT-Creation-Date: 2024-03-11 16:30+0100\n"
+"PO-Revision-Date: 2024-03-11 16:30+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -27,11 +27,11 @@ msgstr "Einstellungen wurden gespeichert."
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:696
+#: inc/gui.php:702
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:727
+#: inc/gui.php:733
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
@@ -477,7 +477,7 @@ msgstr "Custom Fields"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: inc/mpcf-admin.php:30 inc/mpcf-pluginsettings.php:20
+#: inc/mpcf-admin.php:30 inc/mpcf-pluginsettings.php:21
 #: inc/mpcf-settings.php:19
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
@@ -517,7 +517,7 @@ msgstr "Felder"
 msgid "Field"
 msgstr "Feld"
 
-#: inc/mpcf-admin.php:153 inc/mpcf-pluginsettings.php:25
+#: inc/mpcf-admin.php:153 inc/mpcf-pluginsettings.php:26
 #: inc/mpcf-settings.php:24
 msgid "General"
 msgstr "Allgemein"
@@ -602,15 +602,16 @@ msgstr "L&ouml;schen"
 msgid "Panels"
 msgstr "Panele"
 
-#: inc/mpcf-media-display.php:16
+#: inc/mpcf-media-display.php:19 inc/mpcf-media-display.php:51
+#: inc/mpcf-media-display.php:68
 msgid "Used in"
 msgstr "Benutzt in"
 
-#: inc/mpcf-pluginsettings.php:31 inc/mpcf-settings.php:30
+#: inc/mpcf-pluginsettings.php:32 inc/mpcf-settings.php:30
 msgid "Class for multilingual fields"
 msgstr "Klasse f&uuml;r mehrsprachige Felder"
 
-#: inc/mpcf-pluginsettings.php:32 inc/mpcf-settings.php:31
+#: inc/mpcf-pluginsettings.php:33 inc/mpcf-settings.php:31
 msgid ""
 "Specify a class to be added to fields to flag for plugins providing "
 "multilingual support."
@@ -618,15 +619,15 @@ msgstr ""
 "Gib eine Klasse an, die den Feldern hinzugef&uuml;gt wird, um sie f&uuml;r "
 "Plugins zu markieren, die sie in mehrsprachige Felder umwandeln."
 
-#: inc/mpcf-pluginsettings.php:39 inc/mpcf-settings.php:38
+#: inc/mpcf-pluginsettings.php:40 inc/mpcf-settings.php:38
 msgid "Interfaces"
 msgstr "Schnittstellen"
 
-#: inc/mpcf-pluginsettings.php:45 inc/mpcf-settings.php:44
+#: inc/mpcf-pluginsettings.php:46 inc/mpcf-settings.php:44
 msgid "Google Maps API Key"
 msgstr "Google Maps API Schl&uuml;ssel"
 
-#: inc/mpcf-pluginsettings.php:46 inc/mpcf-settings.php:45
+#: inc/mpcf-pluginsettings.php:47 inc/mpcf-settings.php:45
 #, php-format
 msgid ""
 "Generate a free API key <a href=\"%s\" target=\"_blank\" rel=\"noopener"
@@ -636,15 +637,23 @@ msgstr ""
 "kostenlosen API-Schl&uuml;ssel um f&uuml;r das Kartenfeld Google Maps "
 "benutzen zu k&ouml;nnen und gib ihn hier ein."
 
-#: inc/mpcf-pluginsettings.php:52 inc/mpcf-register-metaboxes.php:150
+#: inc/mpcf-pluginsettings.php:53 inc/mpcf-register-metaboxes.php:150
 msgid "Bulk copy-paste"
 msgstr "Alle Felder kopieren"
 
-#: inc/mpcf-pluginsettings.php:53
+#: inc/mpcf-pluginsettings.php:54
 msgid "show bulk copy-paste panel for admin users"
 msgstr "Panel „Alle Felder kopieren“ für Admin-Benutzer anzeigen"
 
-#: inc/mpcf-pluginsettings.php:62 inc/mpcf-settings.php:55
+#: inc/mpcf-pluginsettings.php:59
+msgid "Revisions"
+msgstr "Revisionen"
+
+#: inc/mpcf-pluginsettings.php:60
+msgid "include custom fields in post revisions"
+msgstr "beziehe benutzerdefinierte Felder in Revisionen ein"
+
+#: inc/mpcf-pluginsettings.php:69 inc/mpcf-settings.php:55
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 

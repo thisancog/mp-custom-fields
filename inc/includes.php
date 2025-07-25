@@ -5,7 +5,6 @@ require_once('mpcf-actions.php');
 require_once('mpcf-register-metaboxes.php');
 require_once('mpcf-register-taxonomy-metaboxes.php');
 require_once('mpcf-register-archive-metaboxes.php');
-require_once('mpcf-register-singleton-metaboxes.php');
 require_once('mpcf-revisions.php');
 require_once('gui.php');
 require_once('mpcf-media-display.php');
@@ -56,6 +55,81 @@ function mpcf_filter_admin_body_class() {
 	}
 
 	return $isActive ? 'mpcf-active' : '';
+}
+
+function mpcf_is_serialized($value, &$result = null) {
+	if (!is_string($value))
+		return false;
+
+	if ($value === 'b:0;') {
+		$result = false;
+		return true;
+	}
+
+	$length	= strlen($value);
+	if ($length == 0) {
+		$result = false;
+		return false;
+	}
+
+	$end	= '';
+
+	$value = mb_str_split('', $value);
+	if (!is_array($value)) {
+		$result = false;
+		return false;
+	}
+
+	switch ($value[0]) {
+		case 's':
+			if ($value[$length - 2] !== '"') {
+				return false;
+			}
+		case 'b':
+		case 'i':
+		case 'd':
+			$end .= ';';
+		case 'a':
+		case 'O':
+			$end .= '}';
+
+			if ($value[1] !== ':') {
+				return false;
+			}
+
+			switch ($value[2]) {
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				case 7:
+				case 8:
+				case 9:
+					break;
+				default:
+					return false;
+			}
+		case 'N':
+			$end .= ';';
+
+			if ($value[$length - 1] !== $end[0]) {
+				return false;
+			}
+			break;
+		
+		default:
+			return false;
+	}
+
+	if (($result = @unserialize($value)) === false) {
+		$result = null;
+		return false;
+	}
+
+	return true;
 }
 
 

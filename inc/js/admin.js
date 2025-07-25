@@ -31,7 +31,6 @@
 		checkHTML5Support();
 		registerColorPicker();
 		repeaterField();
-		postSelectField()
 
 		gridField();
 		addQTranslateX();
@@ -58,7 +57,6 @@
 		colorSelects.registerNew(parent);
 		gridField(parent);
 		repeaterField(parent);
-		postSelectField()
 
 		checkHTML5Support(parent);
 		focusInvalids(parent);
@@ -245,29 +243,38 @@
 	var registerEditors = function(parent) {
 		parent = parent || document;
 
-		var fields = [].slice.call(parent.querySelectorAll('.mpcf-editor-input .mpcf-field'));		
+		var fields = [].slice.call(parent.querySelectorAll('.mpcf-editor-input .mpcf-field'));
 
-		fields.forEach(function(field) {
+		fields.forEach(function(field, index) {
 			var inner           = field.querySelector('.mpcf-editor-inner'),
-				editor          = field.querySelector('.mpcf-input-editor'),
-				description     = field.querySelector('.mpcf-description'),
-				textarea        = editor.cloneNode(),
-				id              = editor.id,
-				idShort         = id.split('-').pop(),
-				oldContent      = wp.editor.getContent(id),
+				oldTextarea     = field.querySelector('.mpcf-input-editor');
+			if (!inner || !oldTextarea || inner.dataset.isRegistered == '1') return;
+
+			field.setAttribute('data-is-registered', 1);
+
+			var	description     = field.querySelector('.mpcf-description'),
+				oldID           = oldTextarea.id,
+				newID			= randomString(20),
+				newTextarea     = oldTextarea.cloneNode(),
+				oldContent      = wp.editor.getContent(oldID),
 				oldContentAutop = wp.editor.autop(oldContent),
 				settings        = JSON.parse(inner.dataset.settings);
 
-			textarea.innerText = oldContentAutop || '';
-			wp.editor.remove(idShort);
-			inner.parentElement.removeChild(inner);
-			field.appendChild(textarea);
-			wp.editor.initialize(id, settings);
+			newTextarea.innerText = oldContentAutop || '';
 
+			let wrapper = field.querySelector('#wp-' + oldID + '-wrap');
+
+			wrapper.remove();
+
+			newTextarea.setAttribute('id', newID);
+			inner.appendChild(newTextarea);
 			if (description)
 				field.appendChild(description);
+
+			wp.editor.initialize(newID, settings);
 		});
 	}
+
 
 
 	/**************************************************************
@@ -302,17 +309,16 @@
 
 		var repeaters = parent.querySelectorAll('.mpcf-repeater-input');
 		if (!repeaters.length) return;
-
-		var postIDField = document.querySelector('#post_ID');
 				
 		[].forEach.call(repeaters, function(repeater) {
 			if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
 			var set             = repeater.closest('.mpcf-panels'),
-				rowsWrapper     = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-wrapper'),
-				loader          = repeater.querySelector(':scope > .mpcf-field > .mpcf-loading-container'),
-				addBtn          = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-controls > .mpcf-repeater-add-row'),
-				emtpyField      = repeater.querySelector(':scope > .mpcf-field > .mpcf-repeater-controls >.mpcf-repeater-empty'),
+				uniqid          = repeater.dataset.uniqid,
+				rowsWrapper     = repeater.querySelector('.mpcf-repeater-wrapper[data-uniqid="'  + uniqid + '"]'),
+				loader          = repeater.querySelector('.mpcf-loading-container[data-uniqid="' + uniqid + '"]'),
+				addBtn          = repeater.querySelector('.mpcf-repeater-add-row[data-uniqid="'  + uniqid + '"]'),
+				emtpyField      = repeater.querySelector('.mpcf-repeater-empty[data-uniqid="'    + uniqid + '"]'),
 				fields          = rowsWrapper.dataset.fields,
 				fieldsObj       = JSON.parse(fields),
 				maxRows         = parseInt(rowsWrapper.dataset.maxrows),
@@ -324,14 +330,8 @@
 
 		// 	prefetch blank row
 
-			let data = {
-				'action': 	'mpcf_get_repeater_row',
-				'fields': 	fields,
-				'post_id': 	postIDField ? postIDField.value : null
-			};
-
-			$.post(ajaxurl, data, function(response) {
-				rowHTML = response;
+			$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
+				rowHTML = response.replaceAll('data-is-registered="1"', 'data-is-registered="0"');
 			});
 
 			if (hasMoveBtn) {
@@ -405,6 +405,7 @@
 		//	if there are no rows, "activate" the empty field so there is an empty value posted on submit
 			var checkIfEmpty = function() {
 				rowsWrapper.classList.toggle('empty', rowsWrapper.children.length == 0);
+				if (!emtpyField) return;
 
 				if (rowsWrapper.children.length == 0) {
 					emtpyField.setAttribute('name', emtpyField.dataset.name);
@@ -433,8 +434,42 @@
 			};
 
 
-		//	populate repeater
+		//	add row
+			addBtn.addEventListener('click', function() {
+				let populateRow = function() {
+					var newRow = document.createElement('li');
+					newRow.classList.add('mpcf-repeater-row');
+					newRow.innerHTML = rowHTML;
+					rowsWrapper.appendChild(newRow);
 
+					let conditionalItems = [].slice.call(newRow.querySelectorAll('.mpcf-conditionalpanels-input'));
+					conditionalItems.forEach(item => item.setAttribute('data-panel-id', Math.floor(Math.random() * Math.pow(10,10))));
+					newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
+
+					newRow.querySelector('.mpcf-repeater-row-move-up').addEventListener('click', moveRowUp);
+					newRow.querySelector('.mpcf-repeater-row-move-down').addEventListener('click', moveRowDown);
+
+					addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
+
+					if (hasMoveBtn) dragDropHandler.addElements(newRow);
+					checkIfEmpty();
+					renameDynamicFields(set);
+					registerAsyncElements(newRow);
+				}
+
+				
+				if (rowHTML == null) {
+					$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
+						rowHTML = response;
+						populateRow();
+					});
+				} else {
+					populateRow();
+				}
+			});
+
+
+		//	populate repeater
 			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-move-up'), function(btn) {
 				btn.addEventListener('click', moveRowUp);
 			});
@@ -451,48 +486,6 @@
 			checkCheckableElements(rowsWrapper);
 			registerAsyncElements(rowsWrapper);
 			updateLoadingElements(repeater, true);
-
-
-
-		//	add row
-			addBtn.addEventListener('click', function() {
-				let populateRow = function() {
-					var newRow = document.createElement('li');
-					newRow.classList.add('mpcf-repeater-row');
-					newRow.innerHTML = rowHTML;
-					rowsWrapper.appendChild(newRow);
-
-					let conditionalItems = [].slice.call(newRow.querySelectorAll('.mpcf-conditionalpanels-input'));
-					conditionalItems.forEach(item => item.setAttribute('data-panel-id', Math.floor(Math.random() * Math.pow(10,10))));
-				//	newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
-
-					newRow.querySelector('.mpcf-repeater-row-move-up').addEventListener('click', moveRowUp);
-					newRow.querySelector('.mpcf-repeater-row-move-down').addEventListener('click', moveRowDown);
-
-					addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
-
-					if (hasMoveBtn) dragDropHandler.addElements(newRow);
-					checkIfEmpty();
-					renameDynamicFields(set);
-					registerAsyncElements(newRow);
-				}
-
-				let data = {
-					'action': 	'mpcf_get_repeater_row',
-					'fields': 	fields,
-					'post_id': 	postIDField ? postIDField.value : null
-				};
-
-				
-				if (rowHTML == null) {
-					$.post(ajaxurl, data, function(response) {
-						rowHTML = response;
-						populateRow();
-					});
-				} else {
-					populateRow();
-				}
-			});
 
 			checkIfEmpty();
 		});
@@ -583,13 +576,15 @@
 				var inputs = field.querySelectorAll('[name], [id], [for]');
 
 				inputs = [].filter.call(inputs, function(input) {
-					return valids.indexOf(input.tagName.toLowerCase()) > -1;
+					let tagName = input.tagName.toLowerCase();
+					return valids.indexOf(tagName) > -1;
 				});
 
 				// each input
 				inputs.forEach(function(input, inputIndex) {
-					let type   = input.getAttribute('type'),
-						parent = input.parentElement,
+					let type    = input.getAttribute('type'),
+						tagName = input.tagName.toLowerCase(),
+						parent  = input.parentElement,
 						newID, newName;
 
 					let isTable = input.closest('.mpcf-table-inner');
@@ -619,7 +614,12 @@
 
 					if (type === 'button' || type === 'submit') return;
 
-					if (input.hasAttribute('id'))	input.setAttribute('id', newID);
+					if (input.hasAttribute('id')) {
+						if (tagName != 'textarea' || !input.classList.contains('wp-editor-area')) {
+							input.setAttribute('id', newID);
+						}
+					}
+
 					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
 
 					if (input.hasAttribute('name')) {
@@ -660,8 +660,7 @@
 
 	class ConditionalFields {
 		constructor() {
-			this.fields      = {};
-			this.postIDField = document.querySelector('#post_ID');
+			this.fields = {};
 		}
 
 		registerNew(parent = null) {
@@ -702,7 +701,6 @@
 			if (!this.fields[id]) return;
 
 			let field = this.fields[id];
-
 			field.wrapper.innerHTML = '';
 
 		//	no option with this value available, i.e. no option selected
@@ -710,9 +708,8 @@
 				return;
 
 			let request = {
-				'action': 	'mpcf_get_conditional_fields',
-				'fields': 	JSON.stringify(field.options[field.select.value].fields),
-				'post_id': 	this.postIDField ? this.postIDField.value : null
+				'action': 'mpcf_get_conditional_fields',
+				'fields': JSON.stringify(field.options[field.select.value].fields)
 			};
 
 			updateLoadingElements(field.element);
@@ -745,9 +742,8 @@
 
 	class ConditionalPanelsFields {
 		constructor() {
-			this.fields      = {};
-			this.postIDField = document.querySelector('#post_ID');
-			this.fieldClass  = 'mpcf-conditionalpanels-input';
+			this.fields     = {};
+			this.fieldClass = 'mpcf-conditionalpanels-input';
 		}
 
 		registerNew(parent = null) {
@@ -828,10 +824,9 @@
 			updateLoadingElements(field.element);
 
 			let request = {
-				'action': 	'mpcf_get_conditional_panels_fields',
-				'panel':  	JSON.stringify(field.options[field.select.value].panel),
-				'values': 	field.values,
-				'post_id': 	this.postIDField ? this.postIDField.value : null
+				'action': 'mpcf_get_conditional_panels_fields',
+				'panel':  JSON.stringify(field.options[field.select.value].panel),
+				'values': field.values
 			};
 
 			$.post(ajaxurl, request, (response => {
@@ -958,37 +953,6 @@
 
 
 
-	/**************************************************************
-		Post select fields
-	 **************************************************************/
-
-	var postSelectField = function(wrapper) {
-		wrapper = wrapper || document;
-
-		let fields = [].slice.call(wrapper.querySelectorAll('.mpcf-postselect-input'));
-
-		fields.forEach(field => {
-			let select = field.querySelector('select'),
-				link   = field.querySelector('.postselect-edit-link a');
-
-			let update = function() {
-				let currentValue = select.value;
-
-				if (!Number.isNaN(currentValue) && currentValue > 0) {
-					link.setAttribute('href', link.dataset.baseuri + currentValue);
-					field.classList.remove('hide-edit-link');
-				} else {
-					link.setAttribute('href', '');
-					field.classList.add('hide-edit-link');
-				}
-			};
-
-			select.removeEventListener('change', update);
-			select.addEventListener('change', update);
-
-			update();
-		});
-	}
 
 
 
@@ -1611,11 +1575,24 @@
 		return ancestor;
 	};
 
+
 	var unwrap = function(elem) {
 		var parent = elem.parentNode;
 		while (elem.firstChild)
 			parent.insertBefore(elem.firstChild, elem);
 		parent.removeChild(elem);
+	}
+
+
+	var randomString = function(length) {
+		const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		let result = "";
+		for (let i = 0; i < length; i++) {
+			result += chars.charAt(Math.floor(Math.random() * chars.length));
+		}
+
+		return result;
 	}
 
 
