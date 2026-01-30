@@ -557,7 +557,7 @@
 
 		var id = generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
 
-		if (elem.tagName.toLowerCase() === 'input' && elem.type === 'radio')
+		if (elem.tagName.toLowerCase() === 'input' && (elem.type === 'radio' || elem.type === 'checkbox'))
 			id += '-' + elem.value;
 		return id;
 	}
