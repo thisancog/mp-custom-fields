@@ -496,6 +496,7 @@
 	var generateName = function(elem) {
 		var name                 = [elem.dataset.name || elem.name],
 			parent               = elem,
+			allowsMultiple       = name[0].slice(-2) == '[]',
 			canContainDeepFields = false;
 
 		// traverse parent nodes to find all name attributes to be applied to this input
@@ -533,17 +534,26 @@
 		});
 
 
+	//	smart flatten Array while elimination duplicates
+		name = name.map((item, i) => {
+			if (!Array.isArray(item)) return item;
+			
+			item = item.filter((subItem, j) => subItem != name[j]);
+			return item;
+		});
 
 	//  flatten Array
 		name = name.flat(9999);
 
 	//  remove brackets from strings
 		name = name.map(item => item.toString().replace(/[\[\]]/g, ''));
-
 		name = name.filter((item, index, arr) => index === 0 || item !== arr[index - 1] || canContainDeepFields);
 
 	//	join parts and apply format for nested HTML inputs	
 		name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
+
+	// 	add trailing '[]' if this is a field that allows multiple values
+		name = allowsMultiple ? name + '[]' : name;
 
 		return name;
 	}
