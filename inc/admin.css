@@ -955,6 +955,7 @@
 	transition: transform 0.1s linear;
 }
 
+.mpcf-bulkmediapicker .item,
 .mpcf-bulkmediapicker .mpcf-bulkmedia-item-media {
 	width: 100%;
 	height: 100%;
