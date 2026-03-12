@@ -752,6 +752,228 @@
 }
 
 
+
+
+
+/******************************
+	Bulk media uploader
+ ******************************/
+
+.mpcf-bulkmediapicker {
+	display: block;
+	margin: 0 auto;
+}
+
+.mpcf-bulkmediapicker #plupload-upload-ui {
+	position: relative;
+}
+
+.mpcf-bulkmediapicker .mpcf-drop-zone {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #f8f8f8;
+	border-radius: 0;
+	border: none;
+	height: 200px;
+	transition: background 0.25s ease,;
+}
+
+.mpcf-bulkmediapicker.drag-over .mpcf-drop-zone {
+	background-size: 905px;
+	background-image: repeating-linear-gradient(315deg,
+		rgba(10, 75, 120, 0.2), rgba(10, 75, 120, 0.2) 40px,
+		#F8F8F8 40px, #F8F8F8 80px
+	);
+	animation: backgroundStripes 16s linear infinite;
+}
+
+@keyframes backgroundStripes {
+	from {
+		background-position: 0 0;
+	}
+
+	to {
+		background-position: 113px 0;
+	}
+}
+
+.mpcf-bulkmediapicker .mpcf-drop-zone .drag-drop-inside {
+	display: flex;
+	flex-direction: column;
+	gap: 10px 0;
+	margin: 0;
+	width: auto;
+}
+
+.mpcf-bulkmediapicker .mpcf-drop-zone p {
+	display: block;
+	margin: 0;
+	font-size: 12px;
+}
+
+.mpcf-bulkmediapicker .mpcf-drop-zone .drag-drop-info {
+	font-size: 20px;
+}
+
+.mpcf-bulkmediapicker .mpcf-drop-zone .drag-drop-buttons span {
+	margin: 0 5px;
+}
+
+.mpcf-bulkmediapicker .mpcf-media-upload-error .error {
+	align-items: flex-start;
+	background-color: #fff;
+	border-radius: 0px;
+	border: 0;
+	box-shadow: inset 2px 0 0 0 #ff6d6d, inset 0 0 0 1px #ebebeb;
+	display: flex;
+	margin: 15px 0 0;
+	padding: 8px 15px;
+}
+
+.mpcf-bulkmediapicker .mpcf-media-upload-error .error p {
+	margin: 0;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-items {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	flex-wrap: wrap;
+	box-sizing: border-box;
+	gap: 5px;
+	padding: 0;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-items:not(:empty) {
+	margin-bottom: 20px;
+}
+
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item {
+	position: relative;
+	width: calc((100% - 25px) / 6);
+	max-width: 150px;
+	min-width: 80px;
+	aspect-ratio: 1 / 1;
+	margin: 0;
+	overflow: hidden;
+
+	text-align: center;
+	background: #f8f8f8;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item:empty {
+	border: 1px dotted #2271B1;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item-actions {
+	position: absolute;
+	top: 0;
+	right: -1px;
+	z-index: 2;
+
+	display: flex;
+	flex-direction: column;
+	align-items: end;
+	border-bottom-left-radius: 25px;
+	opacity: 0;
+	pointer-events: none;
+	background-color: #FFFFFF;
+	transition: opacity 0.25s ease;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item:hover .mpcf-bulkmedia-item-actions {
+	opacity: 1;
+	pointer-events: all;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .mpcf-bulkmedia-moveupdown {
+	display: flex;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item input[type="button"] {
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	border: 0;
+	background-color: transparent;
+	font-size: 15px;
+	color: #2271B1;
+	cursor: pointer;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item:first-child .mpcf-bulkmedia-move-up,
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item:last-child .mpcf-bulkmedia-move-down {
+	cursor: not-allowed;
+	color: #888888;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item input[type="button"].mpcf-bulkmedia-remove {
+	width: 25px;
+	height: 25px;
+	padding: 5px;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .progress {
+	padding: 3px 0;
+	background: #ccc;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .progress,
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .progress-bar {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80%;
+	margin: 0;
+	
+	border-radius: 15px;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .progress-text {
+	position: relative;
+	z-index: 10;
+	width: 100%;
+
+	color: #fff;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1;
+	text-align: center;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item .progress-bar {
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 9;
+	transform: translate(0%, -50%) scaleX(0);
+	background: #2271B1;
+	transition: transform 0.1s linear;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item-media {
+	width: 100%;
+	height: 100%;
+}
+
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item img,
+.mpcf-bulkmediapicker .mpcf-bulkmedia-item video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	padding: 0;
+}
+
+
+
+
+
+
 /******************************
 	Map
  ******************************/
