@@ -951,6 +951,7 @@
 	height: 100%;
 	z-index: 9;
 	transform: translate(0%, -50%) scaleX(0);
+	transform-origin: left;
 	background: #2271B1;
 	transition: transform 0.1s linear;
 }
