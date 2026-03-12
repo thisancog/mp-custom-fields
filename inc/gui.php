@@ -299,9 +299,9 @@ function mpcf_resolve_sanitized_fields($var) {
 }
 
 function mpcf_resolve_deep_fields($field) {
-	$type = $field['type'];
-	$deepFields = array('repeater', 'conditional', 'dragdroplist', 'table', 'buttongroup');
-	$isDeep = in_array($type, $deepFields);
+	$type       = $field['type'];
+	$deepFields = array('repeater', 'conditional', 'dragdroplist', 'table', 'buttongroup', 'bulkmedia');
+	$isDeep     = in_array($type, $deepFields);
 
 	if ($type === 'select' && isset($field['multiple']) && $field['multiple'] === true)
 		$isDeep = true;
