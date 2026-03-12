@@ -6,6 +6,7 @@
 		conditionalFields = null,
 		conditionalPanels = null,
 		mediaPickers      = null,
+		bulkMediaPickers  = null,
 		colorSelects      = null,
 		painterColors = {
 			icons: {
@@ -25,6 +26,7 @@
 		conditionalFields = new ConditionalFields();
 		conditionalPanels = new ConditionalPanelsFields();
 		mediaPickers      = new MediaPickers();
+		bulkMediaPickers  = new BulkMediaPickers();
 		colorSelects      = new ColorSelects();
 
 		goToInvalids();
@@ -49,6 +51,7 @@
 
 	var registerAsyncElements = function(parent) {
 		mediaPickers.registerNew(parent);
+		bulkMediaPickers.registerNew(parent);
 		addQTranslateX(parent);
 		registerEditors(parent);
 		registerColorPicker(parent);
@@ -1126,8 +1129,18 @@
 		changeMedia(id, event) {
 			event.preventDefault();
 
-			let picker = this.pickers[id],
-				modal  = wp.media({ title: localizedmpcf.chooseMedia, multiple: picker.multiple });
+			let picker     = this.pickers[id],
+				currentVal = picker.idField.getAttribute('value'),
+				modal      = wp.media({ title: localizedmpcf.chooseMedia, multiple: picker.multiple });
+
+			modal.on('open', () => {
+				let selection  = modal.state().get('selection'),
+					attachment = wp.media.attachment(currentVal);
+
+				attachment.fetch();
+				selection.add(attachment ? [ attachment ] : []);
+
+			});
 
 			modal.on('select', () => {
 				modal.detach();
@@ -1178,6 +1191,379 @@
 			return Math.floor(Math.random() * Math.pow(10,10));
 		}
 	}
+
+
+
+
+
+
+	/**************************************************************
+		Bulk Media picker
+	 **************************************************************/
+
+	class BulkMediaPickers {
+		constructor() {
+			this.pickers = {};
+			this.registerNew();
+		}
+
+		registerNew(parent) {
+			parent = parent || document;
+
+			let newElems = [].slice.call(document.querySelectorAll('.mpcf-bulkmediapicker:not([data-registered])'));
+
+			newElems.forEach((elem => {
+				elem.setAttribute('data-registered', 1);
+
+				let id             = elem.dataset.id,
+					items          = [].slice.call(elem.querySelectorAll('.mpcf-bulkmedia-item')),
+					dropArea       = elem.querySelector('.mpcf-drop-zone'),
+					errorContainer = elem.querySelector('.mpcf-media-upload-error'),
+					addMediaBtn    = elem.querySelector('.mpcf-bulk-choose-button'),
+					uploader       = new plupload.Uploader(window['uploaderInit' + id]);
+
+				uploader.bind('Init', function(u) {
+					if (u.features.dragdrop && !document.querySelector('.mobile')) {
+						elem.classList.add('drag-drop');
+
+						dropArea.addEventListener('dragover',  () => elem.classList.add('drag-over'));
+						dropArea.addEventListener('dragleave', () => elem.classList.remove('drag-over'));
+						dropArea.addEventListener('drop',      () => elem.classList.remove('drag-over'));
+					} else {
+						elem.classList.remove('drag-drop');
+						dropArea.removeEventListener('dragover');
+						dropArea.removeEventListener('dragleave');
+						dropArea.removeEventListener('drop');
+					}
+
+					if (u.runtime === 'html4')
+						 elem.querySelector('.upload-flash-bypass').styles.display = 'none';
+				});
+
+				uploader.bind('postinit', u => u.refresh());
+
+				uploader.bind('FilesAdded', ((u, files) => {
+					errorContainer.innerHTML = '';
+					this.uploadStart();
+
+					plupload.each(files, (file => this.fileQueued(id, file)).bind(this));
+
+					u.refresh();
+					u.start();
+				}).bind(this));
+
+				uploader.bind('UploadFile',     ((u, file)           => this.fileUploading (id, u, file)).bind(this));
+				uploader.bind('UploadProgress', ((u, file)           => this.uploadProgress(id, u, file)).bind(this));
+				uploader.bind('FileUploaded',   ((u, file, response) => this.uploadSuccess (id, file, response.response)).bind(this));
+				uploader.bind('UploadComplete', (()                  => this.uploadComplete()).bind(this));
+
+				uploader.bind('Error', ((u, error) => {
+					this.uploadError(id, error.file, error.code, error.message, u);
+					elem.querySelector('.mpcf-bulkmedia-items #mpcf-bulkmedia-item-' + error.file.id).remove();
+					u.refresh();
+				}).bind(this));
+
+
+				uploader.init();
+
+				items.forEach((item => this.registerItemEvents(item)).bind(this));
+				addMediaBtn.addEventListener('click', (() => this.addMedia(id)).bind(this));
+
+				this.pickers[id] = {
+					element:		elem,
+					dropArea:		dropArea,
+					itemsContainer:	elem.querySelector('.mpcf-bulkmedia-items'),
+					items:			items,
+					errorContainer:	errorContainer,
+					uploader:		uploader
+				};
+			}).bind(this));
+		}
+
+
+		registerItemEvents(item) {
+			let media       = item.querySelector('.mpcf-bulkmedia-item-media'),
+				moveUpBtn   = item.querySelector('.mpcf-bulkmedia-move-up'),
+				moveDownBtn = item.querySelector('.mpcf-bulkmedia-move-down'),
+				removeBtn   = item.querySelector('.mpcf-bulkmedia-remove');
+
+			media.addEventListener('click',       this.changeMedia.bind(this));
+			moveUpBtn.addEventListener('click',   this.moveItemUp.bind(this));
+			moveDownBtn.addEventListener('click', this.moveItemDown.bind(this));
+			removeBtn.addEventListener('click',   this.removeItem.bind(this));
+		}
+
+
+
+	//	Upload process
+
+		uploadStart() {}
+
+
+		fileQueued(id, file) {
+			let picker       = this.pickers[id],
+				item         = document.createElement('div'),
+				inner        = document.createElement('div'),
+				progress;
+
+			item.classList.add('mpcf-bulkmedia-item');
+			item.setAttribute('id', 'mpcf-bulkmedia-item-' + file.id);
+			item.innerHTML = `<div class="item">
+				<div class="progress">
+					<div class="progress-text">0%</div>
+					<div class="progress-bar"></div>
+				</div>
+			</div>`;
+
+			picker.itemsContainer.appendChild(item);
+		}
+
+
+		fileUploading(id, up, file) {
+			let hundredMB = 100 * 1024 * 1024,
+				max       = parseInt(up.settings.max_file_size, 10);
+
+			if (max <= hundredMB || file.size <= hundredMB) return;
+
+			setTimeout(function () {
+				if (file.status >= 3 || file.loaded !== 0) return;
+
+				this.displayErrorMessage(id, up, file, localizedmpcf.bigUploadFailed.replace('%1$s', '<a class="uploader-html" href="#">').replace('%2$s', "</a>"));
+				up.stop();
+				up.removeFile(file);
+				up.start();
+			}, 10000);
+		}
+
+
+		uploadProgress(id, up, file) {
+			let picker       = this.pickers[id],
+				item         = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id),
+				progressBar  = picker.element.querySelector('.progress-bar'),
+				progressText = picker.element.querySelector('.progress-text');
+
+			progressBar.style.transform = 'translate(0%, -50%) scaleX(' + (file.percent / 100) + ')';
+			progressText.innerText = file.percent + '%';
+		}
+
+
+		uploadComplete() {}
+
+
+		uploadSuccess(id, file, response) {
+			let picker  = this.pickers[id],
+				item    = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id);
+
+			if (typeof response === 'string') {
+				response = response.replace(/^<pre>(\d+)<\/pre>$/, '$1');
+
+				if (/media-upload-error|error-div/.test(response)) {
+					item.innerHTML = response;
+					return;
+				}
+			}
+
+			item.querySelector('.progress-text').innerText = localizedmpcf.uploading;
+			this.prepareMediaItem(id, file, response);
+		}
+
+
+		prepareMediaItem(id, file, response) {
+			let picker = this.pickers[id],
+				item   = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id + ' .item');
+
+			$.get(ajaxurl, {
+				attachment_id:	response,
+				fieldName:		picker.element.getAttribute('name'),
+				fieldOwnName: 	picker.element.getAttribute('data-own-name'),
+				action:			'mpcf_bulk_media_fetch_action'
+			}, response => {
+				item.innerHTML = response;
+				this.registerItemEvents(item);
+			});
+		}
+
+
+
+	//	Error handling
+
+		uploadError(id, file = {}, errorCode = 0, message = '', up = null) {
+			let picker    = this.pickers[id],
+				hundredMB = 100 * 1024 * 1024,
+				max;
+
+			switch (errorCode) {
+				case plupload.FAILED:
+					this.displayErrorMessage(id, up, file, localizedmpcf.uploadFailed);
+					break;
+				case plupload.FILE_EXTENSION_ERROR:
+					this.displayErrorMessage(id, up, file, localizedmpcf.invalidType);
+					break;
+				case plupload.FILE_SIZE_ERROR:
+					this.uploadSizeError(id, up, file);
+					break;
+				case plupload.IMAGE_FORMAT_ERROR:
+					this.displayErrorMessage(id, up, file, localizedmpcf.notAnImage);
+					break;
+				case plupload.IMAGE_MEMORY_ERROR:
+					this.displayErrorMessage(id, up, file, localizedmpcf.memoryExceeded);
+					break;
+				case plupload.IMAGE_DIMENSIONS_ERROR:
+					this.displayErrorMessage(id, up, file, localizedmpcf.dimensionsExceeded);
+					break;
+				case plupload.GENERIC_ERROR:
+					this.displayErrorMessage(id, null, {}, localizedmpcf.uploadFailed);
+					break;
+				case plupload.IO_ERROR:
+					max = parseInt(up.settings.filters.max_file_size, 10);
+					if (max > hundredMB && file.size > hundredMB) {
+						this.displayErrorMessage(id, up, file, localizedmpcf.bigUploadFailed.replace('%1$s', '<a class="uploader-html" href="#">').replace('%2$s', '</a>'));
+					} else {
+						this.displayErrorMessage(id, null, {}, localizedmpcf.ioError);
+					}
+					break;
+				case plupload.HTTP_ERROR:
+					this.displayErrorMessage(id, null, file, localizedmpcf.httpError);
+					break;
+				case plupload.INIT_ERROR:
+					picker.element.classList.add('html-uploader');
+					break;
+				case plupload.SECURITY_ERROR:
+					this.displayErrorMessage(id, null, {}, localizedmpcf.securityError);
+					break;
+				default:
+					this.displayErrorMessage(id, up, file, localizedmpcf.defaultUploadError);
+					break;
+			}
+		}
+
+
+		displayErrorMessage(id, up = null, file = {}, message = '') {
+			let errorDiv = document.createElement('div'),
+				errorP   = document.createElement('p');
+
+			if (file.id)
+				errorDiv.setAttribute('id', 'mpcf-bulkmedia-item-' + file.id);
+
+			errorDiv.classList.add('error');
+			errorDiv.appendChild(errorP);
+			errorP.innerText = localizedmpcf.uploadError.replace('%s', file.name) + ' ' + message;	
+			this.pickers[id].errorContainer.appendChild(errorDiv);
+
+			if (up)
+				up.removeFile(file);
+		}
+
+
+		uploadSizeError(id, up, file) {
+			let message = localizedmpcf.fileSizeExceeded.replace('%s', file.name);
+			this.displayErrorMessage(id, up, file, message);
+		}
+
+
+	//	Media library
+
+
+		addMedia(id) {
+			let picker = this.pickers[id],
+				modal  = new wp.media.view.MediaFrame.Select({ title: localizedmpcf.chooseMedia, multiple: true });
+
+			modal.on('select', () => {
+				modal.detach();
+
+				let choices = modal.state().get('selection').toJSON();
+
+				choices.forEach(choice => {
+					let item   = document.createElement('div');
+
+					item.classList.add('mpcf-bulkmedia-item');
+					item.setAttribute('id', 'mpcf-bulkmedia-item-' + choice.id);
+					picker.itemsContainer.appendChild(item);
+
+					$.get(ajaxurl, {
+						attachment_id:	choice.id,
+						fieldName:		picker.element.getAttribute('name'),
+						fieldOwnName: 	picker.element.getAttribute('data-own-name'),
+						action:			'mpcf_bulk_media_fetch_action',
+						removeOuter:    true
+					}, response => {
+						item.innerHTML = response;
+						this.registerItemEvents(item);
+					});
+				});
+			});
+
+			modal.open();
+		}
+
+		changeMedia(e) {
+			e.preventDefault();
+
+			let target       = e.target.classList.contains('mpcf-bulkmedia-item') ? e.target : e.target.closest('.mpcf-bulkmedia-item'),
+				imagePreview = target.querySelector('img'),
+				videoPreview = target.querySelector('video'),
+				isImage      = !imagePreview.classList.contains('hidden'),
+				idField      = target.querySelector('input[type="hidden"]'),
+				currentVal   = idField.value,
+				modal        = new wp.media.view.MediaFrame.Select({ title: localizedmpcf.chooseMedia, multiple: false });
+
+			modal.on('open', () => {
+				let selection  = modal.state().get('selection'),
+					attachment = wp.media.attachment(currentVal);
+
+				attachment.fetch();
+				selection.add(attachment ? [ attachment ] : []);
+
+			});
+
+			modal.on('select', () => {
+				modal.detach();
+
+				let choice  = modal.state().get('selection').first().toJSON(),
+					isImage = choice.mime.indexOf('image') > -1,
+					isVideo = choice.mime.indexOf('video') > -1;
+
+				idField.setAttribute('value', choice.id);
+
+				imagePreview.setAttribute('src', isImage ? choice.url : '');
+				imagePreview.classList.toggle('hidden', !isImage);
+				videoPreview.setAttribute('src', isVideo ? choice.url : '');
+				videoPreview.classList.toggle('hidden', !isVideo);
+			});
+
+			modal.open();
+		}
+
+
+		moveItemUp(e) {
+			let target   = e.target.classList.contains('mpcf-bulkmedia-move-up') ? e.target : e.target.closest('.mpcf-bulkmedia-move-up'),
+				item     = target.closest('.mpcf-bulkmedia-item'),
+				prevItem = item.previousElementSibling;
+			if (!prevItem) return;
+
+			prevItem.insertAdjacentElement('beforebegin', item);
+		}
+
+
+		moveItemDown(e) {
+			let target   = e.target.classList.contains('mpcf-bulkmedia-move-down') ? e.target : e.target.closest('.mpcf-bulkmedia-move-down'),
+				item     = target.closest('.mpcf-bulkmedia-item'),
+				nextItem = item.nextElementSibling;
+			if (!nextItem) return;
+
+			nextItem.insertAdjacentElement('afterend', item);
+		}
+
+
+		removeItem(e) {
+			let target = e.target.classList.contains('mpcf-bulkmedia-remove') ? e.target : e.target.closest('.mpcf-bulkmedia-remove'),
+				item   = target.closest('.mpcf-bulkmedia-item');
+
+			item.remove();
+		}
+	}
+
+	
 
 
 
