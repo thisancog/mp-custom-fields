@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2024-03-11 16:30+0100\n"
-"PO-Revision-Date: 2024-03-11 16:30+0100\n"
+"POT-Creation-Date: 2026-03-12 10:39+0100\n"
+"PO-Revision-Date: 2026-03-12 10:40+0100\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,43 +17,66 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:67 inc/mpcf-admin.php:83
+#: inc/gui.php:67 inc/mpcf-pluginsettings.php:86
 #: inc/mpcf-register-archive-metaboxes.php:131
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:81 inc/mpcf-admin.php:211
+#: inc/gui.php:81 inc/mpcf-pluginsettings.php:214
 #: inc/mpcf-register-archive-metaboxes.php:155
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:702
+#: inc/gui.php:700
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:733
+#: inc/gui.php:731
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
 
-#: inc/modules.php:82 inc/modules/mpcf-buttongroup.php:38
-#: inc/modules/mpcf-colorselect.php:44 inc/modules/mpcf-dragdroplist.php:44
-#: inc/modules/mpcf-imagebuttongroup.php:38 inc/modules/mpcf-radio.php:38
-#: inc/modules/mpcf-select.php:43 inc/mpcf-modules.php:90
-msgid "Name"
-msgstr "Name"
+#: inc/modules/mpcf-bulkmedia.php:33
+msgid "Extensions"
+msgstr "Erweiterungen"
 
-#: inc/modules.php:88 inc/modules/mpcf-buttongroup.php:44
-#: inc/modules/mpcf-colorselect.php:62 inc/modules/mpcf-dragdroplist.php:50
-#: inc/modules/mpcf-radio.php:44 inc/modules/mpcf-select.php:49
-#: inc/modules/mpcf-table.php:56 inc/mpcf-admin.php:120 inc/mpcf-admin.php:159
-#: inc/mpcf-admin.php:365 inc/mpcf-modules.php:96
-msgid "Title"
-msgstr "Titel"
+#: inc/modules/mpcf-bulkmedia.php:44
+msgid "Bulk media selector"
+msgstr "Massen-Medienauswahl"
 
-#: inc/modules.php:165 inc/mpcf-modules.php:178
-msgid "Base Class"
-msgstr "Grundmodul"
+#: inc/modules/mpcf-bulkmedia.php:89
+msgid "Drop files to upload"
+msgstr "Dateien zum Hochladen ablegen"
+
+#: inc/modules/mpcf-bulkmedia.php:91
+msgid "Select files"
+msgstr "Dateien auswählen"
+
+#: inc/modules/mpcf-bulkmedia.php:92
+msgid "or"
+msgstr "oder"
+
+#: inc/modules/mpcf-bulkmedia.php:93
+msgid "Choose from media library"
+msgstr "Aus der Medienbibliothek auswählen"
+
+#: inc/modules/mpcf-bulkmedia.php:97
+#, php-format
+msgid "Maximum upload file size: %s."
+msgstr "Maximale Dateigröße für Uploads: %s."
+
+#: inc/modules/mpcf-bulkmedia.php:216 mp-custom-fields.php:85
+msgid "Dismiss"
+msgstr "Schließen"
+
+#: inc/modules/mpcf-bulkmedia.php:219
+#, php-format
+msgid "&#8220;%s&#8221; has failed to upload."
+msgstr "„%s“ konnte nicht hochgeladen werden."
+
+#: inc/modules/mpcf-bulkmedia.php:250
+msgid "Invalid post type."
+msgstr "Ungültiger Beitragstyp."
 
 #: inc/modules/mpcf-buttongroup.php:33 inc/modules/mpcf-colorselect.php:39
 #: inc/modules/mpcf-dragdroplist.php:39
@@ -61,6 +84,21 @@ msgstr "Grundmodul"
 #: inc/modules/mpcf-select.php:38
 msgid "Choices"
 msgstr "Optionen"
+
+#: inc/modules/mpcf-buttongroup.php:38 inc/modules/mpcf-colorselect.php:44
+#: inc/modules/mpcf-dragdroplist.php:44
+#: inc/modules/mpcf-imagebuttongroup.php:38 inc/modules/mpcf-radio.php:38
+#: inc/modules/mpcf-select.php:43 inc/mpcf-modules.php:90
+msgid "Name"
+msgstr "Name"
+
+#: inc/modules/mpcf-buttongroup.php:44 inc/modules/mpcf-colorselect.php:62
+#: inc/modules/mpcf-dragdroplist.php:50 inc/modules/mpcf-radio.php:44
+#: inc/modules/mpcf-select.php:49 inc/modules/mpcf-table.php:56
+#: inc/mpcf-modules.php:96 inc/mpcf-pluginsettings.php:123
+#: inc/mpcf-pluginsettings.php:162 inc/mpcf-pluginsettings.php:368
+msgid "Title"
+msgstr "Titel"
 
 #: inc/modules/mpcf-buttongroup.php:52 inc/modules/mpcf-dragdroplist.php:33
 #: inc/modules/mpcf-email.php:47 inc/modules/mpcf-select.php:33
@@ -78,10 +116,11 @@ msgstr "Standardwert"
 #: inc/modules/mpcf-dragdroplist.php:58 inc/modules/mpcf-email.php:62
 #: inc/modules/mpcf-grid.php:45 inc/modules/mpcf-imagebuttongroup.php:57
 #: inc/modules/mpcf-month.php:33 inc/modules/mpcf-number.php:33
-#: inc/modules/mpcf-password.php:33 inc/modules/mpcf-radio.php:57
-#: inc/modules/mpcf-range.php:33 inc/modules/mpcf-select.php:57
-#: inc/modules/mpcf-text.php:58 inc/modules/mpcf-textarea.php:50
-#: inc/modules/mpcf-time.php:33 inc/modules/mpcf-week.php:33
+#: inc/modules/mpcf-password.php:33 inc/modules/mpcf-postselect.php:39
+#: inc/modules/mpcf-radio.php:57 inc/modules/mpcf-range.php:33
+#: inc/modules/mpcf-select.php:57 inc/modules/mpcf-text.php:58
+#: inc/modules/mpcf-textarea.php:50 inc/modules/mpcf-time.php:33
+#: inc/modules/mpcf-week.php:33
 msgid "Required"
 msgstr "Pflichtangabe"
 
@@ -270,7 +309,7 @@ msgstr "H&ouml;chstl&auml;nge"
 
 #: inc/modules/mpcf-email.php:52
 msgid "Auto-complete"
-msgstr "automatisch ausfüllen"
+msgstr "Automatisch ausfüllen"
 
 #: inc/modules/mpcf-email.php:70
 msgid "Email"
@@ -281,12 +320,12 @@ msgid "File picker"
 msgstr "Dateiauswahl"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: mp-custom-fields.php:59
+#: mp-custom-fields.php:70
 msgid "Change"
 msgstr "&Auml;ndern"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: inc/modules/mpcf-repeater.php:76 mp-custom-fields.php:58
+#: inc/modules/mpcf-repeater.php:76 mp-custom-fields.php:69
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
@@ -295,7 +334,7 @@ msgid "0b"
 msgstr "0b"
 
 #: inc/modules/mpcf-file.php:72 inc/modules/mpcf-media.php:63
-#: mp-custom-fields.php:66
+#: mp-custom-fields.php:77
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -380,6 +419,38 @@ msgstr "Zahl"
 #: inc/modules/mpcf-password.php:51
 msgid "Password"
 msgstr "Passwort"
+
+#: inc/modules/mpcf-postselect.php:33
+msgid "Query arguments"
+msgstr "Abfrage-Argumente"
+
+#: inc/modules/mpcf-postselect.php:35
+msgid ""
+"A query to pull posts from. If given as a string, it will look for a "
+"function with that name instead. The first argument will be the option list "
+"(post_id => post_title), the second argument the complete query result."
+msgstr ""
+"Eine Abfrage, um Beiträge abzurufen. Wenn sie als Zeichenfolge angegeben "
+"wird, wird stattdessen nach einer Funktion mit diesem Namen gesucht. Das "
+"erste Argument ist die Optionsliste (post_id => post_title), das zweite "
+"Argument das vollständige Abfrageergebnis."
+
+#: inc/modules/mpcf-postselect.php:45
+msgid "Filter"
+msgstr "Filter"
+
+#: inc/modules/mpcf-postselect.php:47
+msgid "The name of a function to call which will filter the query results."
+msgstr ""
+"Der Name einer aufzurufenden Funktion, die die Abfrageergebnisse filtert."
+
+#: inc/modules/mpcf-postselect.php:53
+msgid "Post select"
+msgstr "Post-Auswahl"
+
+#: inc/modules/mpcf-postselect.php:105
+msgid "Edit"
+msgstr "Bearbeiten"
 
 #: inc/modules/mpcf-radio.php:65
 msgid "Radio button"
@@ -469,38 +540,46 @@ msgstr "Woche"
 msgid "format: yyyy-Www (e.g. %s)"
 msgstr "Format: JJJJ-Www (bspw. %s)"
 
-#: inc/mpcf-admin.php:18 inc/mpcf-revisions.php:62
+#: inc/mpcf-media-display.php:19 inc/mpcf-media-display.php:51
+#: inc/mpcf-media-display.php:68
+msgid "Used in"
+msgstr "Benutzt in"
+
+#: inc/mpcf-modules.php:178
+msgid "Base Class"
+msgstr "Grundmodul"
+
+#: inc/mpcf-pluginsettings.php:18 inc/mpcf-revisions.php:69
 msgid "Custom Fields"
 msgstr "Custom Fields"
 
-#: inc/mpcf-admin.php:19
+#: inc/mpcf-pluginsettings.php:19
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: inc/mpcf-admin.php:30 inc/mpcf-pluginsettings.php:21
-#: inc/mpcf-settings.php:19
+#: inc/mpcf-pluginsettings.php:31 inc/mpcf-pluginsettings.php:452
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 "Du hast nicht die notwendigen Berechtigungen, um diese Seite anzuzeigen."
 
-#: inc/mpcf-admin.php:61 inc/mpcf-admin.php:230
+#: inc/mpcf-pluginsettings.php:62 inc/mpcf-pluginsettings.php:233
 msgid "Meta boxes"
 msgstr "Metaboxen"
 
-#: inc/mpcf-admin.php:65
+#: inc/mpcf-pluginsettings.php:66
 msgid "Search"
 msgstr "Suche"
 
-#: inc/mpcf-admin.php:113 mp-custom-fields.php:63
+#: inc/mpcf-pluginsettings.php:116 mp-custom-fields.php:74
 #, php-format
 msgid "Panel: %s"
 msgstr "Panel: %s"
 
-#: inc/mpcf-admin.php:127
+#: inc/mpcf-pluginsettings.php:130
 msgid "Icon"
 msgstr "Symbol"
 
-#: inc/mpcf-admin.php:128
+#: inc/mpcf-pluginsettings.php:131
 #, php-format
 msgid ""
 "Include a dashicon as the icon for this panel by referencing its name as "
@@ -509,109 +588,103 @@ msgstr ""
 "F&uuml;ge diesem Panel ein Symbol hinzu, indem du den Namen eines Dashicon "
 "angibst, wie sie %sin dieser Liste aufgef&uuml;hrt sind%s."
 
-#: inc/mpcf-admin.php:135 inc/mpcf-admin.php:368
+#: inc/mpcf-pluginsettings.php:138 inc/mpcf-pluginsettings.php:371
 msgid "Fields"
 msgstr "Felder"
 
-#: inc/mpcf-admin.php:140
+#: inc/mpcf-pluginsettings.php:143
 msgid "Field"
 msgstr "Feld"
 
-#: inc/mpcf-admin.php:153 inc/mpcf-pluginsettings.php:26
-#: inc/mpcf-settings.php:24
+#: inc/mpcf-pluginsettings.php:156 inc/mpcf-pluginsettings.php:457
 msgid "General"
 msgstr "Allgemein"
 
-#: inc/mpcf-admin.php:165 inc/mpcf-admin.php:366
+#: inc/mpcf-pluginsettings.php:168 inc/mpcf-pluginsettings.php:369
 msgid "Post type"
 msgstr "Artikeltyp"
 
-#: inc/mpcf-admin.php:173
+#: inc/mpcf-pluginsettings.php:176
 msgid "Context"
 msgstr "Kontext"
 
-#: inc/mpcf-admin.php:175
+#: inc/mpcf-pluginsettings.php:178
 msgid "advanced"
 msgstr "fortgeschritten"
 
-#: inc/mpcf-admin.php:176
+#: inc/mpcf-pluginsettings.php:179
 msgid "normal"
 msgstr "normal"
 
-#: inc/mpcf-admin.php:177
+#: inc/mpcf-pluginsettings.php:180
 msgid "side"
 msgstr "seitlich"
 
-#: inc/mpcf-admin.php:180
+#: inc/mpcf-pluginsettings.php:183
 msgid "The place on the screen where the box should be displayed."
 msgstr "Der Ort, an dem die Metabox angezeigt werden soll."
 
-#: inc/mpcf-admin.php:185
+#: inc/mpcf-pluginsettings.php:188
 msgid "Priority"
 msgstr "Priorit&auml;t"
 
-#: inc/mpcf-admin.php:187
+#: inc/mpcf-pluginsettings.php:190
 msgid "high"
 msgstr "hoch"
 
-#: inc/mpcf-admin.php:188
+#: inc/mpcf-pluginsettings.php:191
 msgid "low"
 msgstr "niedrig"
 
-#: inc/mpcf-admin.php:191
+#: inc/mpcf-pluginsettings.php:194
 msgid "The priority within the context where the box should be displayed."
 msgstr ""
 "Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt wird."
 
-#: inc/mpcf-admin.php:200 mp-custom-fields.php:62
+#: inc/mpcf-pluginsettings.php:203 mp-custom-fields.php:73
 #, php-format
 msgid "Edit meta box: %s"
 msgstr "Metabox bearbeiten: %s"
 
-#: inc/mpcf-admin.php:210
+#: inc/mpcf-pluginsettings.php:213
 msgid "Add panel"
 msgstr "Panel hinzuf&uuml;gen"
 
-#: inc/mpcf-admin.php:229
+#: inc/mpcf-pluginsettings.php:232
 msgid "Meta box"
 msgstr "Metabox"
 
-#: inc/mpcf-admin.php:274
+#: inc/mpcf-pluginsettings.php:277
 #, php-format
 msgid "without %s"
 msgstr "ohne %s"
 
-#: inc/mpcf-admin.php:282
+#: inc/mpcf-pluginsettings.php:285
 #, php-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: inc/mpcf-admin.php:317
+#: inc/mpcf-pluginsettings.php:320
 msgid "No meta boxes found."
 msgstr "Keine Metabox gefunden."
 
-#: inc/mpcf-admin.php:330
+#: inc/mpcf-pluginsettings.php:333
 msgid "Edit this metabox"
 msgstr "Diese Metabox bearbeiten"
 
-#: inc/mpcf-admin.php:334 inc/mpcf-admin.php:383
+#: inc/mpcf-pluginsettings.php:337 inc/mpcf-pluginsettings.php:386
 msgid "Delete"
 msgstr "L&ouml;schen"
 
-#: inc/mpcf-admin.php:367
+#: inc/mpcf-pluginsettings.php:370
 msgid "Panels"
 msgstr "Panele"
 
-#: inc/mpcf-media-display.php:19 inc/mpcf-media-display.php:51
-#: inc/mpcf-media-display.php:68
-msgid "Used in"
-msgstr "Benutzt in"
-
-#: inc/mpcf-pluginsettings.php:32 inc/mpcf-settings.php:30
+#: inc/mpcf-pluginsettings.php:463
 msgid "Class for multilingual fields"
 msgstr "Klasse f&uuml;r mehrsprachige Felder"
 
-#: inc/mpcf-pluginsettings.php:33 inc/mpcf-settings.php:31
+#: inc/mpcf-pluginsettings.php:464
 msgid ""
 "Specify a class to be added to fields to flag for plugins providing "
 "multilingual support."
@@ -619,15 +692,31 @@ msgstr ""
 "Gib eine Klasse an, die den Feldern hinzugef&uuml;gt wird, um sie f&uuml;r "
 "Plugins zu markieren, die sie in mehrsprachige Felder umwandeln."
 
-#: inc/mpcf-pluginsettings.php:40 inc/mpcf-settings.php:38
+#: inc/mpcf-pluginsettings.php:471 inc/mpcf-register-metaboxes.php:156
+msgid "Bulk copy-paste"
+msgstr "Alle Felder kopieren"
+
+#: inc/mpcf-pluginsettings.php:472
+msgid "show bulk copy-paste panel for admin users"
+msgstr "Panel „Alle Felder kopieren“ für Admin-Benutzer anzeigen"
+
+#: inc/mpcf-pluginsettings.php:477
+msgid "Revisions"
+msgstr "Revisionen"
+
+#: inc/mpcf-pluginsettings.php:478
+msgid "include custom fields in post revisions"
+msgstr "beziehe benutzerdefinierte Felder in Revisionen ein"
+
+#: inc/mpcf-pluginsettings.php:483
 msgid "Interfaces"
 msgstr "Schnittstellen"
 
-#: inc/mpcf-pluginsettings.php:46 inc/mpcf-settings.php:44
+#: inc/mpcf-pluginsettings.php:489
 msgid "Google Maps API Key"
 msgstr "Google Maps API Schl&uuml;ssel"
 
-#: inc/mpcf-pluginsettings.php:47 inc/mpcf-settings.php:45
+#: inc/mpcf-pluginsettings.php:490
 #, php-format
 msgid ""
 "Generate a free API key <a href=\"%s\" target=\"_blank\" rel=\"noopener"
@@ -637,28 +726,13 @@ msgstr ""
 "kostenlosen API-Schl&uuml;ssel um f&uuml;r das Kartenfeld Google Maps "
 "benutzen zu k&ouml;nnen und gib ihn hier ein."
 
-#: inc/mpcf-pluginsettings.php:53 inc/mpcf-register-metaboxes.php:150
-msgid "Bulk copy-paste"
-msgstr "Alle Felder kopieren"
-
-#: inc/mpcf-pluginsettings.php:54
-msgid "show bulk copy-paste panel for admin users"
-msgstr "Panel „Alle Felder kopieren“ für Admin-Benutzer anzeigen"
-
-#: inc/mpcf-pluginsettings.php:59
-msgid "Revisions"
-msgstr "Revisionen"
-
-#: inc/mpcf-pluginsettings.php:60
-msgid "include custom fields in post revisions"
-msgstr "beziehe benutzerdefinierte Felder in Revisionen ein"
-
-#: inc/mpcf-pluginsettings.php:69 inc/mpcf-settings.php:55
+#: inc/mpcf-pluginsettings.php:500
 msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
 #: inc/mpcf-register-archive-metaboxes.php:27
 #: inc/mpcf-register-metaboxes.php:28
+#: inc/mpcf-register-singleton-metaboxes.php:101
 #: inc/mpcf-register-taxonomy-metaboxes.php:26
 #, php-format
 msgid "%s Options"
@@ -672,11 +746,11 @@ msgstr "Archiv"
 msgid "View archive"
 msgstr "Archiv ansehen"
 
-#: inc/mpcf-register-metaboxes.php:155
+#: inc/mpcf-register-metaboxes.php:161
 msgid "Page metadata"
 msgstr "Seiten-Metadaten"
 
-#: inc/mpcf-register-metaboxes.php:158
+#: inc/mpcf-register-metaboxes.php:164
 msgid ""
 "Copy this page&rsquo;s entire metadata to another page. This does not "
 "include any changes made since the last save."
@@ -685,29 +759,125 @@ msgstr ""
 "Änderungen, die seit dem letzten Speichern vorgenommen wurden, bleiben dabei "
 "unberücksichtigt."
 
-#: inc/mpcf-register-metaboxes.php:168
+#: inc/mpcf-register-metaboxes.php:174
 msgid "Paste another page&rsquo;s entire metadata here."
 msgstr "Füge hier die gesamten Metadaten einer anderen Seite ein."
 
-#: mp-custom-fields.php:57
+#: mp-custom-fields.php:68
 msgid "Add file"
 msgstr "Datei hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:60
+#: mp-custom-fields.php:71
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:61
+#: mp-custom-fields.php:72
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:64
+#: mp-custom-fields.php:75
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:65
+#: mp-custom-fields.php:76
 msgid "Upload file"
 msgstr "Datei hochladen"
+
+#: mp-custom-fields.php:80
+#, php-format
+msgid "Please try uploading this file with the %1$sbrowser uploader%2$s."
+msgstr ""
+"Bitte versuche, diese Datei mit dem %1$sbrowser uploader%2$s hochzuladen."
+
+#: mp-custom-fields.php:81 mp-custom-fields.php:88
+#, php-format
+msgid "%s exceeds the maximum upload size."
+msgstr "%s überschreitet die maximale Upload-Größe."
+
+#: mp-custom-fields.php:82
+msgid "An error occurred during the upload. Please try again later."
+msgstr ""
+"Beim Hochladen ist ein Fehler aufgetreten. Bitte versuche es später erneut."
+
+#: mp-custom-fields.php:83
+msgid "Deleted."
+msgstr "Gelöscht."
+
+#: mp-custom-fields.php:84
+msgid "This image is larger than the maximum size. Please try another."
+msgstr ""
+"Dieses Bild ist größer als die maximale Größe. Bitte versuche es mit einem "
+"anderen."
+
+#: mp-custom-fields.php:86
+msgid "This file is empty. Please try another."
+msgstr "Diese Datei ist leer. Bitte versuche es mit einer anderen."
+
+#: mp-custom-fields.php:87
+msgid "File cancelled."
+msgstr "Datei abgebrochen."
+
+#: mp-custom-fields.php:89
+msgid ""
+"An unexpected error occurred. The file may have been uploaded to the media "
+"library, anyway."
+msgstr ""
+"Ein unerwarteter Fehler ist aufgetreten. Die Datei wurde möglicherweise "
+"trotzdem in die Medienbibliothek hochgeladen."
+
+#: mp-custom-fields.php:90
+msgid ""
+"Post-processing of the image failed likely because the server does not have "
+"enough resources. Please upload a smaller image."
+msgstr ""
+"Die Nachbearbeitung des Bildes ist wahrscheinlich fehlgeschlagen, weil der "
+"Server nicht über ausreichende Ressourcen verfügt. Bitte lade ein kleineres "
+"Bild hoch."
+
+#: mp-custom-fields.php:92
+msgid "This file type is not permitted."
+msgstr "Dieser Dateityp ist nicht zulässig."
+
+#: mp-custom-fields.php:93
+msgid "Input/output error."
+msgstr "Eingabe-/Ausgabefehler."
+
+#: mp-custom-fields.php:94
+msgid "This file is not an image. Please try another."
+msgstr "Diese Datei ist kein Bild. Bitte versuche es mit einer anderen."
+
+#: mp-custom-fields.php:95
+msgid "Memory exceeded. Please upload a smaller file."
+msgstr "Speicherplatz überschritten. Bitte lade eine kleinere Datei hoch."
+
+#: mp-custom-fields.php:96
+msgid "You have queued too many files."
+msgstr "Du hast zu viele Dateien in die Warteschlange gestellt."
+
+#: mp-custom-fields.php:97
+msgid "Security error."
+msgstr "Sicherheitsfehler."
+
+#: mp-custom-fields.php:98
+#, php-format
+msgid "Failed to upload &#8220;%s&#8221;."
+msgstr "Das Hochladen von „%s“ schlug fehl."
+
+#: mp-custom-fields.php:99
+msgid "Upload failed."
+msgstr "Der Upload schlug fehl."
+
+#: mp-custom-fields.php:100
+msgid "Uploading&hellip;"
+msgstr "Hochladen&hellip;"
+
+#: mp-custom-fields.php:101
+msgid "You may only upload one file."
+msgstr "Du kannst nur eine Datei hochladen."
+
+#: mp-custom-fields.php:102
+msgid "Upload stopped."
+msgstr "Der Upload wurde angehalten."
 
 #~ msgid "Add media"
 #~ msgstr "Medium hinzuf&uuml;gen"
@@ -759,9 +929,6 @@ msgstr "Datei hochladen"
 #~ msgstr ""
 #~ "Ein Fehler ist während des Löschens der Datei f&uuml;r „%s\" aufgetreten."
 
-#~ msgid "Delete file"
-#~ msgstr "Datei l&ouml;schen"
-
 #~ msgid "The type of the file for \"%s\" is not valid."
 #~ msgstr "Der Typ der Datei f&uuml;r „%s“ ist ung&uuml;ltig."
 
@@ -782,9 +949,6 @@ msgstr "Datei hochladen"
 
 #~ msgid "Remove item"
 #~ msgstr "Element entfernen"
-
-#~ msgid "Work"
-#~ msgstr "Arbeit"
 
 #~ msgid "General information"
 #~ msgstr "Allgemeine Informationen"
@@ -819,9 +983,6 @@ msgstr "Datei hochladen"
 
 #~ msgid "Vita"
 #~ msgstr "Vita"
-
-#~ msgid "Exhibitions"
-#~ msgstr "Ausstellungen"
 
 #~ msgid "Contact"
 #~ msgstr "Kontakt"
@@ -1816,9 +1977,6 @@ msgstr "Datei hochladen"
 
 #~ msgid "Random posts"
 #~ msgstr "Zuf&auml;llige Artikel"
-
-#~ msgid "Edit"
-#~ msgstr "Bearbeiten"
 
 #~ msgid "This is a sponsored post."
 #~ msgstr "Dieser Artikel wurde durch Drittmittel erm&ouml;glicht."
