@@ -1343,7 +1343,7 @@
 				progressText = picker.element.querySelector('.progress-text');
 
 			progressBar.style.transform = 'translate(0%, -50%) scaleX(' + (file.percent / 100) + ')';
-			progressText.innerText = file.percent + '%';
+			progressText.innerText = (file.percent || 0) + '%';
 		}
 
 
