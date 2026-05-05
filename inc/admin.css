@@ -1705,6 +1705,7 @@ body.no-js .mpcf-file-picker + label {
 }
 
 .mpcf-divider-input .mpcf-field {
-	display: none;
+	grid-column: 1 / span 2;
+	margin-top: -20px;
 }
 
