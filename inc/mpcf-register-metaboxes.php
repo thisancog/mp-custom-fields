@@ -11,6 +11,7 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 
 	$defaults = array(
 		'post_type'		=> 'post',
+		'post_format'	=> '',
 		'page_template'	=> '',
 		'title'			=> '',
 		'context'		=> 'normal',
@@ -70,17 +71,41 @@ function mpcf_remove_all_custom_fields() {
 function mpcf_add_metaboxes() {
 	global $post;
 	$boxes           = get_option('mpcf_meta_boxes', array());
+	$currentFormat   = get_post_format($post->ID);
 	$currentTemplate = get_post_meta($post->ID, '_wp_page_template', true);
 	$isFrontpage     = get_option('page_on_front') && get_option('page_on_front') == $post->ID;
 	$isPostsPage     = get_option('page_for_posts') && get_option('page_for_posts') == $post->ID;
 
 	foreach ($boxes as $id => $box) {
 		$post_type     = $box['post_type'];
+		$post_format   = isset($box['post_format'])   ? $box['post_format']   : '';
 		$page_template = isset($box['page_template']) ? $box['page_template'] : '';
 		$context       = isset($box['context']) ? $box['context'] : 'normal';
 		$priority      = isset($box['priority']) ? $box['priority'] : 'high';
 
 		$registerThisBox = true;
+
+		if ($post_type === 'post' && !empty($post_format)) {
+			if (is_string($post_format))
+				$post_format = explode(',', $post_format);
+
+			$post_format = array_map('trim', $post_format);
+
+			$valids = array_filter($post_format, function($format) {
+				return substr($format, 0, 1) !== '-';
+			});
+
+			$invalids = array_filter($post_format, function($format) {
+				return substr($format, 0, 1) === '-';
+			});
+
+			if (!empty($invalids) && in_array('-' . $currentFormat, $invalids))
+				$registerThisBox = false;
+
+			if (!empty($valids) && !in_array($currentFormat, $valids))
+				$registerThisBox = false;
+		}
+
 
 		if ($post_type === 'page' && !empty($page_template)) {
 			if (is_string($page_template))
@@ -112,7 +137,6 @@ function mpcf_add_metaboxes() {
 		}
 
 		if ($registerThisBox) {
-			
 			add_meta_box($id, $box['title'], 'mpcf_meta_box_init', $post_type, $context, $priority);
 		}
 	}
