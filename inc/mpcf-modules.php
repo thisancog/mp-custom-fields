@@ -218,8 +218,11 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 		$term  = get_term($id);
 		$value = get_term_meta($id, $fieldName, true);
 		$boxes = mpcf_get_taxonomy_boxes($term->taxonomy);
+	} else if ($context == 'user') {
+		$id = $id !== null ? $id : get_current_user_id();
+		if ($id == null) return;
+		$boxes = mpcf_get_user_boxes();
 	}
-
 
 	array_walk($boxes, function($box) use (&$registeredFields, $fieldName) {
 		array_walk($box['panels'], function($panelInBox) use (&$registeredFields, $fieldName) {

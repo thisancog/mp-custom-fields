@@ -101,7 +101,8 @@ function mpcf_add_custom_fields_singleton($singletonID, $id, $arguments = array(
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $singleton['title']);
 	}
 
-	$boxes[$id] = $newbox;
+	$newbox['panels'] = mpcf_assign_order_to_select_fields($newbox['panels']);
+	$boxes[$id]       = $newbox;
 
 	update_option('mpcf_singleton_boxes', $boxes);
 	return $newbox;

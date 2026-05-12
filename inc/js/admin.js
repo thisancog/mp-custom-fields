@@ -5,6 +5,7 @@
 		panelSwitchers    = null,
 		conditionalFields = null,
 		conditionalPanels = null,
+		moduleBoxes       = null,
 		mediaPickers      = null,
 		bulkMediaPickers  = null,
 		colorSelects      = null,
@@ -25,6 +26,7 @@
 		panelSwitchers    = new PanelSwitchers();
 		conditionalFields = new ConditionalFields();
 		conditionalPanels = new ConditionalPanelsFields();
+		moduleBoxes       = new ModuleBoxes();
 		mediaPickers      = new MediaPickers();
 		bulkMediaPickers  = new BulkMediaPickers();
 		colorSelects      = new ColorSelects();
@@ -38,9 +40,11 @@
 		addQTranslateX();
 		dragDropLists();
 		paintImageButtonGroup();
+		reorderSelectFields();
 
 		conditionalFields.registerNew();
 		conditionalPanels.registerNew();
+		moduleBoxes.registerNew();
 	};
 
 
@@ -57,6 +61,7 @@
 		registerColorPicker(parent);
 		conditionalFields.registerNew(parent);
 		conditionalPanels.registerNew(parent);
+		moduleBoxes.registerNew(parent);
 		colorSelects.registerNew(parent);
 		gridField(parent);
 		repeaterField(parent);
@@ -64,6 +69,7 @@
 		checkHTML5Support(parent);
 		focusInvalids(parent);
 		paintImageButtonGroup(parent);
+		reorderSelectFields(parent);
 	}
 
 	
@@ -222,8 +228,8 @@
 	var focusInvalids = function(elem) {
 		[].forEach.call(elem.querySelectorAll('input, select, textarea'), function(input) {
 			input.addEventListener('invalid', function(e) {
-				var menu = input.closest('.mpcf-panels').querySelector('.mpcf-panels-menu'),
-					active = input.closest('.mpcf-panels').querySelector('.mpcf-panels-tabs .active-panel'),
+				var menu = input.closest('.mpcf-panels, .mpcf-modules').querySelector('.mpcf-panels-menu'),
+					active = input.closest('.mpcf-panels, .mpcf-modules').querySelector('.mpcf-panels-tabs .active-panel'),
 					parent = e.target;
 
 				active.classList.remove('active-panel');
@@ -316,7 +322,7 @@
 		[].forEach.call(repeaters, function(repeater) {
 			if (repeater.dataset.registered && repeater.dataset.registered == 1) return;
 
-			var set             = repeater.closest('.mpcf-panels'),
+			var set             = repeater.closest('.mpcf-panels, .mpcf-modules'),
 				uniqid          = repeater.dataset.uniqid,
 				rowsWrapper     = repeater.querySelector('.mpcf-repeater-wrapper[data-uniqid="'  + uniqid + '"]'),
 				loader          = repeater.querySelector('.mpcf-loading-container[data-uniqid="' + uniqid + '"]'),
@@ -389,7 +395,7 @@
 				var panelSelects = [].slice.call(el.querySelectorAll('.mpcf-conditionalpanels-input'));
 				panelSelects.forEach(function(select) {
 					var panelId  = select.dataset.panelId,
-						set      = select.closest('.mpcf-panels'),
+						set      = select.closest('.mpcf-panels, .mpcf-modules'),
 						panel    = set.querySelector('.mpcf-panel[data-panel-id="' + panelId + '"]'),
 						menuItem = set.querySelector('li.mpcf-panel-item[data-panel-id="' + panelId + '"]');
 
@@ -575,14 +581,15 @@
 		return id;
 	}
 
+
 	var renameDynamicFields = function(parent) {
-		var rows        = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel')),
-			validInputs = ['input', 'textarea', 'select', 'fieldset'],
-			valids      = validInputs.concat(['button', 'label', 'datalist', 'keygen', 'option']);
+		var rows        = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel, .mpcf-module')),
+			validInputs = [ 'input', 'textarea', 'select', 'fieldset' ],
+			valids      = validInputs.concat([ 'button', 'label', 'datalist', 'keygen', 'option' ]);
 
 		// each row
 		rows.forEach(function(row, rowIndex) {
-			var fields = [].slice.call(row.querySelectorAll('.mpcf-field-option'));
+			var fields = [].slice.call(row.querySelectorAll('.mpcf-field-option, .mpcf-module-controls'));
 
 			// each field
 			fields.forEach(function(field, fieldIndex) {
@@ -650,7 +657,6 @@
 							panel.dataset.basename = newName.replace(/(\[type\]$)/g, '');
 						}
 					}
-
 				});
 			});
 		});
@@ -767,7 +773,7 @@
 
 			newFields = newFields.map((field => {
 				let id       = field.dataset.panelId || this.generateID(),
-					set      = field.closest('.mpcf-panels'),
+					set      = field.closest('.mpcf-panels, .mpcf-modules'),
 					menu     = set.querySelector('.mpcf-panels-menu'),
 					menuItem = menu.querySelector('.mpcf-panel-item[data-panel-id="' + id + '"]'),
 					tabs     = set.querySelector('.mpcf-panels-tabs'),
@@ -872,6 +878,210 @@
 				registerAsyncElements(field.tab);
 			}).bind(this));
 		}
+
+		getElemOrder(elem) {
+			let order = 0,
+				node  = elem.parentNode.firstChild;
+
+			while (node && node !== elem) {
+				if (node !== elem && node.nodeType == Node.ELEMENT_NODE)
+					order++;
+				node = node.nextElementSibling || node.nextSibling;
+			}
+
+			return order;
+		}
+
+		generateID() {
+			return Math.floor(Math.random() * Math.pow(10,10));
+		}
+	}
+
+
+
+	/**************************************************************
+		Conditional panel fields
+	 **************************************************************/
+
+	class ModuleBoxes {
+		constructor() {
+			this.boxes      = {};
+			this.fieldClass = 'mpcf-modules';
+		}
+
+		registerNew(parent = null) {
+			parent = parent || document;
+
+			let newBoxes = [].slice.call(parent.querySelectorAll('.' + this.fieldClass + ':not([data-registered])'));
+			if (newBoxes.length == 0) return;
+
+			newBoxes = newBoxes.map((box => {
+				let id          = box.dataset.moduleId || this.generateID(),
+					modulesList = box.querySelector('.mpcf-modules-inner'),
+					modules     = [].slice.call(modulesList.querySelectorAll('.mpcf-module')),
+					select      = box.querySelector('.mpcf-modules-controls-inner select'),
+					addBtn      = box.querySelector('.mpcf-modules-add-module'),
+					activeInput = box.querySelector('.activetab'),
+					options     = JSON.parse(select.dataset.modules);		
+
+				box.dataset.registered = 1;
+				box.setAttribute('data-module-id', id);
+				select.removeAttribute('data-modules');
+
+				modules.forEach(mod => this.registerModuleEvents(id, mod));
+				addBtn.addEventListener('click', (() => this.addModule(id)).bind(this));
+
+				renameDynamicFields(box);
+				checkCheckableElements(box);
+				registerAsyncElements(box);
+
+				return {
+					box:			box,
+					id:				id,
+					modulesList:	modulesList,
+					modules:		modules,
+					select:			select,
+					baseName:		select.dataset.basename,
+					options:		options,
+					activeInput:	activeInput
+				};
+			}).bind(this));
+
+			newBoxes.forEach((newBox => this.boxes[newBox.id] = newBox).bind(this));
+			newBoxes.forEach((newBox => this.activateModule(newBox.id)).bind(this));
+		}
+
+
+		addModule(id) {
+			let box = this.boxes[id];
+			if (box.select.value == '' || box.select.value == -1) return;
+
+			updateLoadingElements(box.box);
+
+			let type = box.select.value,
+				request = {
+					'action':	'mpcf_get_modules_fields',
+					'module':	JSON.stringify(box.options[type]),
+					'type':		type,
+					'i': 		box.modules.length,
+					'baseName':	box.baseName
+				};
+
+			$.post(ajaxurl, request, (response => {
+				let newModule = document.createElement('section');
+				box.modulesList.appendChild(newModule);
+				newModule.outerHTML = response;
+
+				newModule = box.modulesList.children[box.modulesList.children.length - 1];
+
+				this.boxes[id].modules = [].slice.call(box.modulesList.querySelectorAll('.mpcf-module'));
+				this.activateModule(id, newModule);
+				this.registerModuleEvents(id, newModule);
+
+				this.reorderModules(id);
+				updateLoadingElements(box.box, true);
+				checkCheckableElements(box.box);
+				registerAsyncElements(box.box);
+			}).bind(this));
+		}
+
+
+		registerModuleEvents(id, mod) {
+			let header    = mod.querySelector('.mpcf-module-header'),
+				btnRemove = mod.querySelector('.mpcf-btn-remove-module'),
+				btnUp     = mod.querySelector('.mpcf-btn-move-module-up'),
+				btnDown   = mod.querySelector('.mpcf-btn-move-module-down');
+
+			header.addEventListener('click',    ((e) => this.toggleModule(id, e)).bind(this));
+			btnRemove.addEventListener('click', ((e) => this.removeModule(id, e)).bind(this));
+			btnUp.addEventListener('click',     ((e) => this.moveModuleUp(id, e)).bind(this));
+			btnDown.addEventListener('click',   ((e) => this.moveModuleDown(id, e)).bind(this));
+		}
+
+
+		toggleModule(id, e) {
+			let mod        = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module'),
+				toActivate = !mod.classList.contains('active'),
+				inner      = mod.querySelector('.mpcf-module-inner');
+
+			mod.classList.toggle('active', toActivate);
+			inner.style.maxHeight = toActivate ? inner.scrollHeight + 'px' : '0px';
+
+			this.updateActiveModules(id);
+		}
+
+
+		removeModule(id, e) {
+			e.stopPropagation();
+
+			let mod = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module');
+			
+			mod.parentElement.removeChild(mod);
+			this.reorderModules(id);
+		}
+
+
+		moveModuleUp(id, e) {
+			e.stopPropagation();
+
+			let mod = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module');
+			if (mod.previousElementSibling === null) return;
+
+			mod.previousElementSibling.before(mod);
+			this.reorderModules(id);
+		}
+
+
+		moveModuleDown(id, e) {
+			e.stopPropagation();
+
+			let mod = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module');
+			if (mod.nextElementSibling === null) return;
+
+			mod.nextElementSibling.after(mod);
+			this.reorderModules(id);
+		}
+
+
+		reorderModules(id) {
+			this.boxes[id].modules = [].slice.call(this.boxes[id].modulesList.querySelectorAll('.mpcf-module'));
+			this.boxes[id].modules.forEach((mod, i) => {
+				mod.dataset.basename = this.boxes[id].baseName + '[' + i + ']';
+			});
+
+			renameDynamicFields(this.boxes[id].box);
+			this.updateActiveModules(id);
+		}
+
+
+		activateModule(id, mod = null) {
+			if (mod) {
+				let inner = mod.querySelector('.mpcf-module-inner');
+
+				mod.classList.add('active');
+				inner.style.maxHeight = inner.scrollHeight + 'px';
+			}
+
+			this.updateActiveModules(id);
+		};
+
+
+		updateActiveModules(id) {
+			let actives = [];
+			wp.svgPainter.setColors(painterColors);
+
+			this.boxes[id].modules.forEach((mod, i) => {
+				let icon      = mod.querySelector('.mpcf-module-icon'),
+					isActive  = mod.classList.contains('active'),
+					paintMode = isActive ? 'focus' : 'base';
+
+				if (icon) 		wp.svgPainter.paintElement($(icon), paintMode);
+				if (isActive) 	actives.push(i);
+			});
+
+			this.boxes[id].activeInput.value = actives.join(',');
+		}
+
 
 		getElemOrder(elem) {
 			let order = 0,
@@ -1887,6 +2097,73 @@
 				input.addEventListener('change', changeSelection);
 			});
 
+		});
+	}
+
+
+
+	/**************************************************************
+		Reorder select fields
+	 **************************************************************/
+
+	var reorderSelectFields = function(parent) {
+		parent = parent || document;
+
+		let elems = [].slice.call(parent.querySelectorAll('[data-json-safe-order]'));
+
+	//	no JSON.parse() as it sometimes messes with the order
+		let decodeOrderList = function(list) {
+			let arr = [];
+
+			list = list.substring(1, list.length - 1);
+
+			while (list.length > 0) {
+				let nextComma        = list.indexOf(','),
+					nextOpenBracket  = list.indexOf('[');
+
+				if (nextOpenBracket === 0) {
+					let nextCloseBracket = list.indexOf(']')
+						item             = list.substring(0, nextCloseBracket);
+
+					arr.push(decodeOrderList(item));
+					list  = list.substring(nextCloseBracket + 2);
+				} else if (nextComma > -1) {
+					let item = list.substring(0, nextComma);
+
+					if (item[0] == '"') item = item.substring(1, item.length - 1);
+					else 				item = Number(item);
+
+					arr.push(item);
+					list  = list.substring(nextComma + 1);
+				} else {
+					let item = list;
+
+					if (item[0] == '"') item = item.substring(1, item.length - 1);
+					else 				item = Number(item);
+
+					arr.push(item);
+					list = '';
+				}
+			}
+
+			return arr;
+		};
+
+
+		elems.forEach(elem => {
+			let order = decodeOrderList(elem.dataset.jsonSafeOrder);
+
+			order.forEach(key => {
+				let child = elem.querySelector('[value="' + key + '"]');
+
+				while (child.parentElement !== elem) {
+					child = child.parentElement;
+				}
+
+				elem.appendChild(child);
+			});
+
+			elem.removeAttribute('data-json-safe-order');
 		});
 	}
 

@@ -22,6 +22,7 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 
 	$newbox = array_merge($defaults, $arguments);
 	$newbox['post_type'] = $type;
+	$newbox['type']      = 'metabox';
 
 //	Give generic title if needed
 	if (empty($newbox['title'])) {
@@ -29,8 +30,8 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-
-	$boxes[$id] = $newbox;
+	$newbox['panels'] = mpcf_assign_order_to_select_fields($newbox['panels']);
+	$boxes[$id]       = $newbox;
 
 	update_option('mpcf_meta_boxes', $boxes);
 	return $newbox;

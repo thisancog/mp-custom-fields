@@ -49,6 +49,8 @@ class MPCFRepeaterField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
+		$args['value'] = $args['value'] == '[]' ? [] : $args['value'];
+
 		array_walk_recursive($args['value'], function(&$item, $key) {
 			$item = mpcf_mknice($item);
 		});
@@ -74,7 +76,7 @@ class MPCFRepeaterField extends MPCFModule {
 
 		<div class="mpcf-repeater-controls" data-uniqid="<?php echo $args['uniqid']; ?>">
 			<input type="button" class="mpcf-repeater-add-row mpcf-button<?php echo $showAddBtn; ?>" value="<?php _e('Add', 'mpcf'); ?>" data-uniqid="<?php echo $args['uniqid']; ?>" />
-			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo mpcf_get_input_name($this); ?>"<?php echo mpcf_input_own_name($this); ?> data-uniqid="<?php echo $args['uniqid']; ?>" value="" />
+			<input type="hidden" class="mpcf-repeater-empty" data-name="<?php echo mpcf_get_input_name($this); ?>[]"<?php echo mpcf_input_own_name($this); ?> data-uniqid="<?php echo $args['uniqid']; ?>" value="" />
 		</div>
 		
 <?php	foreach ($args['fields'] as $field => $data) {
@@ -131,6 +133,8 @@ class MPCFRepeaterField extends MPCFModule {
 		$mediaFields = mpcf_get_media_storing_fields();
 
 		$i = 0;
+
+		$values      = is_array($values) ? $values : [];
 
 		foreach ($values as $value) {
 			$j = 0;

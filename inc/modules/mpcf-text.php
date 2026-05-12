@@ -67,7 +67,7 @@ class MPCFTextField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$params    = mpcf_list_input_params($this, array('required', 'placeholder', 'minlength', 'maxlength'));
+		$params    = mpcf_list_input_params($this, array('required', 'placeholder', 'minlength', 'maxlength', 'disabled'));
 		$value     = htmlspecialchars(stripslashes($args['value']));
 
 		$hasList   = isset($args['list']) && !empty($args['list']) ? $args['list'] : false;

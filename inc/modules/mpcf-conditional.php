@@ -48,6 +48,7 @@ class MPCFConditionalField extends MPCFModule {
 
 		$type        = isset($value['type']) ? $value['type'] : null;
 		$selected    = null;
+		$order       = $args['original_order'];
 		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
 
 		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . mpcf_input_own_name($this)
@@ -79,7 +80,7 @@ class MPCFConditionalField extends MPCFModule {
 
 <?php		} else { ?>
 
-				<select<?php echo $attrs; ?>>
+				<select<?php echo $attrs; ?> data-json-safe-order="<?php echo $order; ?>">
 					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
 <?php 			foreach ($options as $name => $params) {

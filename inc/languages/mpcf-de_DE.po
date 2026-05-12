@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2026-03-12 10:39+0100\n"
-"PO-Revision-Date: 2026-03-12 10:40+0100\n"
+"POT-Creation-Date: 2026-05-07 00:29+0200\n"
+"PO-Revision-Date: 2026-05-07 00:30+0200\n"
 "Last-Translator: Matthias Planitzer\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -17,21 +17,21 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: inc\n"
 
-#: inc/gui.php:67 inc/mpcf-pluginsettings.php:86
+#: inc/gui.php:75 inc/mpcf-pluginsettings.php:86
 #: inc/mpcf-register-archive-metaboxes.php:131
 msgid "Options were saved."
 msgstr "Einstellungen wurden gespeichert."
 
-#: inc/gui.php:81 inc/mpcf-pluginsettings.php:214
+#: inc/gui.php:89 inc/mpcf-pluginsettings.php:214
 #: inc/mpcf-register-archive-metaboxes.php:155
 msgid "Save"
 msgstr "Speichern"
 
-#: inc/gui.php:700
+#: inc/gui.php:711
 msgid "* required fields"
 msgstr "* Pflichtfelder"
 
-#: inc/gui.php:731
+#: inc/gui.php:742
 #, php-format
 msgid "Can't create internationalisation file %s."
 msgstr "Internationalisierungsdatei %s konnte nicht erstellt werden."
@@ -65,7 +65,7 @@ msgstr "Aus der Medienbibliothek auswählen"
 msgid "Maximum upload file size: %s."
 msgstr "Maximale Dateigröße für Uploads: %s."
 
-#: inc/modules/mpcf-bulkmedia.php:216 mp-custom-fields.php:85
+#: inc/modules/mpcf-bulkmedia.php:216
 msgid "Dismiss"
 msgstr "Schließen"
 
@@ -320,12 +320,12 @@ msgid "File picker"
 msgstr "Dateiauswahl"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: mp-custom-fields.php:70
+#: mp-custom-fields.php:71
 msgid "Change"
 msgstr "&Auml;ndern"
 
 #: inc/modules/mpcf-file.php:42 inc/modules/mpcf-media.php:48
-#: inc/modules/mpcf-repeater.php:76 mp-custom-fields.php:69
+#: inc/modules/mpcf-repeater.php:78 mp-custom-fields.php:70
 msgid "Add"
 msgstr "Hinzuf&uuml;gen"
 
@@ -334,7 +334,7 @@ msgid "0b"
 msgstr "0b"
 
 #: inc/modules/mpcf-file.php:72 inc/modules/mpcf-media.php:63
-#: mp-custom-fields.php:77
+#: mp-custom-fields.php:78
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -570,7 +570,7 @@ msgstr "Metaboxen"
 msgid "Search"
 msgstr "Suche"
 
-#: inc/mpcf-pluginsettings.php:116 mp-custom-fields.php:74
+#: inc/mpcf-pluginsettings.php:116 mp-custom-fields.php:75
 #, php-format
 msgid "Panel: %s"
 msgstr "Panel: %s"
@@ -641,7 +641,7 @@ msgid "The priority within the context where the box should be displayed."
 msgstr ""
 "Die Priorit&auml;t innerhalb des Kontexts, in dem die Metabox angezeigt wird."
 
-#: inc/mpcf-pluginsettings.php:203 mp-custom-fields.php:73
+#: inc/mpcf-pluginsettings.php:203 mp-custom-fields.php:74
 #, php-format
 msgid "Edit meta box: %s"
 msgstr "Metabox bearbeiten: %s"
@@ -692,7 +692,7 @@ msgstr ""
 "Gib eine Klasse an, die den Feldern hinzugef&uuml;gt wird, um sie f&uuml;r "
 "Plugins zu markieren, die sie in mehrsprachige Felder umwandeln."
 
-#: inc/mpcf-pluginsettings.php:471 inc/mpcf-register-metaboxes.php:156
+#: inc/mpcf-pluginsettings.php:471 inc/mpcf-register-metaboxes.php:181
 msgid "Bulk copy-paste"
 msgstr "Alle Felder kopieren"
 
@@ -731,7 +731,7 @@ msgid "MP Custom Fields Options"
 msgstr "MP Custom Fields Einstellungen"
 
 #: inc/mpcf-register-archive-metaboxes.php:27
-#: inc/mpcf-register-metaboxes.php:28
+#: inc/mpcf-register-metaboxes.php:30 inc/mpcf-register-module-metaboxes.php:32
 #: inc/mpcf-register-singleton-metaboxes.php:101
 #: inc/mpcf-register-taxonomy-metaboxes.php:26
 #, php-format
@@ -746,11 +746,11 @@ msgstr "Archiv"
 msgid "View archive"
 msgstr "Archiv ansehen"
 
-#: inc/mpcf-register-metaboxes.php:161
+#: inc/mpcf-register-metaboxes.php:186
 msgid "Page metadata"
 msgstr "Seiten-Metadaten"
 
-#: inc/mpcf-register-metaboxes.php:164
+#: inc/mpcf-register-metaboxes.php:189
 msgid ""
 "Copy this page&rsquo;s entire metadata to another page. This does not "
 "include any changes made since the last save."
@@ -759,125 +759,130 @@ msgstr ""
 "Änderungen, die seit dem letzten Speichern vorgenommen wurden, bleiben dabei "
 "unberücksichtigt."
 
-#: inc/mpcf-register-metaboxes.php:174
+#: inc/mpcf-register-metaboxes.php:199
 msgid "Paste another page&rsquo;s entire metadata here."
 msgstr "Füge hier die gesamten Metadaten einer anderen Seite ein."
 
-#: mp-custom-fields.php:68
+#: inc/mpcf-register-module-metaboxes.php:102
+msgid "Add new module"
+msgstr "Neues Modul hinzufügen"
+
+#: inc/mpcf-register-module-metaboxes.php:121
+msgid "Module"
+msgstr "Module"
+
+#: inc/mpcf-register-module-metaboxes.php:146
+msgid "Remove module"
+msgstr "Modul entfernen"
+
+#: inc/mpcf-register-module-metaboxes.php:148
+msgid "Move up"
+msgstr "Nach oben bewegen"
+
+#: inc/mpcf-register-module-metaboxes.php:150
+msgid "Move down"
+msgstr "Nach unten bewegen"
+
+#: inc/mpcf-register-module-metaboxes.php:152
+msgid "Show module"
+msgstr "Modul anzeigen"
+
+#: mp-custom-fields.php:69
 msgid "Add file"
 msgstr "Datei hinzuf&uuml;gen"
 
-#: mp-custom-fields.php:71
+#: mp-custom-fields.php:72
 msgid "Change media"
 msgstr "Medium &auml;ndern"
 
-#: mp-custom-fields.php:72
+#: mp-custom-fields.php:73
 msgid "Choose media"
 msgstr "Medium w&auml;hlen"
 
-#: mp-custom-fields.php:75
+#: mp-custom-fields.php:76
 msgid "files selected"
 msgstr "Dateien ausgew&auml;hlt"
 
-#: mp-custom-fields.php:76
+#: mp-custom-fields.php:77
 msgid "Upload file"
 msgstr "Datei hochladen"
 
-#: mp-custom-fields.php:80
 #, php-format
-msgid "Please try uploading this file with the %1$sbrowser uploader%2$s."
-msgstr ""
-"Bitte versuche, diese Datei mit dem %1$sbrowser uploader%2$s hochzuladen."
+#~ msgid "Please try uploading this file with the %1$sbrowser uploader%2$s."
+#~ msgstr ""
+#~ "Bitte versuche, diese Datei mit dem %1$sbrowser uploader%2$s hochzuladen."
 
-#: mp-custom-fields.php:81 mp-custom-fields.php:88
 #, php-format
-msgid "%s exceeds the maximum upload size."
-msgstr "%s überschreitet die maximale Upload-Größe."
+#~ msgid "%s exceeds the maximum upload size."
+#~ msgstr "%s überschreitet die maximale Upload-Größe."
 
-#: mp-custom-fields.php:82
-msgid "An error occurred during the upload. Please try again later."
-msgstr ""
-"Beim Hochladen ist ein Fehler aufgetreten. Bitte versuche es später erneut."
+#~ msgid "An error occurred during the upload. Please try again later."
+#~ msgstr ""
+#~ "Beim Hochladen ist ein Fehler aufgetreten. Bitte versuche es später "
+#~ "erneut."
 
-#: mp-custom-fields.php:83
-msgid "Deleted."
-msgstr "Gelöscht."
+#~ msgid "Deleted."
+#~ msgstr "Gelöscht."
 
-#: mp-custom-fields.php:84
-msgid "This image is larger than the maximum size. Please try another."
-msgstr ""
-"Dieses Bild ist größer als die maximale Größe. Bitte versuche es mit einem "
-"anderen."
+#~ msgid "This image is larger than the maximum size. Please try another."
+#~ msgstr ""
+#~ "Dieses Bild ist größer als die maximale Größe. Bitte versuche es mit "
+#~ "einem anderen."
 
-#: mp-custom-fields.php:86
-msgid "This file is empty. Please try another."
-msgstr "Diese Datei ist leer. Bitte versuche es mit einer anderen."
+#~ msgid "This file is empty. Please try another."
+#~ msgstr "Diese Datei ist leer. Bitte versuche es mit einer anderen."
 
-#: mp-custom-fields.php:87
-msgid "File cancelled."
-msgstr "Datei abgebrochen."
+#~ msgid "File cancelled."
+#~ msgstr "Datei abgebrochen."
 
-#: mp-custom-fields.php:89
-msgid ""
-"An unexpected error occurred. The file may have been uploaded to the media "
-"library, anyway."
-msgstr ""
-"Ein unerwarteter Fehler ist aufgetreten. Die Datei wurde möglicherweise "
-"trotzdem in die Medienbibliothek hochgeladen."
+#~ msgid ""
+#~ "An unexpected error occurred. The file may have been uploaded to the "
+#~ "media library, anyway."
+#~ msgstr ""
+#~ "Ein unerwarteter Fehler ist aufgetreten. Die Datei wurde möglicherweise "
+#~ "trotzdem in die Medienbibliothek hochgeladen."
 
-#: mp-custom-fields.php:90
-msgid ""
-"Post-processing of the image failed likely because the server does not have "
-"enough resources. Please upload a smaller image."
-msgstr ""
-"Die Nachbearbeitung des Bildes ist wahrscheinlich fehlgeschlagen, weil der "
-"Server nicht über ausreichende Ressourcen verfügt. Bitte lade ein kleineres "
-"Bild hoch."
+#~ msgid ""
+#~ "Post-processing of the image failed likely because the server does not "
+#~ "have enough resources. Please upload a smaller image."
+#~ msgstr ""
+#~ "Die Nachbearbeitung des Bildes ist wahrscheinlich fehlgeschlagen, weil "
+#~ "der Server nicht über ausreichende Ressourcen verfügt. Bitte lade ein "
+#~ "kleineres Bild hoch."
 
-#: mp-custom-fields.php:92
-msgid "This file type is not permitted."
-msgstr "Dieser Dateityp ist nicht zulässig."
+#~ msgid "This file type is not permitted."
+#~ msgstr "Dieser Dateityp ist nicht zulässig."
 
-#: mp-custom-fields.php:93
-msgid "Input/output error."
-msgstr "Eingabe-/Ausgabefehler."
+#~ msgid "Input/output error."
+#~ msgstr "Eingabe-/Ausgabefehler."
 
-#: mp-custom-fields.php:94
-msgid "This file is not an image. Please try another."
-msgstr "Diese Datei ist kein Bild. Bitte versuche es mit einer anderen."
+#~ msgid "This file is not an image. Please try another."
+#~ msgstr "Diese Datei ist kein Bild. Bitte versuche es mit einer anderen."
 
-#: mp-custom-fields.php:95
-msgid "Memory exceeded. Please upload a smaller file."
-msgstr "Speicherplatz überschritten. Bitte lade eine kleinere Datei hoch."
+#~ msgid "Memory exceeded. Please upload a smaller file."
+#~ msgstr "Speicherplatz überschritten. Bitte lade eine kleinere Datei hoch."
 
-#: mp-custom-fields.php:96
-msgid "You have queued too many files."
-msgstr "Du hast zu viele Dateien in die Warteschlange gestellt."
+#~ msgid "You have queued too many files."
+#~ msgstr "Du hast zu viele Dateien in die Warteschlange gestellt."
 
-#: mp-custom-fields.php:97
-msgid "Security error."
-msgstr "Sicherheitsfehler."
+#~ msgid "Security error."
+#~ msgstr "Sicherheitsfehler."
 
-#: mp-custom-fields.php:98
 #, php-format
-msgid "Failed to upload &#8220;%s&#8221;."
-msgstr "Das Hochladen von „%s“ schlug fehl."
+#~ msgid "Failed to upload &#8220;%s&#8221;."
+#~ msgstr "Das Hochladen von „%s“ schlug fehl."
 
-#: mp-custom-fields.php:99
-msgid "Upload failed."
-msgstr "Der Upload schlug fehl."
+#~ msgid "Upload failed."
+#~ msgstr "Der Upload schlug fehl."
 
-#: mp-custom-fields.php:100
-msgid "Uploading&hellip;"
-msgstr "Hochladen&hellip;"
+#~ msgid "Uploading&hellip;"
+#~ msgstr "Hochladen&hellip;"
 
-#: mp-custom-fields.php:101
-msgid "You may only upload one file."
-msgstr "Du kannst nur eine Datei hochladen."
+#~ msgid "You may only upload one file."
+#~ msgstr "Du kannst nur eine Datei hochladen."
 
-#: mp-custom-fields.php:102
-msgid "Upload stopped."
-msgstr "Der Upload wurde angehalten."
+#~ msgid "Upload stopped."
+#~ msgstr "Der Upload wurde angehalten."
 
 #~ msgid "Add media"
 #~ msgstr "Medium hinzuf&uuml;gen"
@@ -940,9 +945,6 @@ msgstr "Der Upload wurde angehalten."
 
 #~ msgid "Description"
 #~ msgstr "Beschreibung"
-
-#~ msgid "Move"
-#~ msgstr "Bewegen"
 
 #~ msgid "Move item"
 #~ msgstr "Element bewegen"
@@ -1720,9 +1722,6 @@ msgstr "Der Upload wurde angehalten."
 #~ msgid "Follow"
 #~ msgstr "Folge"
 
-#~ msgid "Add module"
-#~ msgstr "Modul hinzuf&uuml;gen"
-
 #~ msgid "Latest posts from category"
 #~ msgstr "Aktuelle Artikel einer Kategorie"
 
@@ -1737,9 +1736,6 @@ msgstr "Der Upload wurde angehalten."
 
 #~ msgid "Popular posts"
 #~ msgstr "Beliebte Artikel"
-
-#~ msgid "Remove module"
-#~ msgstr "Modul entfernen"
 
 #~ msgid "Social Media"
 #~ msgstr "Social Media"
@@ -1773,9 +1769,6 @@ msgstr "Der Upload wurde angehalten."
 #~ msgstr ""
 #~ "Schließe Artikel von nachfolgenden Listen aus, wenn sie bereits angezeigt "
 #~ "wurden"
-
-#~ msgid "Modules:"
-#~ msgstr "Module:"
 
 #~ msgid "Exclude sticky posts (that are part of the teaser slideshow)"
 #~ msgstr ""

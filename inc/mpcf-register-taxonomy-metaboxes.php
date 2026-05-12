@@ -26,7 +26,8 @@ function mpcf_add_custom_fields_taxonomy($tax, $id, $arguments = array()) {
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-	$boxes[$id] = $newbox;
+	$newbox['panels'] = mpcf_assign_order_to_select_fields($newbox['panels']);
+	$boxes[$id]       = $newbox;
 
 	update_option('mpcf_taxonomy_boxes', $boxes);
 	return $newbox;
@@ -112,40 +113,55 @@ function mpcf_build_taxonomy_gui($tax = null, $term = null) {
 			<div class="mpcf-parent">
 				<?php mpcf_build_gui_as_panels($id, $panels, $values); ?>
 			</div>
+
+			<input type="hidden" name="mpcf-is-complete-save" value="true" />
 		</div>
 <?php
 	}
 }
 
+
 function mpcf_edit_custom_fields_taxonomy($term, $tax) {
 	mpcf_build_taxonomy_gui($tax, $term);
 }
 
+
 function mpcf_save_custom_fields_taxonomy($term_id) {
+	if (!isset($_POST['mpcf-is-complete-save'])) return;
+	
 	$termObj = get_term($term_id);
-	$tax = $termObj->taxonomy;
-	$boxes = mpcf_get_taxonomy_boxes($tax);
+	$tax     = $termObj->taxonomy;
+	$boxes   = mpcf_get_taxonomy_boxes($tax);
 
 	foreach ($boxes as $boxId => $box) {
-		$panels = $box['panels'];
+		$fields = array();
+		if (isset($box['panels'])) {
+			$result = mpcf_add_bulk_copypaste_panels($boxId, $box['panels']);
+			
+			array_walk($result['panels'], function($panel) use (&$fields) {				
+				$fields = array_merge($fields, $panel['fields']);
+			});
+		}
 
-		foreach ($panels as $panel) {
-			foreach ($panel['fields'] as $field) {
-				$name = $field['name'];
-				$type = $field['type'];
-				$field['context'] = 'taxonomy';
+		foreach ($fields as $field) {
+			if (!isset($field['name'])) continue;
 
-				$actions = isset($field['actions']) ? $field['actions'] : array();
+			$field['context'] = 'taxonomy';
+			$actions  = isset($field['actions']) ? $field['actions'] : array();		
 
-				$oldValue = mpcf_get_tax_field($name, $term_id);
-				$value    = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
-				$value    = mpcf_before_save($field, $term_id, $value);
+			$oldValue = mpcf_get_tax_field($field['name'], $term_id);
+			$value    = isset($_POST[$field['name']]) ? mpcf_mksafe($_POST[$field['name']]) : false;
+			$value    = mpcf_before_save($field, $term_id, $value);
 
-				update_term_meta($term_id, $name, $value);
-				mpcf_after_save($field, $term_id, $value, $oldValue);
-			}
+			update_term_meta($term_id, $field['name'], $value);
+			mpcf_after_save($field, $term_id, $value, $oldValue);
 		}
 	}
+
+	array_walk($_POST, function($value, $key) use ($term_id) {
+		if (strpos($key, 'mpcf-activetab') === false) return;
+		update_term_meta($term_id, $key, $value);
+	});
 }
 
 

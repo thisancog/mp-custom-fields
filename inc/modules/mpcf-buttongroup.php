@@ -74,9 +74,10 @@ class MPCFButtonGroupField extends MPCFModule {
 	function build_field($args = array()) {
 		$options  = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
 		$default  = mpcf_get_input_param($this, 'default');
-		$multiple = mpcf_get_input_param($this, 'multiple'); ?>
+		$multiple = mpcf_get_input_param($this, 'multiple');
+		$order    = $args['original_order']; ?>
 
-		<div class="mpcf-buttongroup-wrapper">
+		<div class="mpcf-buttongroup-wrapper" data-json-safe-order="<?php echo $order; ?>">
 <?php 		foreach ($options as $name => $title) {
 				$id      = uniqid('mpcf-input-buttongroup-' . $name . '-');
 				$tag     = $multiple ? 'checkbox' : 'radio';

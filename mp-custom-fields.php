@@ -14,16 +14,17 @@ Version: 1.5
 
 require_once('inc/includes.php');
 
-add_action('add_meta_boxes', 'mpcf_add_metaboxes');
-add_action('admin_init', 'mpcf_admin_init');
-add_action('admin_menu', 'mpcf_setup_theme_admin_menu');
-add_action('init', 'mpcf_init');
-add_action('plugins_loaded', 'mpcf_load_textdomain');
-add_action('post_edit_form_tag', 'mpcf_update_edit_form');
-add_action('save_post', 'mpcf_save_meta_boxes', 10, 2);
-add_action('wp_ajax_mpcf_get_repeater_row', 'mpcf_ajax_get_repeater_row');
-add_action('wp_ajax_mpcf_get_conditional_fields', 'mpcf_ajax_get_conditional_fields');
+add_action('add_meta_boxes',                             'mpcf_add_metaboxes');
+add_action('admin_init',                                 'mpcf_admin_init');
+add_action('admin_menu',                                 'mpcf_setup_theme_admin_menu');
+add_action('init',                                       'mpcf_init');
+add_action('plugins_loaded',                             'mpcf_load_textdomain');
+add_action('post_edit_form_tag',                         'mpcf_update_edit_form');
+add_action('save_post',                                  'mpcf_save_meta_boxes', 10, 2);
+add_action('wp_ajax_mpcf_get_repeater_row',              'mpcf_ajax_get_repeater_row');
+add_action('wp_ajax_mpcf_get_conditional_fields',        'mpcf_ajax_get_conditional_fields');
 add_action('wp_ajax_mpcf_get_conditional_panels_fields', 'mpcf_ajax_get_conditional_panels_fields');
+add_action('wp_ajax_mpcf_get_modules_fields',            'mpcf_ajax_get_module_fields');
 
 add_filter('admin_body_class', 'mpcf_filter_admin_body_class');
 
@@ -44,6 +45,7 @@ function mpcf_init() {
 		update_option('mpcf_options', mpcf_default_settings());
 	
 	mpcf_register_modules();
+	mpcf_add_metaboxes_user();
 }
 
 function mpcf_default_settings() {

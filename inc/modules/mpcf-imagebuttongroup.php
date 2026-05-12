@@ -67,9 +67,10 @@ class MPCFImageButtonGroupField extends MPCFButtonGroupField {
 
 	function build_field($args = array()) {
 		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
+		$order   = $args['original_order'];
 		$default = mpcf_get_input_param($this, 'default'); ?>
 
-		<div class="mpcf-buttongroup-wrapper mpcf-imagebuttongroup-wrapper">
+		<div class="mpcf-buttongroup-wrapper mpcf-imagebuttongroup-wrapper" data-json-safe-order="<?php echo $order; ?>">
 <?php 		foreach ($options as $name => $image) {
 				$id = uniqid('mpcf-input-imagebuttongroup-' . $name . '-');
 				$class = '';

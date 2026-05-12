@@ -3,8 +3,10 @@
 require_once('mpcf-modules.php');
 require_once('mpcf-actions.php');
 require_once('mpcf-register-metaboxes.php');
-require_once('mpcf-register-taxonomy-metaboxes.php');
 require_once('mpcf-register-archive-metaboxes.php');
+require_once('mpcf-register-module-metaboxes.php');
+require_once('mpcf-register-taxonomy-metaboxes.php');
+require_once('mpcf-register-user-metaboxes.php');
 require_once('mpcf-revisions.php');
 require_once('gui.php');
 require_once('mpcf-media-display.php');
@@ -130,6 +132,22 @@ function mpcf_is_serialized($value, &$result = null) {
 	}
 
 	return true;
+}
+
+
+
+//	no json_encode() as it sometimes messes with the order
+function mpcf_make_json_safe_order($arr) {
+	$arr = array_keys($arr);
+
+	$arr = array_map(function($val) {
+		if (is_integer($val) || is_float($val) || $val === null) return $val;
+		if (is_array($val)) return mpcf_make_json_safe_order($val);
+
+		return '&quot;' . htmlspecialchars($val) . '&quot;';
+	}, $arr);
+
+	return '[' . implode(',', $arr) . ']';
 }
 
 

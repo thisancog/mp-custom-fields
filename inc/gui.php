@@ -6,16 +6,24 @@
 
 function mpcf_meta_box_init($post, $metabox) {
 	global $post;
+
 	$boxes  = get_option('mpcf_meta_boxes', array());
 	$box    = $boxes[$metabox['id']];
-	$values = get_post_meta($post->ID, '', true);
+	$type   = isset($box['type']) ? $box['type'] : 'metabox';
+
 	$nonce  = 'mpcf_meta_box_nonce_' . $metabox['id'];
 	wp_nonce_field($nonce, $nonce); ?>
 	<div class="mpcf-parent">
-<?php 	if (isset($box['panels'])) {
-			mpcf_build_gui_as_panels($metabox['id'], $box['panels'], $values);
-		} else if (isset($box['fields'])) {
-			mpcf_build_gui_from_fields($box['fields'], $values);
+<?php 	if ($type == 'metabox') {
+			$values = get_post_meta($post->ID, '', true);
+
+			if (isset($box['panels']))		mpcf_build_gui_as_panels($metabox['id'], $box['panels'], $values);
+			else if (isset($box['fields']))	mpcf_build_gui_from_fields($box['fields'], $values);
+		} else if ($type == 'module-metabox') {
+			$activeID = 'mpcf-activetab-' . $metabox['id'];
+			$values   = get_post_meta($post->ID, $box['base_name'], true);
+			$active   = get_post_meta($post->ID, $activeID, true);
+			mpcf_build_gui_as_modules($metabox['id'], $box['modules'], $values, $box['base_name'], $active);
 		} ?>
 	</div>
 
@@ -58,7 +66,8 @@ function mpcf_build_admin_gui($panels, $optionName) {
 		update_option($optionName, $values);
 	}
 
-	$values = get_option($optionName);
+	$panels  = mpcf_assign_order_to_select_fields($panels);
+	$values  = get_option($optionName);
 	$message = '';
 
 	$formName = 'mpcf-options-' . $optionName;
@@ -227,7 +236,6 @@ function mpcf_get_field_value($field, $values) {
 	$value = isset($field['value']) ? $field['value'] : null;
 
 	if ($field['type'] == 'checkbox') {
-
 		if (isset($values[$field['name']])) {
 			$value = is_array($values[$field['name']]) ? $values[$field['name']][0] : $values[$field['name']];
 			$value = $value === 'checked' ? true : $value;
@@ -540,6 +548,36 @@ function mpcf_sanitize_args($args) {
 }
 
 
+function mpcf_assign_order_to_select_fields($fields) {
+	$canBeNested = [ 'conditional', 'conditionalpanels' ];
+	$toCheck     = [
+		'buttongroup'		=> 'options',
+		'conditional'		=> 'options',
+		'conditionalpanels'	=> 'options',
+		'imagebuttongroup'	=> 'options',
+		'select'			=> 'options',
+	];
+
+	foreach ($fields as $key => $val) {
+		if (is_array($val) || is_object($val)) {
+			if (isset($val['type']) && isset($toCheck[$val['type']]) && isset($val[$toCheck[$val['type']]])) {
+				$val['original_order'] = mpcf_make_json_safe_order($val['options']);
+
+				if (!in_array($val['type'], $canBeNested)) {
+					$fields[$key] = $val;
+					continue;
+				}
+			}
+
+			$fields[$key] = mpcf_assign_order_to_select_fields($val);
+		}
+	}
+
+	return $fields;
+}
+
+
+
 
 /*****************************************************
 	Save meta box form contents
@@ -556,13 +594,17 @@ function mpcf_save_meta_boxes($post_id) {
 		$nonce = 'mpcf_meta_box_nonce_' . $id;
 		if (!isset($_POST[$nonce]) || !wp_verify_nonce($_POST[$nonce], $nonce)) continue;
 
+		$type   = isset($box['type']) ? $box['type'] : 'metabox';
 		$fields = array();
-		if (isset($box['panels'])) {
+
+		if ($type == 'metabox' && isset($box['panels'])) {
 			$result = mpcf_add_bulk_copypaste_panels($id, $box['panels']);
 			
 			array_walk($result['panels'], function($panel) use (&$fields) {				
 				$fields = array_merge($fields, $panel['fields']);
 			});
+		} else if ($type == 'module-metabox') {
+			$fields = [[ 'name' => $box['base_name'] ]];
 		}
 
 		foreach ($fields as $field) {

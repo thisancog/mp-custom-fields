@@ -35,13 +35,14 @@ class MPCFConditionalPanelField extends MPCFModule {
 	}
 
 	function build_field($args = array()) {
-		$name    = $args['name'];
+		$name        = $args['name'];
 
-		$value   = isset($args['value']) ? $args['value'] : array();
-		$value   = isset($value[$name])  ? $value[$name]  : $value;
+		$value       = isset($args['value']) ? $args['value'] : array();
+		$value       = isset($value[$name])  ? $value[$name]  : $value;
 
-		$label   = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
-		$options = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
+		$label       = isset($args['label']) && !empty($args['label']) ? $args['label'] : '';
+		$options     = isset($args['options']) && !empty($args['options']) ? $args['options'] : array();
+		$order       = $args['original_order'];
 		$noSelection = !isset($value['type']) ? ' selected' : '';
 
 		foreach ($value as $prop => $val) {
@@ -80,7 +81,7 @@ class MPCFConditionalPanelField extends MPCFModule {
 
 <?php		} else { ?>
 
-				<select<?php echo $attrs; ?>>
+				<select<?php echo $attrs; ?> data-json-safe-order="<?php echo $order; ?>">
 					<option value="-1" <?php echo $noSelection; ?>>------</option>
 
 <?php 			foreach ($options as $name => $params) {

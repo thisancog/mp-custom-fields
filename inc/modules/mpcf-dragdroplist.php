@@ -63,7 +63,7 @@ class MPCFDragDropList extends MPCFModule {
 	}
 
 	function label() {
-		return __('Select', 'mpcf');
+		return __('Drag/drop list', 'mpcf');
 	}
 
 	function render_list($options, $withNameBase = true) {

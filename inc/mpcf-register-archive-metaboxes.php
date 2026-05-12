@@ -27,7 +27,8 @@ function mpcf_add_custom_fields_archive($post_type, $id, $arguments = array()) {
 		$newbox['title'] = sprintf(__('%s Options', 'mpcf'), $obj->labels->singular_name);
 	}
 
-	$boxes[$id] = $newbox;
+	$newbox['panels'] = mpcf_assign_order_to_select_fields($newbox['panels']);
+	$boxes[$id]       = $newbox;
 
 	update_option('mpcf_archive_boxes', $boxes);
 
