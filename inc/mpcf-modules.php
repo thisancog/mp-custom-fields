@@ -225,6 +225,8 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 	}
 
 	array_walk($boxes, function($box) use (&$registeredFields, $fieldName) {
+		if (!isset($box['panels'])) return;
+		
 		array_walk($box['panels'], function($panelInBox) use (&$registeredFields, $fieldName) {
 			array_walk($panelInBox['fields'], function($fieldInPanel) use (&$registeredFields, $fieldName) {
 				if (isset($fieldInPanel['name']) && $fieldInPanel['name'] === $fieldName)
