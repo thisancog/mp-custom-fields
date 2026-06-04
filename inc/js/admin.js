@@ -1007,6 +1007,8 @@
 			mod.classList.toggle('active', toActivate);
 			inner.style.maxHeight = toActivate ? inner.scrollHeight + 'px' : '0px';
 
+			if (toActivate) setTimeout(() => inner.style.maxHeight = '', 250);
+
 			this.updateActiveModules(id);
 		}
 
@@ -1060,6 +1062,8 @@
 
 				mod.classList.add('active');
 				inner.style.maxHeight = inner.scrollHeight + 'px';
+
+				setTimeout(() => inner.style.maxHeight = '', 250);
 			}
 
 			this.updateActiveModules(id);
@@ -2269,5 +2273,5 @@
 	}
 
 
-	init();
+	document.addEventListener('DOMContentLoaded', init);
 })();
