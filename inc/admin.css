@@ -316,6 +316,7 @@ html {
 	position: sticky;
 	bottom: 0px;
 	left: 0;
+	z-index: 2;
 	padding-bottom: 12px;
 }
 
