@@ -278,10 +278,10 @@ function mpcf_get_field_value($field, $values) {
 }
 
 function mpcf_insert_field_title($field) {
-	if (isset($field['title']) && !empty($field['title'])) { ?>
-<div class="mpcf-title"><label for="<?php echo $field['name']; ?>"><?php echo $field['title']; ?></label></div>
+	if (!isset($field['title']) || empty($field['title'])) return;
+	$for = isset($field['name']) && !empty($field['name']) ? ' for="' . $field['name'] . '"' : ''; ?>
+<div class="mpcf-title"><label<?php echo $for; ?>><?php echo $field['title']; ?></label></div>
 <?php 
-	}
 }
 
 function mpcf_insert_field_description($field) {
@@ -559,8 +559,10 @@ function mpcf_assign_order_to_select_fields($fields) {
 	];
 
 	foreach ($fields as $key => $val) {
-		if (is_array($val) || is_object($val)) {
-			if (isset($val['type']) && isset($toCheck[$val['type']]) && isset($val[$toCheck[$val['type']]])) {
+		if (is_array($val)) {
+			if (isset($val['type']) &&
+				isset($toCheck[$val['type']]) &&
+				isset($val[$toCheck[$val['type']]])) {
 				$val['original_order'] = mpcf_make_json_safe_order($val['options']);
 
 				if (!in_array($val['type'], $canBeNested)) {
