@@ -278,8 +278,9 @@ function mpcf_get_field_value($field, $values) {
 }
 
 function mpcf_insert_field_title($field) {
-	if (!isset($field['title']) || empty($field['title']) || $field['type'] == 'custom') return;
-	$for = isset($field['name']) && !empty($field['name']) ? ' for="' . $field['name'] . '"' : ''; ?>
+	if (!isset($field['title']) || empty($field['title'])) return;
+	$for = $field['type'] !== 'custom' && isset($field['name']) && !empty($field['name'])
+		 ? ' for="' . $field['name'] . '"' : ''; ?>
 <div class="mpcf-title"><label<?php echo $for; ?>><?php echo $field['title']; ?></label></div>
 <?php 
 }
