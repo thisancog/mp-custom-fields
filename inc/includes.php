@@ -138,6 +138,8 @@ function mpcf_is_serialized($value, &$result = null) {
 
 //	no json_encode() as it sometimes messes with the order
 function mpcf_make_json_safe_order($arr) {
+	if (!is_array($arr)) return $arr;
+	
 	$arr = array_keys($arr);
 
 	$arr = array_map(function($val) {
