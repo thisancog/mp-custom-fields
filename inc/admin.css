@@ -955,6 +955,10 @@ html {
  ******************************/
 
 .mpcf-hidden-input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
 	margin-bottom: 0;
 }
 
