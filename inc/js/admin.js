@@ -1,3 +1,5 @@
+var mpcf;
+
 (function() {
 	$ = jQuery;
 
@@ -45,6 +47,10 @@
 		conditionalFields.registerNew();
 		conditionalPanels.registerNew();
 		moduleBoxes.registerNew();
+
+		mpcf = {
+			loadingElements, panelSwitchers, conditionalFields, conditionalPanels, moduleBoxes, mediaPickers, bulkMediaPickers, colorSelects, painterColors
+		};
 	};
 
 
@@ -1297,9 +1303,11 @@
 
 	class MediaPickers {
 		constructor() {
-			this.pickers = {};
+			this.pickers   = {};
+			this.callbacks = [];
 			this.registerNew();
 		}
+
 
 		registerNew(parent) {
 			parent = parent || document;
@@ -1321,7 +1329,7 @@
 
 				elem.setAttribute('data-registered', 1);
 
-				this.pickers[id] = {
+				let picker = {
 					element:       elem,
 					changeMedia:   changeMedia,
 					changeBtns:    changeBtns,
@@ -1337,15 +1345,26 @@
 					isMediaPicker: elem.classList.contains('mpcf-mediapicker'),
 					isFilePicker:  elem.classList.contains('mpcf-filepicker'),
 				};
+
+				let newPicker = this.callbacks.forEach(cb => cb('registerPicker', picker, id));
+				this.pickers[id] = newPicker || picker;
 			}).bind(this));
 		}
+
+
+		registerCallback(cb) {
+			this.callbacks.push(cb);
+		}
+
 
 		changeMedia(id, event) {
 			event.preventDefault();
 
-			let picker     = this.pickers[id],
-				currentVal = picker.idField.getAttribute('value'),
-				modal      = wp.media({ title: localizedmpcf.chooseMedia, multiple: picker.multiple });
+			let picker          = this.pickers[id],
+				currentVal      = picker.idField.getAttribute('value'),
+				modalOptions    = { title: localizedmpcf.chooseMedia, multiple: picker.multiple },
+				newModalOptions = this.callbacks.forEach(cb => cb('modalRegister', picker, id, modalOptions)),
+				modal           = wp.media(newModalOptions || modalOptions);
 
 			modal.on('open', () => {
 				let selection  = modal.state().get('selection'),
@@ -1354,6 +1373,7 @@
 				attachment.fetch();
 				selection.add(attachment ? [ attachment ] : []);
 
+				this.callbacks.forEach(cb => cb('modalOpen', picker, id, selection, modal));
 			});
 
 			modal.on('select', () => {
@@ -1362,6 +1382,8 @@
 				let choice  = modal.state().get('selection').first().toJSON(),
 					isImage = choice.mime.indexOf('image') > -1,
 					isVideo = choice.mime.indexOf('video') > -1;
+
+				this.callbacks.forEach(cb => cb('select', picker, id, choice, modal));
 
 				picker.idField.setAttribute('value', choice.id);
 				picker.changeMedia.setAttribute('value', localizedmpcf.change);
@@ -1382,8 +1404,12 @@
 			modal.open();
 		}
 
+
 		clearMedia(id) {
 			let picker = this.pickers[id];
+
+			this.callbacks.forEach(cb => cb('clear', picker, id));
+
 			picker.idField.setAttribute('value', '');
 
 			picker.changeMedia.setAttribute('value', picker.isFilePicker ? localizedmpcf.addFile : localizedmpcf.addMedia)
@@ -1400,6 +1426,7 @@
 			picker.videoPreview.setAttribute('src', '');
 			picker.videoPreview.classList.add('hidden');
 		}
+
 
 		generateID() {
 			return Math.floor(Math.random() * Math.pow(10,10));
