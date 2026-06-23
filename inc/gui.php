@@ -15,7 +15,7 @@ function mpcf_meta_box_init($post, $metabox) {
 	wp_nonce_field($nonce, $nonce); ?>
 	<div class="mpcf-parent">
 <?php 	if ($type == 'metabox') {
-			$values = get_post_meta($post->ID, '', true);
+			$values = get_post_meta($post->ID);
 
 			if (isset($box['panels']))		mpcf_build_gui_as_panels($metabox['id'], $box['panels'], $values);
 			else if (isset($box['fields']))	mpcf_build_gui_from_fields($box['fields'], $values);
