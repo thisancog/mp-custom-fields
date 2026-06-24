@@ -7,6 +7,9 @@
 function mpcf_add_custom_fields_taxonomy($tax, $id, $arguments = array()) {
 	if (!taxonomy_exists($tax)) return;
 
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'tax');
+	if (!$isUpdated) return;
+
 	$boxes = get_option('mpcf_taxonomy_boxes', array());
 
 	$defaults = array(
@@ -52,6 +55,7 @@ function mpcf_remove_custom_fields_taxonomy($boxID) {
 	});
 
 	update_option('mpcf_taxonomy_boxes', $boxes);
+	mpcf_remove_metabox_from_versions($boxID, 'tax');
 	return $removed;
 }
 
