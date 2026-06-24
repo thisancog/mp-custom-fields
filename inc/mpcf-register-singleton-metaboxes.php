@@ -82,9 +82,11 @@ function mpcf_singleton_exists($id) {
 function mpcf_add_custom_fields_singleton($singletonID, $id, $arguments = array()) {
 	if (!mpcf_singleton_exists($singletonID)) return;
 
-	$singleton = mpcf_get_singleton($singletonID);
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'singleton');
+	if (!$isUpdated) return;
 
-	$boxes = get_option('mpcf_singleton_boxes', array());
+	$singleton = mpcf_get_singleton($singletonID);
+	$boxes     = get_option('mpcf_singleton_boxes', array());
 
 	$defaults = array(
 		'title'			=> '',
@@ -107,6 +109,7 @@ function mpcf_add_custom_fields_singleton($singletonID, $id, $arguments = array(
 	update_option('mpcf_singleton_boxes', $boxes);
 	return $newbox;
 }
+
 
 function mpcf_get_singleton_boxes($singletonID) {
 	$boxes = get_option('mpcf_singleton_boxes', array());
@@ -145,6 +148,7 @@ function mpcf_remove_custom_fields_singleton($boxID) {
 	});
 
 	update_option('mpcf_singleton_boxes', $boxes);
+	mpcf_remove_metabox_from_versions($boxID, 'singleton');
 	return $removed;
 }
 
