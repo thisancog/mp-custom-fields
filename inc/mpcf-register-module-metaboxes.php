@@ -8,6 +8,9 @@
 function mpcf_add_module_metabox($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'module');
+	if (!$isUpdated) return;
+
 	$boxes = get_option('mpcf_meta_boxes', array());
 
 	$defaults = array(
@@ -41,6 +44,7 @@ function mpcf_add_module_metabox($type, $id, $arguments = array()) {
 
 
 function mpcf_remove_module_metabox($boxID) {
+	mpcf_remove_metabox_from_versions($boxID, 'module');
 	return mpcf_remove_custom_fields($boxID);
 }
 
