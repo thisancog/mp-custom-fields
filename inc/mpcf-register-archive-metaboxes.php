@@ -7,6 +7,9 @@
 function mpcf_add_custom_fields_archive($post_type, $id, $arguments = array()) {
 	if (!post_type_exists($post_type)) return;
 
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'archive');
+	if (!$isUpdated) return;
+
 	$boxes = get_option('mpcf_archive_boxes', array());
 
 	$defaults = array(
@@ -67,6 +70,7 @@ function mpcf_remove_custom_fields_archive($post_type) {
 	$meta = get_option('mpcf_archive_meta', array());
 	unset($meta[$post_type]);
 	update_option('mpcf_archive_meta', $meta);
+	mpcf_remove_metabox_from_versions($id, 'archive');
 
 	return $removed;
 }
