@@ -7,6 +7,9 @@
 function mpcf_add_custom_fields($type, $id, $arguments = array()) {
 	if (!post_type_exists($type)) return;
 
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'post');
+	if (!$isUpdated) return;
+
 	$boxes = get_option('mpcf_meta_boxes', array());
 
 	$defaults = array(
@@ -44,8 +47,8 @@ function mpcf_add_custom_fields($type, $id, $arguments = array()) {
  *****************************************************/
 
 function mpcf_remove_custom_fields($boxID) {
-	$boxes = get_option('mpcf_meta_boxes', array());
-	$keys = array_keys($boxes);
+	$boxes   = get_option('mpcf_meta_boxes', array());
+	$keys    = array_keys($boxes);
 	$removed = null;
 
 	array_walk($keys, function($id) use ($boxID, &$boxes, &$removed) {
@@ -56,11 +59,47 @@ function mpcf_remove_custom_fields($boxID) {
 	});
 
 	update_option('mpcf_meta_boxes', $boxes);
+	mpcf_remove_metabox_from_versions($id, 'post');
 	return $removed;
 }
 
 function mpcf_remove_all_custom_fields() {
 	update_option('mpcf_meta_boxes', array());
+}
+
+
+
+/*****************************************************
+	Check metabox version and add 
+ *****************************************************/
+
+function mpcf_check_metabox_version($id, $args, $type = 'post') {
+	$versions = get_option('mpcf_metabox_versions', []);
+	$key      = md5($type . '#' . $id);
+	$version  = md5(serialize($args));	
+
+	if (!isset($versions[$key])) {
+		$versions[$key] = $version;
+		update_option('mpcf_metabox_versions', $versions);
+		return true;
+	}
+
+	if ($version == $versions[$key])
+		return false;
+
+	$versions[$key] = $version;
+	update_option('mpcf_metabox_versions', $versions);
+	return true;
+}
+
+
+function mpcf_remove_metabox_from_versions($id, $type = 'post') {
+	$versions = get_option('mpcf_metabox_versions', []);
+	$key      = md5($type . '#' . $id);
+	if (!isset($versions[$key])) return;
+
+	unset($versions[$key]);
+	update_option('mpcf_metabox_versions', $versions);
 }
 
 
