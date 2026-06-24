@@ -7,6 +7,9 @@
 function mpcf_add_custom_fields_user($roles, $id, $arguments = array()) {
 	$boxes = mpcf_get_user_boxes();
 
+	$isUpdated = mpcf_check_metabox_version($id, $arguments, 'user');
+	if (!$isUpdated) return;
+
 	$defaults = array(
 		'position'		=> 'top',
 		'title'			=> '',
@@ -50,6 +53,7 @@ function mpcf_remove_custom_fields_user($boxID) {
 	});
 
 	update_option('mpcf_user_boxes', $boxes);
+	mpcf_remove_metabox_from_versions($boxID, 'user');
 	return $removed;
 }
 
