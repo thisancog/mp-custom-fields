@@ -221,6 +221,8 @@ function mpcf_get_field($fieldName = null, $id = null, $context = 'post') {
 	} else if ($context == 'user') {
 		$id = $id !== null ? $id : get_current_user_id();
 		if ($id == null) return;
+
+		$value = get_user_meta($id, $fieldName, true);
 		$boxes = mpcf_get_user_boxes();
 	}
 
