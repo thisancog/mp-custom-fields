@@ -883,7 +883,6 @@ html {
 
 .mpcf-textarea-input textarea {
 	resize: vertical;
-	min-height: 75px;
 	border-radius: 3px;
 }
 
