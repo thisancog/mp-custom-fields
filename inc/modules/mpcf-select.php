@@ -94,17 +94,32 @@ class MPCFSelectField extends MPCFModule {
 			<option value="" disabled<?php echo (empty($value) ? ' selected' : ''); ?>>-----</option>
 <?php 	}
 
- 		foreach ($options as $name => $title) {
- 			if (is_array($title))
- 				extract($title);
+		foreach ($options as $indexOrName => $infoOrTitle) {
+			if (is_array($infoOrTitle) && isset($infoOrTitle['options']) && is_array($infoOrTitle['options'])) {
+				$label = isset($infoOrTitle['label']) ? $infoOrTitle['label'] : sprintf(__('Group %d', 'mpcf'), ($indexOrName + 1)); ?>
+				<optgroup label="<?php echo $label; ?>">
+<?php			foreach ($infoOrTitle['options'] as $name => $title) {
+					$this->render_option($name, $title, $value);
+				} ?>
+				</optgroup>
+<?php		} else {
+				var_dump(7890);
+				$this->render_option($indexOrName, $infoOrTitle, $value, true);
+			}
+		} ?>
+		</select>
+
+<?php	}
+
+
+		function render_option($name, $title, $value, $log = false) {
+		//	if ($log) var_dump($name, $title);
+			if (is_array($title)) extract($title);
 
 			$selected = $value == $name || (is_array($value) && in_array($name, $value));
 			$disabled = isset($disabled) && $disabled ? ' disabled' : ''; ?>
 
 			<option value="<?php echo $name; ?>"<?php echo ($selected ? ' selected' : '') . $disabled; ?>><?php echo $title; ?></option>
-<?php	} ?>
-		</select>
-
 <?php	}
 }
 
