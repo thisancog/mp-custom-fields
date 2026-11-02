@@ -564,7 +564,27 @@ function mpcf_assign_order_to_select_fields($fields) {
 			if (isset($val['type']) &&
 				isset($toCheck[$val['type']]) &&
 				isset($val[$toCheck[$val['type']]])) {
-				$val['original_order'] = mpcf_make_json_safe_order($val['options']);
+
+				if ($val['type'] == 'select') {
+					$options = [];
+
+					array_walk($val['options'], function($val, $key) use (&$options) {
+						if (!is_array($val)) {
+							$options[$key] = $val;
+							return;
+						}
+
+						if (!isset($val['options'])) return;
+
+						foreach ($val['options'] as $k => $v) {
+							$options[$k] = $v;
+						}
+					});
+
+					$val['original_order'] = mpcf_make_json_safe_order($options);
+				} else {
+					$val['original_order'] = mpcf_make_json_safe_order($val['options']);
+				}
 
 				if (!in_array($val['type'], $canBeNested)) {
 					$fields[$key] = $val;
