@@ -59,7 +59,7 @@ function mpcf_remove_custom_fields($boxID) {
 	});
 
 	update_option('mpcf_meta_boxes', $boxes);
-	mpcf_remove_metabox_from_versions($id, 'post');
+	mpcf_remove_metabox_from_versions($boxID, 'post');
 	return $removed;
 }
 
