@@ -103,7 +103,6 @@ class MPCFSelectField extends MPCFModule {
 				} ?>
 				</optgroup>
 <?php		} else {
-				var_dump(7890);
 				$this->render_option($indexOrName, $infoOrTitle, $value, true);
 			}
 		} ?>
