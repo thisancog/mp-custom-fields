@@ -26,8 +26,8 @@ function mpcf_meta_box_init($post, $metabox) {
 			mpcf_build_gui_as_modules($metabox['id'], $box['modules'], $values, $box['base_name'], $active);
 		} ?>
 	</div>
-
-<?php 
+<?php
+	mpcf_enqueue_scripts();
 }
 
 
@@ -94,6 +94,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 	</div>
 <?php
 
+	mpcf_enqueue_scripts();
 	mpcf_create_i18n_file($formName);
 }
 
@@ -133,10 +134,12 @@ function mpcf_build_gui_as_panels($id, $panels, $values) {
 		</div>
 
 	</div>
-
 <?php
+}
 
-	// Register TinyMCE editor scripts
+
+function mpcf_enqueue_scripts() {
+// Register TinyMCE editor scripts
 
 	_WP_Editors::enqueue_scripts();
 	print_footer_scripts();
