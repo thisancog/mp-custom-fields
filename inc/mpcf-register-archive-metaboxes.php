@@ -53,29 +53,39 @@ function mpcf_add_custom_fields_archive($post_type, $id, $arguments = array()) {
  *****************************************************/
 
 function mpcf_remove_custom_fields_archive($post_type) {
-	$boxes = mpcf_get_archive_boxes();
-	$removed = null;
+//	read directly: mpcf_get_archive_boxes() sorts the boxes and loses their IDs
+	$boxes      = get_option('mpcf_archive_boxes', array());
+	$removed    = null;
+	$removedIDs = array();
 
-	$boxes = array_filter($boxes, function($box) use ($post_type, &$removed) {
+	$boxes = array_filter($boxes, function($box, $id) use ($post_type, &$removed, &$removedIDs) {
 		if ($box['post_type'] === $post_type) {
-			$removed = $box;
+			$removed      = $box;
+			$removedIDs[] = $id;
 			return false;
 		}
 
 		return true;
-	});
+	}, ARRAY_FILTER_USE_BOTH);
 
 	update_option('mpcf_archive_boxes', $boxes);
 
 	$meta = get_option('mpcf_archive_meta', array());
 	unset($meta[$post_type]);
 	update_option('mpcf_archive_meta', $meta);
-	mpcf_remove_metabox_from_versions($id, 'archive');
+
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach ($removedIDs as $id)
+		mpcf_remove_metabox_from_versions($id, 'archive');
 
 	return $removed;
 }
 
 function mpcf_remove_all_custom_fields_archives() {
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach (array_keys(get_option('mpcf_archive_boxes', array())) as $id)
+		mpcf_remove_metabox_from_versions($id, 'archive');
+
 	update_option('mpcf_archive_boxes', array());
 }
 
@@ -133,7 +143,7 @@ function mpcf_build_archive_gui() {
 	$boxes = mpcf_get_archive_boxes($post_type);
 
 	if (isset($_POST['update_settings'])) {
-		$message = __('Options were saved.', 'mpcf');
+		$message = mpcf_submission_is_complete() ? __('Options were saved.', 'mpcf') : mpcf_incomplete_submission_message();
 	} ?>
 
 	<div class="mpcf-options">
@@ -149,7 +159,7 @@ function mpcf_build_archive_gui() {
 					<h2 class="mpcf-archive-box-title"><?php echo $box['title']; ?></h2>
 					<span class="mpcf-archive-link"><a href="<?php echo $archiveLink; ?>"><?php _e('View archive', 'mpcf'); ?></a></span>
 					<div class="mpcf-parent">
-						<?php mpcf_build_gui_as_panels($box['panels'], $values); ?>
+						<?php mpcf_build_gui_as_panels($id, $box['panels'], $values); ?>
 					</div>
 				</div> 
 
@@ -168,6 +178,11 @@ function mpcf_build_archive_gui() {
 
 
 function mpcf_save_custom_fields_archive($post_type) {
+	if (isset($_POST['update_settings']) && !mpcf_submission_is_complete()) {	// see inc/mpcf-submission.php
+		mpcf_log('Archive fields of "' . $post_type . '" were not saved: the form was sent before all fields were loaded.');
+		return;
+	}
+
 	if (isset($_POST['update_settings'])) {
 		$boxes = mpcf_get_archive_boxes($post_type);
 
@@ -182,11 +197,12 @@ function mpcf_save_custom_fields_archive($post_type) {
 
 					$actions = isset($field['actions']) ? $field['actions'] : array();
 
-					$value = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
-					$value = mpcf_before_save($field, null, $value);
+					$oldValue = mpcf_get_archive_meta($post_type, $name);
+					$value    = isset($_POST[$name]) ? mpcf_mksafe($_POST[$name]) : false;
+					$value    = mpcf_before_save($field, null, $value);
 
-					mpcf_update_archive_meta($post_type, $name, $value);	
-					mpcf_after_save($field, null, $value);
+					mpcf_update_archive_meta($post_type, $name, $value);
+					mpcf_after_save($field, null, $value, $oldValue);
 				}
 			}
 		}

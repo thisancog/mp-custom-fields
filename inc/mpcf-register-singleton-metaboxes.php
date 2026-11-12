@@ -153,6 +153,10 @@ function mpcf_remove_custom_fields_singleton($boxID) {
 }
 
 function mpcf_remove_all_custom_fields_singleton() {
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach (array_keys(get_option('mpcf_singleton_boxes', array())) as $id)
+		mpcf_remove_metabox_from_versions($id, 'singleton');
+
 	update_option('mpcf_singleton_boxes', array());
 }
 

@@ -1,0 +1,6 @@
+panels: 5
+  added: Hero, basename modules, fields headline@modules[0][module] layout@modules[0][module] items@modules[0][module]
+  added: Gallery, basename modules, fields headline@modules[2][module] layout@modules[2][module] items@modules[2][module]
+  added: Text, basename modules, fields headline@modules[4][module] layout@modules[4][module] items@modules[4][module]
+values: modules title seotitle
+checksum of the complete result: 12e47d51c72d9c78c42daea89f69b4fa

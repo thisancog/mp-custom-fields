@@ -1,6 +1,27 @@
 <?php
 
 /*****************************************************
+	Graphical user interface
+
+	Renders meta boxes, panels and fields on the server.
+	The flow for a post's meta box:
+
+	mpcf_meta_box_init()                 meta box callback
+	  mpcf_build_gui_as_panels()         panel menu + tabs
+	    mpcf_add_conditional_panels()    adds the panels chosen in
+	                                     conditional panels fields
+	    mpcf_build_gui_from_fields()     each field: wrapper, title,
+	      $module->build_field()         the field type's own HTML
+	                                     (inc/modules/), nested fields
+	                                     call this function again
+
+	Field names are completed in the browser (admin.js) for
+	fields inside repeaters, conditional fields and panels.
+ *****************************************************/
+
+
+
+/*****************************************************
 	Build graphical user interface for posts
  *****************************************************/
 
@@ -18,7 +39,7 @@ function mpcf_meta_box_init($post, $metabox) {
 			$values = get_post_meta($post->ID);
 
 			if (isset($box['panels']))		mpcf_build_gui_as_panels($metabox['id'], $box['panels'], $values);
-			else if (isset($box['fields']))	mpcf_build_gui_from_fields($box['fields'], $values);
+			else if (isset($box['fields']))	{ mpcf_interface_ready_input(); mpcf_build_gui_from_fields($box['fields'], $values); }
 		} else if ($type == 'module-metabox') {
 			$activeID = 'mpcf-activetab-' . $metabox['id'];
 			$values   = get_post_meta($post->ID, $box['base_name'], true);
@@ -37,7 +58,11 @@ function mpcf_meta_box_init($post, $metabox) {
  *****************************************************/
 
 function mpcf_build_admin_gui($panels, $optionName) {
-	if (isset($_POST['update_settings'])) {
+	$isComplete = mpcf_submission_is_complete();	// see inc/mpcf-submission.php
+
+	if (isset($_POST['update_settings']) && !$isComplete) {
+		mpcf_log('Options "' . $optionName . '" were not saved: the form was sent before all fields were loaded.');
+	} else if (isset($_POST['update_settings'])) {
 		$values = get_option($optionName);
 		$values = $values == '' ? array() : $values;
 
@@ -73,7 +98,7 @@ function mpcf_build_admin_gui($panels, $optionName) {
 	$formName = 'mpcf-options-' . $optionName;
 
 	if (isset($_POST['update_settings'])) {
-		$message = __('Options were saved.', 'mpcf');
+		$message = $isComplete ? __('Options were saved.', 'mpcf') : mpcf_incomplete_submission_message();
 	} ?>
 
 	<div class="mpcf-options">
@@ -121,6 +146,7 @@ function mpcf_build_gui_as_panels($id, $panels, $values) {
 
 	<div class="mpcf-panels">
 		<input type="hidden" name="<?php echo $tab; ?>" class="activetab" value="<?php echo $activetab; ?>" />
+<?php	mpcf_interface_ready_input(); ?>
 		<ul class="mpcf-panels-menu">
 <?php	for ($i = 0; $i < count($panels); $i++) {
 			mpcf_build_panel_menu_item($panels[$i], $i);
@@ -177,6 +203,8 @@ function mpcf_build_panel_tab($panel, $values, $i) {
 
 
 function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
+	$GLOBALS['mpcf_options_store']['depth']++;		// see mpcf_options_data_attribute()
+
 	$o = get_option('mpcf_options');
 	setlocale(LC_TIME, get_locale());
 	$required = false;
@@ -197,7 +225,9 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 		$required         = !$required && $field['required'] ? true : $required;
 		$hasRequireds     = false;
 
-		if (isset($o['modules'][$type])) {
+		if (!isset($o['modules'][$type])) {
+			mpcf_log('Unknown field type "' . $type . '" (field "' . $field['name'] . '") - the field is not shown.');
+		} else {
 			$classname = $o['modules'][$type]['name'];
 			$module    = new $classname();
 
@@ -230,6 +260,79 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	if ($required && $echoRequired) {
 		mpcf_required_hint();
 	}
+
+//	outermost call: print the options referenced by the fields above
+	$GLOBALS['mpcf_options_store']['depth']--;
+	if ($GLOBALS['mpcf_options_store']['depth'] === 0)
+		mpcf_print_options_store();
+}
+
+
+
+/*****************************************************
+	Options of conditional fields: output once per page
+
+	Conditional fields and conditional panels carry their
+	complete options (incl. all sub-field definitions) in
+	a data-options attribute. Inside repeaters, the same
+	options were repeated in every row (e.g. 36 times
+	220 KB on one page).
+
+	On a normal page load, large options are now printed
+	once per page in a <script type="application/json">
+	element and the field only references it with
+	data-options-ref. Everything is generated freshly on
+	each page load - nothing is cached - so dynamic
+	options (e.g. lists of posts) are always up to date.
+
+	AJAX responses keep the data-options attribute, as
+	does any option set below the size threshold.
+ *****************************************************/
+
+$GLOBALS['mpcf_options_store'] = array(
+	'depth'   => 0,			// nesting level of mpcf_build_gui_from_fields()
+	'pending' => array(),	// referenced, but not printed yet
+	'printed' => array()	// already printed on this page
+);
+
+
+function mpcf_options_store_active() {
+	if (wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) return false;
+	if ($GLOBALS['mpcf_options_store']['depth'] < 1) return false;	// only while fields are being built, so the store gets printed
+
+	return (bool) apply_filters('mpcf_options_store_enabled', true);
+}
+
+
+//	returns ' data-options="..."' or ' data-options-ref="..."'
+function mpcf_options_data_attribute($options) {
+	$json = json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP);
+
+	if (strlen($json) < 2048 || !mpcf_options_store_active())
+		return ' data-options="' . esc_attr($json) . '"';
+
+	$key   = md5($json);
+	$store = &$GLOBALS['mpcf_options_store'];
+
+	if (!isset($store['printed'][$key]) && !isset($store['pending'][$key]))
+		$store['pending'][$key] = $json;
+
+	return ' data-options-ref="' . $key . '"';
+}
+
+
+function mpcf_print_options_store() {
+	$store = &$GLOBALS['mpcf_options_store'];
+
+	foreach ($store['pending'] as $key => $json) {
+	//	same as JSON_HEX_TAG: no "<" or ">" inside the script element
+		$json = str_replace(array('<', '>'), array('\u003C', '\u003E'), $json); ?>
+<script type="application/json" class="mpcf-options-store" id="mpcf-options-<?php echo $key; ?>"><?php echo $json; ?></script>
+<?php
+		$store['printed'][$key] = true;
+	}
+
+	$store['pending'] = array();
 }
 
 
@@ -274,7 +377,8 @@ function mpcf_get_field_value($field, $values) {
 	}
 
 	if (isset($field['actions']) && isset($field['actions']['display_before'])) {
-		$value = call_user_func($field['actions']['display_before'], $id, $field['name'], $value);
+		$postID = isset($field['post_id']) ? $field['post_id'] : null;
+		$value  = call_user_func($field['actions']['display_before'], $postID, $field['name'], $value);
 	}
 
 	return $value;
@@ -357,6 +461,14 @@ function mpcf_get_queried_object_id() {
 
 /*****************************************************
 	Add conditional panels
+
+	A conditional panels field shows an additional panel
+	(tab) with the fields of the chosen option. This walks
+	through the field configuration, looks up the saved
+	choice of each conditional panels field (also inside
+	repeater rows) and returns the panels to add, together
+	with the values (the panel ID is added to the value of
+	the field, so the browser can connect field and panel).
  *****************************************************/
 
 function mpcf_add_conditional_panels($panels, $values) {
@@ -371,6 +483,12 @@ Class MPCFRecursiveConditionalPanelsAdder {
 	public $allValues;
 	public $conditionalPanels = array();
 
+//	The search visits every array in the field configuration and, for each one, walks
+//	the post meta values from the top - unserializing the same (often large) meta
+//	values over and over again. Results are cached, the search itself is unchanged.
+	private $serializedCache = array();
+	private $serializedCacheSize = 16;
+
 	function __construct($allPanels, $allValues = array()) {
 		$this->allPanels = $allPanels;
 		$this->allValues = $allValues;
@@ -382,6 +500,9 @@ Class MPCFRecursiveConditionalPanelsAdder {
 
 	public function add_layer($layer, $key, $args = []) {
 		if (!is_array($layer)) return;
+
+	//	nothing to find in this branch of the configuration - skip it (has no effect on the result)
+		if (!$this->may_contain_conditional_panels($layer)) return;
 
 		if ($key !== null)
 			$args['path'][] = $key;
@@ -463,8 +584,8 @@ Class MPCFRecursiveConditionalPanelsAdder {
 			$baseName[] = $name;
 			$value = $value[$name];
 
-			if (is_array($value) && count($value) == 1 && isset($value[0]) && is_serialized($value[0])) {
-				$value = unserialize($value[0]);
+			if ($this->is_single_serialized($value)) {
+				$value = $this->cached_unserialize($value[0]);
 			}
 		}
 
@@ -488,8 +609,8 @@ Class MPCFRecursiveConditionalPanelsAdder {
 
 			$value = $value[$name];
 
-			if (is_array($value) && count($value) == 1 && isset($value[0]) && is_serialized($value[0])) {
-				$value = unserialize($value[0]);
+			if ($this->is_single_serialized($value)) {
+				$value = $this->cached_unserialize($value[0]);
 			}
 		}
 
@@ -510,8 +631,8 @@ Class MPCFRecursiveConditionalPanelsAdder {
 
 			$pointer = &$pointer[$name];
 
-			if (is_array($pointer) && count($pointer) == 1 && isset($pointer[0]) && is_serialized($pointer[0])) {
-				$pointer = unserialize($pointer[0]);
+			if ($this->is_single_serialized($pointer)) {
+				$pointer = $this->cached_unserialize($pointer[0]);
 				$pointer = &$pointer;
 			}
 		}
@@ -526,6 +647,43 @@ Class MPCFRecursiveConditionalPanelsAdder {
 
 	public function get_merged_panels() {
 		return array_merge($this->allPanels, $this->conditionalPanels);
+	}
+
+//	false only if this part of the field configuration definitely contains no conditional panels field
+	private function may_contain_conditional_panels($layer) {
+		$json = json_encode($layer, JSON_PARTIAL_OUTPUT_ON_ERROR);
+		return $json === false || strpos($json, '"conditionalpanels"') !== false;
+	}
+
+//	same as:  is_array($value) && count($value) == 1 && isset($value[0]) && is_serialized($value[0])
+	private function is_single_serialized($value) {
+		if (!is_array($value) || count($value) != 1 || !isset($value[0]) || !is_string($value[0]))
+			return false;
+
+		return $this->cached_entry($value[0])['serialized'];
+	}
+
+//	same as:  unserialize($string)
+	private function cached_unserialize($string) {
+		return $this->cached_entry($string)['value'];
+	}
+
+	private function cached_entry($string) {
+		if (isset($this->serializedCache[$string]))
+			return $this->serializedCache[$string];
+
+		$serialized = is_serialized($string);
+		$entry      = array(
+			'serialized' => $serialized,
+			'value'      => $serialized ? unserialize($string) : null
+		);
+
+	//	values are re-serialized after each conditional panel, so old entries become useless - keep memory low
+		if (count($this->serializedCache) >= $this->serializedCacheSize)
+			unset($this->serializedCache[array_key_first($this->serializedCache)]);
+
+		$this->serializedCache[$string] = $entry;
+		return $entry;
 	}
 
 	public function get_merged_values() {
@@ -613,6 +771,11 @@ function mpcf_save_meta_boxes($post_id) {
 	if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 	if (!current_user_can('edit_post', $post_id)) return;
 
+	if (!mpcf_submission_is_complete()) {				// see inc/mpcf-submission.php
+		mpcf_report_incomplete_submission('post ' . $post_id);
+		return;
+	}
+
 	$post_type = get_post_type($post_id);
 	$boxes     = mpcf_get_metaboxes_for_type($post_type);
 
@@ -660,8 +823,10 @@ function mpcf_save_meta_boxes($post_id) {
 	Build graphical user interface with AJAX
  *****************************************************/
 
+//	All handlers check the request first, see inc/mpcf-ajax.php
+
 function mpcf_ajax_get_repeater_row() {
-	$fields = json_decode(stripcslashes($_POST['fields']), true);
+	$fields  = mpcf_ajax_get_verified_definition(isset($_POST['fields']) ? $_POST['fields'] : null);
 	$buttons = mpcf_get_repeater_buttons();
 
 
@@ -678,10 +843,7 @@ function mpcf_ajax_get_repeater_row() {
 
 
 function mpcf_ajax_get_conditional_fields() {
-	if (!isset($_POST['fields']))
-		return '';
-	
-	$fields = json_decode(stripcslashes($_POST['fields']), true);
+	$fields = mpcf_ajax_get_verified_definition(isset($_POST['fields']) ? $_POST['fields'] : null);
 	$values = array();
 
 	if (isset($_POST['values']) && $_POST['values'] !== 'false') {
@@ -705,7 +867,7 @@ function mpcf_ajax_get_conditional_fields() {
 }
 
 function mpcf_ajax_get_conditional_panels_fields() {
-	$panel  = json_decode(stripcslashes($_POST['panel']), true);
+	$panel  = mpcf_ajax_get_verified_definition(isset($_POST['panel']) ? $_POST['panel'] : null);
 	$values = array();
 
 	$panel['panel_id']       = isset($panel['panel_id'])       ? $panel['panel_id']       : uniqid();
@@ -739,21 +901,20 @@ function mpcf_ajax_get_conditional_panels_fields() {
  *****************************************************/
 
 function mpcf_get_repeater_buttons() {
-	$includeMoveUpDown = true;
-	$includeMove       = false;
+//	the controls are focusable and work with the keyboard: Enter / Space, arrow keys on the move handle
+	$control = function($class, $icon, $label) {
+		return '<div class="' . $class . ' dashicons-before ' . $icon . '" role="button" tabindex="0"'
+			 . ' title="' . esc_attr($label) . '" aria-label="' . esc_attr($label) . '"></div>';
+	};
 
-	$buttons = '<div class="mpcf-repeater-row-controls">';
-
-	if ($includeMoveUpDown) {
-		$buttons .= '<div class="mpcf-repeater-row-moveupdown"><div class="mpcf-repeater-row-move-up dashicons-before dashicons-arrow-up"></div><div class="mpcf-repeater-row-move-down dashicons-before dashicons-arrow-down"></div></div>';
-	}
-	
-	if ($includeMove) {
-		$buttons .= '<div class="mpcf-repeater-row-move dashicons-before dashicons-move"></div>';
-	}
-
-	$buttons .= '<div class="mpcf-repeater-row-remove dashicons-before dashicons-remove"></div></div>';
-	return $buttons;
+	return '<div class="mpcf-repeater-row-controls">'
+		 . '<div class="mpcf-repeater-row-moveupdown">'
+		 .		$control('mpcf-repeater-row-move-up',   'dashicons-arrow-up',   __('Move up', 'mpcf'))
+		 .		$control('mpcf-repeater-row-move',      'dashicons-move',       __('Move (drag, or use the arrow keys)', 'mpcf'))
+		 .		$control('mpcf-repeater-row-move-down', 'dashicons-arrow-down', __('Move down', 'mpcf'))
+		 . '</div>'
+		 . $control('mpcf-repeater-row-remove', 'dashicons-remove', __('Remove row', 'mpcf'))
+		 . '</div>';
 }
 
 
@@ -795,12 +956,16 @@ function mpcf_create_i18n_file($formName = false) {
 
 	$fileName = dirname(dirname(__FILE__)) . '/i18n-config.json';
 
-	if (!file_exists($fileName))
-		fopen($fileName, 'w') or die(sprintf(__("Can't create internationalisation file %s."), $fileName));
+//	the plugin folder may be read-only (e.g. on managed hosting): skip instead of stopping the page
+	if (file_exists($fileName) ? !is_writable($fileName) : !is_writable(dirname($fileName))) {
+		mpcf_log('The qTranslate configuration file ' . $fileName . ' could not be written (folder not writable).');
+		return;
+	}
 
-	$obj = file_get_contents($fileName);
+	$obj = file_exists($fileName) ? file_get_contents($fileName) : '';
 
-	if (empty($obj)) {
+//	empty or unreadable file: start anew
+	if (empty($obj) || !is_object(json_decode($obj))) {
 		$obj = new stdClass();
 		$obj->vendor = new stdClass();
 		$obj->vendor->{'plugins/mp-custom-fields'} = '1.0';

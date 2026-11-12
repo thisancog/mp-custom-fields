@@ -1,7 +1,32 @@
+/**************************************************************
+	MP Custom Fields - admin interface
+
+	The server renders the complete interface (all panels, rows
+	and fields). This script makes it interactive:
+
+	1. init() runs on DOMContentLoaded and calls build(), which
+	   registers all components: panel tabs, repeaters, conditional
+	   fields and panels, modules, media pickers, editors etc.
+	   Components register the components nested inside them via
+	   registerAsyncElements().
+	2. Fields inside repeaters, conditional fields/panels and modules
+	   get their names from their position (see "Field names and
+	   IDs"). Renaming is collected while building and done once
+	   at the end (see batchRenames).
+	3. Labels are connected to their fields (connectLabels).
+
+	Content loaded later via AJAX (new repeater rows, conditional
+	fields and panels, modules) goes through the same steps.
+
+	The global object `mpcf` gives access to the components, e.g.
+	mpcf.mediaPickers.registerCallback(fn) to hook into the media
+	picker. Its properties must stay stable for third-party code.
+ **************************************************************/
+
 var mpcf;
 
 (function() {
-	$ = jQuery;
+	$ = jQuery;		// note: also makes $ available globally, kept for code relying on it
 
 	var loadingElements   = [],
 		panelSwitchers    = null,
@@ -11,6 +36,8 @@ var mpcf;
 		mediaPickers      = null,
 		bulkMediaPickers  = null,
 		colorSelects      = null,
+		renameQueue       = null,		// parents waiting to be renamed while batching (see batchRenames)
+		qtxQueue          = null,		// parents waiting for qTranslate-X hooks while batching
 		painterColors = {
 			icons: {
 				base:    '#666666',
@@ -21,10 +48,170 @@ var mpcf;
 
 	var vpWidth = function() { return Math.max(document.documentElement.clientWidth, window.innerWidth || 0); }
 
+
+
+	/**************************************************************
+		Error reporting
+
+		Errors are reported in the browser console, prefixed with
+		[MPCF]. Errors that may lead to incomplete data block saving
+		(see "Saving only complete forms").
+	 **************************************************************/
+
+	var reportError = function(message, details) {
+		if (details !== undefined)	console.error('[MPCF] ' + message, details);
+		else						console.error('[MPCF] ' + message);
+	}
+
+	var reportRequestError = function(message, xhr) {
+		let status = xhr && xhr.status ? ' (' + xhr.status + (xhr.responseText ? ': ' + String(xhr.responseText).slice(0, 200) : '') + ')' : '';
+		reportError(message + status);
+	}
+
+	//	JSON.parse() that reports unreadable data instead of stopping everything
+	var parseJSON = function(text, fallback, what, elem) {
+		try {
+			return JSON.parse(text);
+		} catch (error) {
+			reportError('Could not read ' + what + '.', elem || error);
+			return fallback;
+		}
+	}
+
+	//	Runs fn() and reports errors. Content inserted after an error may be incomplete,
+	//	so saving is blocked until the page is reloaded.
+	var runSafely = function(message, fn) {
+		try {
+			return fn();
+		} catch (error) {
+			interfaceBroken = true;
+			updateSaveState();
+			reportError(message + ' Saving the custom fields is blocked to prevent data loss - please reload the page.', error);
+		}
+	}
+
+
+
+	/**************************************************************
+		Saving only complete forms
+
+		Fields missing from a submitted form are saved as empty, i.e.
+		their values are deleted. So a form must not be sent while the
+		interface is being built or while fields are loading:
+
+		- every box contains a hidden input .mpcf-interface-ready,
+		  which is only set to 1 while saving is safe - the server
+		  does not save the custom fields otherwise (see
+		  inc/mpcf-submission.php)
+		- submitting such a form is prevented in the meantime
+		- in the block editor, saving is locked
+	 **************************************************************/
+
+	var interfaceReady  = false,		// interface completely built
+		interfaceBroken = false,		// an error occurred, content may be incomplete
+		pendingRequests = 0;			// fields currently loading
+
+	var canBeSaved = function() {
+		return interfaceReady && !interfaceBroken && pendingRequests === 0;
+	}
+
+	var updateSaveState = function() {
+		let safe = canBeSaved();
+
+		[].forEach.call(document.querySelectorAll('.mpcf-interface-ready'), input => input.value = safe ? '1' : '0');
+
+	//	block editor: lock / unlock the save button
+		if (document.body && document.body.classList.contains('block-editor-page') && window.wp && wp.data && wp.data.dispatch) {
+			try {
+				let editor = wp.data.dispatch('core/editor');
+				if (editor && safe)  editor.unlockPostSaving('mpcf');
+				if (editor && !safe) editor.lockPostSaving('mpcf');
+			} catch (error) {
+				reportError('Could not lock saving in the block editor.', error);
+			}
+		}
+	}
+
+	//	counts a request as pending until it is finished
+	var trackRequest = function(request) {
+		pendingRequests++;
+		updateSaveState();
+
+		request.always(() => {
+			pendingRequests--;
+			updateSaveState();
+		});
+
+		return request;
+	}
+
+	//	active immediately, i.e. also while the page is still loading
+	document.addEventListener('submit', function(e) {
+		let form = e.target;
+		if (!form || !form.querySelector || !form.querySelector('.mpcf-interface-ready') || canBeSaved()) return;
+
+		e.preventDefault();
+		e.stopImmediatePropagation();
+
+		let strings = window.localizedmpcf || {};
+		window.alert(interfaceBroken
+			? (strings.interfaceBroken || 'The custom fields could not be loaded completely. Please reload the page before saving, otherwise data may be lost.')
+			: (strings.waitForFields   || 'Please wait until all fields have been loaded, then save again.'));
+	}, true);
+
+
+
+	/**************************************************************
+		AJAX requests
+
+		All requests of this plugin carry a nonce, which the server
+		checks (see inc/mpcf-ajax.php). It is refreshed via the
+		WordPress heartbeat, so it does not expire on screens that
+		stay open for a long time.
+	 **************************************************************/
+
+	var withNonce = function(data) {
+		data.nonce = window.localizedmpcf && localizedmpcf.nonce ? localizedmpcf.nonce : '';
+		return data;
+	}
+
+	$(document).on('heartbeat-send', function(e, data) {
+		data.mpcf_refresh_nonce = 1;
+	});
+
+	$(document).on('heartbeat-tick', function(e, data) {
+		if (data && data.mpcf_nonce && window.localizedmpcf)
+			localizedmpcf.nonce = data.mpcf_nonce;
+	});
+
+
+
 	var init = function() {
 		if (!wp || !('svgPainter' in wp))
 			return setTimeout(init, 30);
 
+		try {
+			batchRenames(build);
+
+		//	also fields outside of repeaters etc., which are never renamed
+			connectLabels(document);
+		} catch (error) {
+			interfaceBroken = true;
+			updateSaveState();
+			reportError('The interface could not be built completely. Saving the custom fields is blocked to prevent data loss - please reload the page.', error);
+			return;
+		}
+
+		mpcf = {
+			loadingElements, panelSwitchers, conditionalFields, conditionalPanels, moduleBoxes, mediaPickers, bulkMediaPickers, colorSelects, painterColors
+		};
+
+		interfaceReady = true;
+		updateSaveState();
+	};
+
+	//	registers all components of the interface, see the overview at the top
+	var build = function() {
 		panelSwitchers    = new PanelSwitchers();
 		conditionalFields = new ConditionalFields();
 		conditionalPanels = new ConditionalPanelsFields();
@@ -36,6 +223,7 @@ var mpcf;
 		goToInvalids();
 		checkHTML5Support();
 		registerColorPicker();
+		registerEditors();			// editors are initialised when they become visible
 		repeaterField();
 
 		gridField();
@@ -47,16 +235,17 @@ var mpcf;
 		conditionalFields.registerNew();
 		conditionalPanels.registerNew();
 		moduleBoxes.registerNew();
-
-		mpcf = {
-			loadingElements, panelSwitchers, conditionalFields, conditionalPanels, moduleBoxes, mediaPickers, bulkMediaPickers, colorSelects, painterColors
-		};
 	};
 
 
 
 	/**************************************************************
 		Register asynchronously loaded elements
+
+		Registers all components inside a parent element: used for
+		content loaded via AJAX and for content nested inside other
+		components (e.g. the rows of a repeater). Components that are
+		already registered are skipped.
 	 **************************************************************/
 
 	var registerAsyncElements = function(parent) {
@@ -83,6 +272,9 @@ var mpcf;
 
 	/**************************************************************
 		Panel switch
+
+		The tabs (panels) of a meta box and their menu. One "set"
+		per meta box, identified by the ID of the meta box or form.
 	**************************************************************/
 
 	class PanelSwitchers {
@@ -120,7 +312,11 @@ var mpcf;
 		}
 
 		registerEvents(id) {
-			window.addEventListener('resize', this.resizePanelMenus.bind(this));
+		//	one listener is enough: resizePanelMenus() always handles all sets
+			if (this.resizeListener) return;
+
+			this.resizeListener = this.resizePanelMenus.bind(this);
+			window.addEventListener('resize', this.resizeListener);
 		}
 
 		activatePreactivatedPanel(id) {
@@ -167,7 +363,7 @@ var mpcf;
 
 		removePanel(id, panel, menuItem) {
 			this.sets[id].panels    = this.sets[id].panels.filter(otherPanel => otherPanel !== panel);
-			this.sets[id].menuItems = this.sets[id].panels.filter(otherItem  => otherItem  !== menuItem);
+			this.sets[id].menuItems = this.sets[id].menuItems.filter(otherItem => otherItem !== menuItem);
 
 			if (panel.classList.contains('active-panel'))
 				this.activatePanel(id, this.sets[id].panels[0].dataset.index);
@@ -176,34 +372,66 @@ var mpcf;
 			menuItem.parentElement.removeChild(menuItem);
 		}
 
+		//	Measures the width of every menu title (in bold, as for the active item) and sets
+		//	min-width: on small screens per title, otherwise the widest title for all of a set.
 		resizePanelMenus() {
 			let isSmallScreen = vpWidth() < this.threshold;
 
-			for (let id in this.sets) {
-				let set      = this.sets[id],
-					minWidth = 0;
+			if (isSmallScreen)
+				return this.resizePanelMenusSequentially();
 
-				set.menuItems.forEach((item => {
+		//	Large screens: the menu is a vertical list, so the width of one title does not depend
+		//	on the others. Done in three phases - change all, measure all, restore all - so the
+		//	browser only calculates the layout once instead of once per menu item.
+			let sets = [];
+
+		//	1. prepare all titles for measuring
+			for (let id in this.sets) {
+				let titles = this.sets[id].menuItems
+							.map(item => item.querySelector('.mpcf-panel-title'))
+							.filter(title => title !== null);
+
+				titles.forEach(title => {
+					title.style.minWidth   = '';
+					title.style.position   = 'fixed';
+					title.style.fontWeight = 'bold';
+				});
+
+				sets.push(titles);
+			}
+
+		//	2. measure
+			let widths = sets.map(titles => titles.map(title => Math.ceil(title.clientWidth)));
+
+		//	3. restore and apply the width of the widest title to all titles of a set
+			sets.forEach((titles, i) => {
+				let setWidth = Math.min(widths[i].reduce((max, width) => Math.max(max, width), 0), this.maxWidth);
+
+				titles.forEach(title => {
+					title.style.position   = '';
+					title.style.fontWeight = '';
+					title.style.minWidth   = setWidth + 'px';
+				});
+			});
+		}
+
+		//	Small screens: the menu items wrap in rows, so the width available to a title depends on
+		//	the widths already set on the titles before it - they have to be measured one after another.
+		resizePanelMenusSequentially() {
+			for (let id in this.sets) {
+				this.sets[id].menuItems.forEach((item => {
 					let title = item.querySelector('.mpcf-panel-title');
+					if (title === null) return;
 
 					title.style.minWidth   = '';
 					title.style.position   = 'fixed';
 					title.style.fontWeight = 'bold';
 
-					minWidth = isSmallScreen ? Math.ceil(title.clientWidth) : Math.max(minWidth, Math.ceil(title.clientWidth));
+					let minWidth = Math.ceil(title.clientWidth);
 					title.style.position   = '';
 					title.style.fontWeight = '';
-
-					if (isSmallScreen) {
-						title.style.minWidth = Math.min(minWidth, this.maxWidth) + 'px';
-					}
+					title.style.minWidth   = Math.min(minWidth, this.maxWidth) + 'px';
 				}).bind(this));
-
-				if (isSmallScreen)
-					continue;
-
-				minWidth = Math.min(minWidth, this.maxWidth);
-				set.menuItems.forEach(item => item.querySelector('.mpcf-panel-title').style.minWidth = minWidth + 'px');
 			}
 		}
 
@@ -231,20 +459,29 @@ var mpcf;
 		});
 	}
 
+	//	when the browser finds an invalid field on submit, switch to the panel containing it
 	var focusInvalids = function(elem) {
 		[].forEach.call(elem.querySelectorAll('input, select, textarea'), function(input) {
+			if (input.dataset.mpcfInvalidHandler) return;		// already registered
+			input.dataset.mpcfInvalidHandler = 1;
+
 			input.addEventListener('invalid', function(e) {
-				var menu = input.closest('.mpcf-panels, .mpcf-modules').querySelector('.mpcf-panels-menu'),
-					active = input.closest('.mpcf-panels, .mpcf-modules').querySelector('.mpcf-panels-tabs .active-panel'),
-					parent = e.target;
+				var set    = input.closest('.mpcf-panels, .mpcf-modules'),
+					menu   = set ? set.querySelector('.mpcf-panels-menu') : null,
+					active = set ? set.querySelector('.mpcf-panels-tabs .active-panel') : null,
+					parent = e.target.closest('.mpcf-panel');
+
+			//	not inside a panel (e.g. in a module box): nothing to switch
+				if (!menu || !active || !parent) return;
+
+				let activeItem = menu.querySelector('li[data-index="' + active.dataset.index + '"]'),
+					targetItem = menu.querySelector('li[data-index="' + parent.dataset.index + '"]');
 
 				active.classList.remove('active-panel');
-				menu.querySelector('li[data-index="' + active.dataset.index + '"]').classList.remove('active');
+				if (activeItem) activeItem.classList.remove('active');
 
-				while ((parent = parent.parentElement) && !parent.classList.contains('mpcf-panel'));
 				parent.classList.add('active-panel');
-
-				menu.querySelector('li[data-index="' + parent.dataset.index + '"]').classList.add('active');
+				if (targetItem) targetItem.classList.add('active');
 			});
 		});
 	}
@@ -252,41 +489,118 @@ var mpcf;
 
 
 	/**************************************************************
-		Regiser adynamically loaded TinyMCE editors
+		Editors (TinyMCE)
+
+		Editors are output as plain textareas and only initialised
+		via wp.editor once they become visible, e.g. when their panel
+		is opened - initialising all editors of a page is slow. Until
+		then the textarea holds the content, so saving works the same
+		(an editor that is never opened saves its content unchanged).
+
+		TinyMCE does not survive being moved within the page (its
+		iframe reloads), so editors are removed before a repeater row
+		or module is moved and initialised again afterwards
+		(see detachEditors).
 	 **************************************************************/
+
+	var editorObserver = null;
 
 	var registerEditors = function(parent) {
 		parent = parent || document;
 
 		var fields = [].slice.call(parent.querySelectorAll('.mpcf-editor-input .mpcf-field'));
 
-		fields.forEach(function(field, index) {
-			var inner           = field.querySelector('.mpcf-editor-inner'),
-				oldTextarea     = field.querySelector('.mpcf-input-editor');
-			if (!inner || !oldTextarea || inner.dataset.isRegistered == '1') return;
+		if (fields.length && !(window.wp && wp.editor && wp.editor.initialize)) {
+			reportError('The WordPress editor scripts are not loaded - editor fields cannot be initialised.');
+			return;
+		}
 
-			field.setAttribute('data-is-registered', 1);
+		fields.forEach(function(field) {
+			let inner = field.querySelector('.mpcf-editor-inner');
+			if (!inner || inner.dataset.isRegistered == '1' || inner.dataset.isObserved == '1') return;
 
-			var	description     = field.querySelector('.mpcf-description'),
-				oldID           = oldTextarea.id,
-				newID			= randomString(20),
-				newTextarea     = oldTextarea.cloneNode(),
-				oldContent      = wp.editor.getContent(oldID),
-				oldContentAutop = wp.editor.autop(oldContent),
-				settings        = JSON.parse(inner.dataset.settings);
+			observeEditor(inner);
+		});
+	}
 
-			newTextarea.innerText = oldContentAutop || '';
 
-			let wrapper = field.querySelector('#wp-' + oldID + '-wrap');
+	//	initialise the editor as soon as it is (nearly) visible
+	var observeEditor = function(inner) {
+		if (!('IntersectionObserver' in window)) {
+			runSafely('An editor could not be initialised.', () => initEditor(inner.closest('.mpcf-field')));
+			return;
+		}
 
-			wrapper.remove();
+		if (!editorObserver) {
+			editorObserver = new IntersectionObserver(function(entries) {
+				entries.forEach(function(entry) {
+					if (!entry.isIntersecting) return;
 
-			newTextarea.setAttribute('id', newID);
-			inner.appendChild(newTextarea);
-			if (description)
-				field.appendChild(description);
+					editorObserver.unobserve(entry.target);
+					entry.target.removeAttribute('data-is-observed');
+					runSafely('An editor could not be initialised.', () => initEditor(entry.target.closest('.mpcf-field')));
+				});
+			}, { rootMargin: '300px 0px' });
+		}
 
-			wp.editor.initialize(newID, settings);
+		inner.dataset.isObserved = 1;
+		editorObserver.observe(inner);
+	}
+
+
+	//	Replaces the textarea with a new one (new ID) and initialises the editor on it.
+	var initEditor = function(field) {
+		if (!field || !field.isConnected) return;
+
+		var inner       = field.querySelector('.mpcf-editor-inner'),
+			oldTextarea = field.querySelector('.mpcf-input-editor');
+		if (!inner || !oldTextarea || inner.dataset.isRegistered == '1') return;
+
+	//	mark as registered (on inner, where it is checked, and on field as before)
+		field.setAttribute('data-is-registered', 1);
+		inner.setAttribute('data-is-registered', 1);
+
+		var	description = field.querySelector('.mpcf-description'),
+			oldID       = oldTextarea.id,
+			newID       = randomString(20),
+			newTextarea = oldTextarea.cloneNode(),
+			settings    = parseJSON(inner.dataset.settings, {}, 'the settings of an editor', field),
+			content     = wp.editor.getContent(oldID) || '',
+			wrapper     = field.querySelector('#wp-' + oldID + '-wrap'),
+			style       = inner.querySelector('style');
+
+	//	editors with automatic paragraphs expect content with paragraphs
+		newTextarea.textContent = settings.wpautop === false ? content : wp.editor.autop(content);
+		newTextarea.removeAttribute('style');
+
+		if (wrapper)	wrapper.remove();		// markup of wp_editor()
+		else			oldTextarea.remove();	// after detachEditors()
+
+		newTextarea.setAttribute('id', newID);
+		inner.appendChild(newTextarea);
+		if (description)
+			field.appendChild(description);
+
+	//	keep the minimum height defined for the old ID
+		if (style)
+			style.textContent = style.textContent.split(oldID).join(newID);
+
+		wp.editor.initialize(newID, settings);
+	}
+
+
+	//	Before an element containing editors is moved: save their content to the textareas and remove
+	//	the editors. Call registerEditors() on the element afterwards to initialise them again.
+	var detachEditors = function(container) {
+		[].forEach.call(container.querySelectorAll('.mpcf-editor-inner[data-is-registered="1"]'), function(inner) {
+			let textarea = inner.querySelector('textarea.wp-editor-area');
+
+			if (textarea && window.wp && wp.editor && wp.editor.remove)
+				wp.editor.remove(textarea.id);
+
+			inner.setAttribute('data-is-registered', 0);
+			let field = inner.closest('.mpcf-field');
+			if (field) field.setAttribute('data-is-registered', 0);
 		});
 	}
 
@@ -317,6 +631,11 @@ var mpcf;
 
 	/**************************************************************
 		Repeater field
+
+		A list of rows with the same sub-fields. Rows can be added
+		(the blank row is fetched from the server via AJAX when the
+		user approaches the "add" button), moved and removed; after
+		each change the fields of the rows are renamed.
 	 **************************************************************/
 
 	var repeaterField = function(parent = null) {
@@ -337,68 +656,74 @@ var mpcf;
 				fields          = rowsWrapper.dataset.fields,
 				fieldsObj       = JSON.parse(fields),
 				maxRows         = parseInt(rowsWrapper.dataset.maxrows),
-				hasMoveBtn      = repeater.querySelector('.mpcf-repeater-row-controls .mpcf-repeater-row-move'),
-				rowHTML         = null,
-				dragDropHandler = null;
+				rowHTML         = null;
 
 			repeater.dataset.registered = 1;
 
-		// 	prefetch blank row
+		//	rows and buttons that belong to this repeater, not to repeaters nested inside its rows
+			var ownRows = function() {
+				return [].filter.call(rowsWrapper.children, child => child.classList.contains('mpcf-repeater-row'));
+			};
 
-			$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
-				rowHTML = response.replaceAll('data-is-registered="1"', 'data-is-registered="0"');
-			});
+		//	the row of this repeater an element belongs to (null for elements of nested repeaters)
+			var ownRow = function(elem) {
+				let row = elem.closest('.mpcf-repeater-row');
+				return row !== null && row.parentElement === rowsWrapper ? row : null;
+			};
 
-			if (hasMoveBtn) {
-				dragDropHandler = new addDragDrop(rowsWrapper.querySelectorAll('.mpcf-repeater-row'), {
-					cbEnd: function() {
-						renameDynamicFields(set);
-						updateConditionalPanelsOrder();
-					},
-					clickElem: '.mpcf-repeater-row-move'
+		// 	prefetch blank row - lazily, as soon as the user approaches the "add" button,
+		//	instead of firing one request per repeater on page load
+
+			var rowRequest = null;
+
+			var prefetchRow = function() {
+				if (rowHTML !== null || rowRequest !== null) return rowRequest;
+
+				rowRequest = $.post(ajaxurl, withNonce({ 'action': 'mpcf_get_repeater_row', 'fields': fields }), function(response) {
+					rowHTML = response.replaceAll('data-is-registered="1"', 'data-is-registered="0"');
 				});
-			}
 
-		//	move row up
-			var moveRowUp = function(e) {
-				let target    = e.target.classList.contains('mpcf-repeater-row-move-up')
-						      ? e.target
-						      : e.target.querySelector('.mpcf-repeater-row-move-up'),
-					row       = target.closest('.mpcf-repeater-row'),
-					rowBefore = row.previousElementSibling;
+				rowRequest.fail(function(xhr) {
+					rowRequest = null;
+					reportRequestError('A new row could not be loaded.', xhr);
+				});
+				return rowRequest;
+			};
 
-				if (!rowBefore) return;
+			addBtn.addEventListener('pointerenter', prefetchRow);
+			addBtn.addEventListener('focus',        prefetchRow);
 
-				row.parentNode.insertBefore(row, rowBefore);
+		//	Moves a row in front of another row (null: to the end). Editors in the row are
+		//	removed before and initialised again after the move (TinyMCE does not survive it).
+			var moveRow = function(row, before) {
+				if (before === row || row.nextElementSibling === before) return false;
+
+				detachEditors(row);
+				rowsWrapper.insertBefore(row, before);
+				afterRowsMoved(row);
+				return true;
+			};
+
+			var afterRowsMoved = function(row) {
 				renameDynamicFields(set);
 				updateConditionalPanelsOrder();
-			}
+				registerEditors(row);
+			};
 
-		//	move row down
-			var moveRowDown = function(e) {
-				let target    = e.target.classList.contains('mpcf-repeater-row-move-down')
-						      ? e.target
-						      : e.target.querySelector('.mpcf-repeater-row-move-down'),
-					row       = target.closest('.mpcf-repeater-row'),
-					rowAfter  = row.nextElementSibling;
+			var moveRowUp = function(row) {
+				if (row.previousElementSibling) moveRow(row, row.previousElementSibling);
+			};
 
-				if (!rowAfter) return;
-
-				rowAfter.parentNode.insertBefore(rowAfter, row);
-				renameDynamicFields(set);
-				updateConditionalPanelsOrder();
-			}
+			var moveRowDown = function(row) {
+				if (row.nextElementSibling) moveRow(row, row.nextElementSibling.nextElementSibling);
+			};
 
 		//	remove Row
-			var removeRow = function(e) {
-				var el = e.target;
-				el.removeEventListener('click', removeRow);
-				removeQTranslateX(el);
-
-				while ((el = el.parentElement) && !el.classList.contains('mpcf-repeater-row'));
+			var removeRow = function(row) {
+				removeQTranslateX(row);
 
 				// find and also remove attached panels, if there are conditional panels
-				var panelSelects = [].slice.call(el.querySelectorAll('.mpcf-conditionalpanels-input'));
+				var panelSelects = [].slice.call(row.querySelectorAll('.mpcf-conditionalpanels-input'));
 				panelSelects.forEach(function(select) {
 					var panelId  = select.dataset.panelId,
 						set      = select.closest('.mpcf-panels, .mpcf-modules'),
@@ -408,13 +733,125 @@ var mpcf;
 					panelSwitchers.removePanel(select.closest('.postbox').id, panel, menuItem);
 				});
 
-				el.parentElement.removeChild(el);
+				row.parentElement.removeChild(row);
 
 				addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 				checkIfEmpty();
 				renameDynamicFields(set);
 				updateConditionalPanelsOrder();
 			};
+
+
+		//	Drag and drop with the move handle (mouse, pen and touch). The row itself is moved
+		//	while dragging, it is placed before the first row whose middle is below the pointer.
+			var dragRow = function(handle, e) {
+				let row = ownRow(handle);
+				if (!row || e.button !== 0) return;
+
+				e.preventDefault();
+
+				let startOrder = ownRows(),
+					pointerY   = e.clientY,
+					dragging   = true;
+
+				detachEditors(row);
+				row.classList.add('mpcf-dragging');
+				rowsWrapper.classList.add('mpcf-sorting');
+
+			//	listening on the document: moving the row within the page would end a pointer capture on the handle
+				let onMove = function(ev) {
+					if (ev.pointerId === e.pointerId) pointerY = ev.clientY;
+				};
+
+				let frame = function() {
+					if (!dragging) return;
+
+				//	scroll the page near the top or bottom edge of the window
+					let edge = 60;
+					if (pointerY < edge)							window.scrollBy(0, -Math.ceil((edge - pointerY) / 4));
+					else if (pointerY > window.innerHeight - edge)	window.scrollBy(0, Math.ceil((pointerY - window.innerHeight + edge) / 4));
+
+					let before = ownRows().find(other => {
+						if (other === row) return false;
+						let rect = other.getBoundingClientRect();
+						return pointerY < rect.top + rect.height / 2;
+					}) || null;
+
+					if (before !== row.nextElementSibling)
+						rowsWrapper.insertBefore(row, before);
+
+					requestAnimationFrame(frame);
+				};
+
+				let onEnd = function(ev) {
+					if (ev.pointerId !== e.pointerId) return;
+
+					dragging = false;
+					document.removeEventListener('pointermove',   onMove);
+					document.removeEventListener('pointerup',     onEnd);
+					document.removeEventListener('pointercancel', onEnd);
+
+					row.classList.remove('mpcf-dragging');
+					rowsWrapper.classList.remove('mpcf-sorting');
+
+					let moved = ownRows().some((other, i) => other !== startOrder[i]);
+					if (moved)	afterRowsMoved(row);
+					else		registerEditors(row);
+				};
+
+				document.addEventListener('pointermove',   onMove);
+				document.addEventListener('pointerup',     onEnd);
+				document.addEventListener('pointercancel', onEnd);
+				requestAnimationFrame(frame);
+			};
+
+
+		//	The controls of the rows: one listener for all rows of this repeater, ignoring
+		//	the controls of nested repeaters (they have their own listeners).
+			var controlSelector = '.mpcf-repeater-row-move-up, .mpcf-repeater-row-move-down, .mpcf-repeater-row-remove, .mpcf-repeater-row-move';
+
+			var ownControl = function(target) {
+				let control = target.closest ? target.closest(controlSelector) : null;
+				if (!control || !control.parentElement.closest('.mpcf-repeater-row-controls')) return null;
+
+				let row = ownRow(control);
+				return row && control.closest('.mpcf-repeater-row') === row ? { control, row } : null;
+			};
+
+			rowsWrapper.addEventListener('click', function(e) {
+				let found = ownControl(e.target);
+				if (!found) return;
+
+				if      (found.control.matches('.mpcf-repeater-row-move-up'))	moveRowUp(found.row);
+				else if (found.control.matches('.mpcf-repeater-row-move-down'))	moveRowDown(found.row);
+				else if (found.control.matches('.mpcf-repeater-row-remove'))	removeRow(found.row);
+			});
+
+			rowsWrapper.addEventListener('pointerdown', function(e) {
+				let found = ownControl(e.target);
+				if (found && found.control.matches('.mpcf-repeater-row-move'))
+					dragRow(found.control, e);
+			});
+
+		//	keyboard: Enter / Space activate a control, the arrow keys move a row via its move handle
+			rowsWrapper.addEventListener('keydown', function(e) {
+				let found = ownControl(e.target);
+				if (!found) return;
+
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					found.control.click();
+					return;
+				}
+
+				if (!found.control.matches('.mpcf-repeater-row-move') || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+
+				e.preventDefault();
+				if (e.key === 'ArrowUp')	moveRowUp(found.row);
+				else						moveRowDown(found.row);
+
+				found.control.focus();		// moving the row removes the focus
+			});
 
 
 		//	if there are no rows, "activate" the empty field so there is an empty value posted on submit
@@ -452,6 +889,10 @@ var mpcf;
 		//	add row
 			addBtn.addEventListener('click', function() {
 				let populateRow = function() {
+					runSafely('A new row could not be inserted.', () => batchRenames(insertRow));
+				};
+
+				let insertRow = function() {
 					var newRow = document.createElement('li');
 					newRow.classList.add('mpcf-repeater-row');
 					newRow.innerHTML = rowHTML;
@@ -459,44 +900,24 @@ var mpcf;
 
 					let conditionalItems = [].slice.call(newRow.querySelectorAll('.mpcf-conditionalpanels-input'));
 					conditionalItems.forEach(item => item.setAttribute('data-panel-id', Math.floor(Math.random() * Math.pow(10,10))));
-					newRow.querySelector('.mpcf-repeater-row-remove').addEventListener('click', removeRow);
-
-					newRow.querySelector('.mpcf-repeater-row-move-up').addEventListener('click', moveRowUp);
-					newRow.querySelector('.mpcf-repeater-row-move-down').addEventListener('click', moveRowDown);
 
 					addBtn.classList.toggle('hide', maxRows !== 0 && maxRows <= rowsWrapper.children.length);
 
-					if (hasMoveBtn) dragDropHandler.addElements(newRow);
 					checkIfEmpty();
 					renameDynamicFields(set);
 					registerAsyncElements(newRow);
-				}
+				};
 
-				
-				if (rowHTML == null) {
-					$.post(ajaxurl, { 'action': 'mpcf_get_repeater_row', 'fields': fields }, function(response) {
-						rowHTML = response;
-						populateRow();
-					});
-				} else {
+				if (rowHTML !== null) {
 					populateRow();
+				} else {
+					let request = prefetchRow();
+					if (request) request.done(populateRow);
 				}
 			});
 
 
 		//	populate repeater
-			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-move-up'), function(btn) {
-				btn.addEventListener('click', moveRowUp);
-			});
-
-			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-move-down'), function(btn) {
-				btn.addEventListener('click', moveRowDown);
-			});
-
-			[].forEach.call(rowsWrapper.querySelectorAll('.mpcf-repeater-row-remove'), function(btn) {
-				btn.addEventListener('click', removeRow);
-			});
-
 			renameDynamicFields(set);
 			checkCheckableElements(rowsWrapper);
 			registerAsyncElements(rowsWrapper);
@@ -508,35 +929,68 @@ var mpcf;
 
 
 
-	var generateName = function(elem) {
-		var name                 = [elem.dataset.name || elem.name],
+	/**************************************************************
+		Field names and IDs
+
+		Fields inside repeater rows, conditional fields, conditional
+		panels and modules get their name attribute from the nesting
+		they are in, e.g. the field "title" in the third row of the
+		repeater "slides" inside the module "modules[2]" is named
+
+			modules[2][slides][2][title]
+
+		The parts of a name are collected from the field's ancestors:
+		every element with a data-basename attribute adds that name,
+		every repeater row adds its index. The field's own name is
+		stored in data-name the first time it is renamed.
+
+		The resulting names decide how values are stored in the
+		database, so the rules below must never change.
+	 **************************************************************/
+
+	//	Name parts contributed by all ancestors of an element (outermost first) and whether
+	//	one of them is a table field (which allows repeated parts, e.g. table[0][0]).
+	var collectAncestorNameParts = function(elem) {
+		var parts                = [],
 			parent               = elem,
-			allowsMultiple       = name[0].slice(-2) == '[]',
 			canContainDeepFields = false;
 
-		// traverse parent nodes to find all name attributes to be applied to this input
 		while (parent.parentNode) {
 			parent = parent.parentNode;
 			canContainDeepFields = canContainDeepFields || (parent.classList && parent.classList.contains('mpcf-table-input'));
 
 			if (parent.dataset && parent.dataset.basename)
-				name.unshift(parent.dataset.basename);
+				parts.unshift(parent.dataset.basename);
 
-			if (parent.classList && parent.classList.contains('mpcf-repeater-row')) {
-				var i = 0,
-					child = parent;
-
-				while ((child = child.previousSibling) != null) {
-					if (child.classList && child.classList.contains('mpcf-repeater-row'))
-						i++;
-				}
-
-				name.unshift(i);
-			}
+			if (parent.classList && parent.classList.contains('mpcf-repeater-row'))
+				parts.unshift(getRowIndex(parent));
 		}
 
+		return { parts: parts, canContainDeepFields: canContainDeepFields };
+	}
 
-		// generate nested Arrays
+
+	//	position of a repeater row among its sibling rows
+	var getRowIndex = function(row) {
+		var index = 0,
+			child = row;
+
+		while ((child = child.previousSibling) != null) {
+			if (child.classList && child.classList.contains('mpcf-repeater-row'))
+				index++;
+		}
+
+		return index;
+	}
+
+
+	//	Builds the name attribute from the collected parts, e.g.
+	//	[ 'modules', 2, 'slides', 2, 'title' ]  ->  modules[2][slides][2][title]
+	//	Parts may themselves contain brackets (e.g. a base name "modules[2]"),
+	//	those are split up and duplicates of the previous part are removed.
+	var composeName = function(name, canContainDeepFields, allowsMultiple) {
+
+	//	split parts with brackets into sub-parts
 		name = name.filter(item => typeof item !== 'undefined' && item !== null);
 		name = name.map(function(item, i) {
 			var regex     = /(\S+?)\[(\S+?)\](\[(\S+?)\])?/g,
@@ -548,39 +1002,51 @@ var mpcf;
 			return subfields;
 		});
 
-
-	//	smart flatten Array while elimination duplicates
+	//	remove sub-parts that repeat the part at the same position
 		name = name.map((item, i) => {
 			if (!Array.isArray(item)) return item;
-			
+
 			item = item.filter((subItem, j) => subItem != name[j]);
 			return item;
 		});
 
-	//  flatten Array
 		name = name.flat(9999);
 
-	//  remove brackets from strings
+	//	remove remaining brackets and consecutive duplicates (allowed inside tables)
 		name = name.map(item => item.toString().replace(/[\[\]]/g, ''));
 		name = name.filter((item, index, arr) => index === 0 || item !== arr[index - 1] || canContainDeepFields);
 
-	//	join parts and apply format for nested HTML inputs	
+	//	join parts in the format for nested form fields: first[second][third]
 		name = name.length == 1 ? name[0] : name[0] + '[' + name.slice(1).join('][') + ']';
 
-	// 	add trailing '[]' if this is a field that allows multiple values
-		name = allowsMultiple ? name + '[]' : name;
-
-		return name;
+	//	fields that allow multiple values keep their trailing []
+		return allowsMultiple ? name + '[]' : name;
 	}
 
 
-	var generateID = function(elem) {
-		if (elem.tagName && elem.tagName.toLowerCase() == 'label' && 
+	var generateName = function(elem, ancestorCache) {
+		var ownName        = elem.dataset.name || elem.name,
+			allowsMultiple = ownName.slice(-2) == '[]',
+			ancestors      = ancestorCache ? ancestorCache.get(elem.parentNode) : collectAncestorNameParts(elem);
+
+		return composeName(ancestors.parts.concat([ ownName ]), ancestors.canContainDeepFields, allowsMultiple);
+	}
+
+
+	var generateID = function(elem, ancestorCache) {
+	//	a label directly after an input gets the input's ID
+		if (elem.tagName && elem.tagName.toLowerCase() == 'label' &&
 			elem.previousElementSibling && elem.previousElementSibling.tagName.toLowerCase() == 'input') {
-			return generateID(elem.previousElementSibling);
+			return generateID(elem.previousElementSibling, ancestorCache);
 		}
 
-		var id = generateName(elem).replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
+		return idFromName(elem, generateName(elem, ancestorCache));
+	}
+
+
+	//	modules[2][title] -> modules-2-title, checkboxes and radio buttons get their value appended
+	var idFromName = function(elem, name) {
+		var id = name.replace(/\]\[/g, '-').replace('[', '-').replace(']', '');
 
 		if (elem.tagName.toLowerCase() === 'input' && (elem.type === 'radio' || elem.type === 'checkbox'))
 			id += '-' + elem.value;
@@ -588,87 +1054,309 @@ var mpcf;
 	}
 
 
+	//	Caches the ancestor name parts of every element during one renaming pass, so the
+	//	ancestors of the ~10 inputs of a row are only walked once instead of for each input.
+	//	Gives exactly the same result as collectAncestorNameParts().
+	class AncestorNamePartsCache {
+		constructor() {
+			this.entries = new Map();
+		}
+
+		get(node) {
+			if (!node)
+				return { parts: [], canContainDeepFields: false };
+
+			let entry = this.entries.get(node);
+			if (entry) return entry;
+
+			let parent = this.get(node.parentNode),
+				parts  = parent.parts.slice();
+
+		//	same order as in collectAncestorNameParts: row index before the element's base name
+			if (node.classList && node.classList.contains('mpcf-repeater-row'))
+				parts.push(getRowIndex(node));
+
+			if (node.dataset && node.dataset.basename)
+				parts.push(node.dataset.basename);
+
+			entry = {
+				parts:                parts,
+				canContainDeepFields: parent.canContainDeepFields || !!(node.classList && node.classList.contains('mpcf-table-input'))
+			};
+
+			this.entries.set(node, entry);
+			return entry;
+		}
+
+	//	base names have changed - cached parts are outdated
+		clear() {
+			this.entries.clear();
+		}
+	}
+
+
+
+	/**************************************************************
+		Renaming dynamic fields
+
+		Whenever fields are added, moved or removed, the names of
+		all fields in the affected container are recalculated.
+
+		While the interface is being built (see batchRenames), all
+		rename requests are collected and carried out once at the
+		end, for the outermost containers only. This used to happen
+		dozens of times on pages with many dynamic fields.
+	 **************************************************************/
+
+	var renameRowSelector   = '.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel, .mpcf-module',
+		renameFieldSelector = '.mpcf-field-option, .mpcf-module-controls',
+		renameValidInputs   = [ 'input', 'textarea', 'select', 'fieldset' ],
+		renameValidElements = renameValidInputs.concat([ 'button', 'label', 'datalist', 'keygen', 'option' ]);
+
+
 	var renameDynamicFields = function(parent) {
-		var rows        = [].slice.call(parent.querySelectorAll('.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel, .mpcf-module')),
-			validInputs = [ 'input', 'textarea', 'select', 'fieldset' ],
-			valids      = validInputs.concat([ 'button', 'label', 'datalist', 'keygen', 'option' ]);
+		if (renameQueue !== null) {
+			if (renameQueue.indexOf(parent) === -1) renameQueue.push(parent);
+			return;
+		}
 
-		// each row
-		rows.forEach(function(row, rowIndex) {
-			var fields = [].slice.call(row.querySelectorAll('.mpcf-field-option, .mpcf-module-controls'));
+		flushRenames([parent]);
+	}
 
-			// each field
-			fields.forEach(function(field, fieldIndex) {
-				var inputs = field.querySelectorAll('[name], [id], [for]');
 
-				inputs = [].filter.call(inputs, function(input) {
-					let tagName = input.tagName.toLowerCase();
-					return valids.indexOf(tagName) > -1;
-				});
+	//	Runs fn() and collects all rename requests made meanwhile, then renames once.
+	var batchRenames = function(fn) {
+		if (renameQueue !== null)
+			return fn();
 
-				// each input
-				inputs.forEach(function(input, inputIndex) {
-					let type    = input.getAttribute('type'),
-						tagName = input.tagName.toLowerCase(),
-						parent  = input.parentElement,
-						newID, newName;
+		renameQueue = [];
+		qtxQueue    = [];
 
-					let isTable = input.closest('.mpcf-table-inner');
+		try {
+			return fn();
+		} finally {
+			let parents = renameQueue,
+				qtx     = qtxQueue;
 
-					if (!input.dataset.name) {
-						var isLabel = input.getAttribute('for') && input.tagName.toLowerCase() == 'label';
-						isLabel = isLabel && (parent.classList.contains('mpcf-title') || parent.classList.contains('mpcf-buttongroup-option') || parent.classList.contains('mpcf-radio-option'));
+			renameQueue = null;
+			qtxQueue    = null;
 
-						if (isLabel) {
-							var labelFor = parent.closest('.mpcf-field-option, .mpcf-buttongroup-option, .mpcf-radio-option').querySelector(validInputs.join(','));
-							newID = labelFor ? generateID(labelFor) : '';
-						} else if (isTable) {
-							input.dataset.name = input.dataset.ownName;
-						} else {
-							let name  = input.name || input.dataset.ownName || '',
-								split = name.split('][').slice(-1)[0];							
+			flushRenames(parents);
+			qtx.forEach(parent => addQTranslateX(parent));
+		}
+	}
 
-							if ((split.match(/\]/g) || []).length > (split.match(/\[/g) || []).length)
-								split = split.replace(/\]$/, '');
-							input.dataset.name = split; 
-						}
-					}
 
-					if (!input.getAttribute('for')) {
-						newID = generateID(input);
-					}
+	var flushRenames = function(parents) {
+		parents = parents.filter(parent => parent && parent.querySelectorAll && (parent === document || parent.isConnected));
 
-					if (type === 'button' || type === 'submit') return;
+	//	only rename the outermost containers, nested ones are included
+		let roots    = parents.filter(parent => !parents.some(other => other !== parent && other.contains(parent))),
+			maxPass  = 10,
+			pass     = 0,
+			repeat   = true;
 
-					if (input.hasAttribute('id')) {
-						if (tagName != 'textarea' || !input.classList.contains('wp-editor-area')) {
-							input.setAttribute('id', newID);
-						}
-					}
+	//	usually one pass is enough, see renameDynamicFieldsPass()
+		while (repeat && pass < maxPass) {
+			repeat = false;
+			roots.forEach(root => { if (renameDynamicFieldsPass(root)) repeat = true; });
+			pass++;
+		}
 
-					if (input.hasAttribute('for'))	input.setAttribute('for', newID);
+		if (repeat)
+			reportError('Field names did not stabilise after ' + maxPass + ' passes.');
 
-					if (input.hasAttribute('name')) {
-						newName = generateName(input);
-						input.setAttribute('name', newName);
-					}
+		parents.forEach(parent => { if (parent.classList) parent.classList.toggle('empty', parent.childElementCount === 0); });
+		roots.forEach(root => connectLabels(root));
+	}
 
-				//	propagate conditional panel name and update panel base name
-					if (field.classList.contains('mpcf-conditionalpanels-input')) {
-						var panelID = field.dataset.panelId,
-							set     = field.closest('.mpcf-panels'),
-							panel   = set.querySelector('.mpcf-panel[data-panel-id="' + panelID + '"]');
-						
-						if (panel) {
-							panel.dataset.basename = newName.replace(/(\[type\]$)/g, '');
-						}
-					}
-				});
+
+	//	Stores an input's own (last) name segment in data-name, e.g. "title" for "modules[2][title]".
+	//	The same rules have always been used, they must not change.
+	var initOwnName = function(input) {
+		if (input.dataset.name) return;
+
+		if (input.closest('.mpcf-table-inner')) {
+			input.dataset.name = input.dataset.ownName;
+			return;
+		}
+
+		let name  = input.name || input.dataset.ownName || '',
+			split = name.split('][').slice(-1)[0];
+
+		if ((split.match(/\]/g) || []).length > (split.match(/\[/g) || []).length)
+			split = split.replace(/\]$/, '');
+		input.dataset.name = split;
+	}
+
+
+	//	One renaming pass over a container. Gives the same result as the original implementation
+	//	(which renamed the whole container once per registered component) repeated until nothing
+	//	changes - verified on a page with ~1000 fields - but:
+	//	- every field is processed once (fields in nested rows used to be processed repeatedly)
+	//	- the ancestors' name parts are cached (AncestorNamePartsCache)
+	//	- a label's input gets its own name stored before the label's ID is calculated
+	//	- attributes are only written if their value changes
+	//
+	//	Returns true if another pass is needed: when a conditional panel's base name changes
+	//	after fields inside that panel have already been renamed with the old base name.
+
+	var renameDynamicFieldsPass = function(parent) {
+		var rows          = [].slice.call(parent.querySelectorAll(renameRowSelector)),
+			ancestorCache = new AncestorNamePartsCache(),
+			renamedFields = new Set(),
+			needsRepeat   = false;
+
+		var setAttr = function(elem, attr, value) {
+			if (elem.getAttribute(attr) !== String(value))
+				elem.setAttribute(attr, value);
+		};
+
+		var renameInput = function(input, field) {
+			let type    = input.getAttribute('type'),
+				tagName = input.tagName.toLowerCase(),
+				parent  = input.parentElement,
+				name    = undefined,
+				newID, newName;
+
+		//	the title label and the option labels of radio buttons and button groups
+		//	get the ID of the first input of their field / option
+			if (!input.dataset.name) {
+				let isLabel = input.getAttribute('for') && tagName == 'label'
+							  && (parent.classList.contains('mpcf-title') || parent.classList.contains('mpcf-buttongroup-option') || parent.classList.contains('mpcf-radio-option'));
+
+				if (isLabel) {
+					let labelFor = parent.closest('.mpcf-field-option, .mpcf-buttongroup-option, .mpcf-radio-option').querySelector(renameValidInputs.join(','));
+
+					if (labelFor && labelFor.matches('[name], [id], [for]'))
+						initOwnName(labelFor);
+
+					newID = labelFor ? generateID(labelFor, ancestorCache) : '';
+				} else {
+					initOwnName(input);
+				}
+			}
+
+			if (!input.getAttribute('for')) {
+				let isLabelAfterInput = tagName == 'label' && input.previousElementSibling && input.previousElementSibling.tagName.toLowerCase() == 'input';
+
+				if (isLabelAfterInput) {
+					newID = generateID(input, ancestorCache);
+				} else {
+					name  = generateName(input, ancestorCache);
+					newID = idFromName(input, name);
+				}
+			}
+
+			if (type === 'button' || type === 'submit') return;
+
+		//	TinyMCE editors keep the ID they were initialised with
+			if (input.hasAttribute('id') && (tagName != 'textarea' || !input.classList.contains('wp-editor-area')))
+				setAttr(input, 'id', newID);
+
+		//	note: labels not covered above get for="undefined" here, as they always did - connectLabels() repairs them
+			if (input.hasAttribute('for'))
+				setAttr(input, 'for', newID);
+
+			if (input.hasAttribute('name')) {
+				newName = name !== undefined ? name : generateName(input, ancestorCache);
+				setAttr(input, 'name', newName);
+			}
+
+		//	a conditional panels field passes its name on to the panel it creates
+			if (field.classList.contains('mpcf-conditionalpanels-input') && newName !== undefined)
+				updateConditionalPanelBaseName(field, newName);
+		};
+
+		var updateConditionalPanelBaseName = function(field, fieldName) {
+			let set         = field.closest('.mpcf-panels'),
+				panel       = set.querySelector('.mpcf-panel[data-panel-id="' + field.dataset.panelId + '"]'),
+				newBaseName = fieldName.replace(/(\[type\]$)/g, '');
+
+			if (!panel || panel.dataset.basename === newBaseName) return;
+
+			panel.dataset.basename = newBaseName;
+			ancestorCache.clear();
+
+		//	fields of this panel renamed earlier in this pass used the old base name
+			let panelFields = [].slice.call(panel.querySelectorAll(renameFieldSelector));
+			if (panelFields.some(panelField => renamedFields.has(panelField)))
+				needsRepeat = true;
+		};
+
+		rows.forEach(function(row) {
+			[].forEach.call(row.querySelectorAll(renameFieldSelector), function(field) {
+				if (renamedFields.has(field)) return;
+				renamedFields.add(field);
+
+				[].filter.call(field.querySelectorAll('[name], [id], [for]'), input => renameValidElements.indexOf(input.tagName.toLowerCase()) > -1)
+					.forEach(input => renameInput(input, field));
 			});
 		});
 
-		parent.classList.toggle('empty', parent.childElementCount === 0);
+		return needsRepeat;
 	}
+
+
+	/**************************************************************
+		Label connections
+
+		Some labels point to an ID that does not exist (for="undefined",
+		the field's name instead of its ID, an editor that got a new ID,
+		a hidden input). This connects them to their field - without
+		changing any name or ID of a field:
+
+		- labels that already work are left alone
+		- a field's title label is connected to the first text input,
+		  select or textarea of its own field, never to a checkbox,
+		  radio button or button (clicking the title would change a
+		  value or open a dialog)
+		- other labels are connected to the input right before them
+		  (e.g. the label next to a checkbox)
+		- if there is no suitable field, the broken "for" is removed
+	 **************************************************************/
+
+	var labelTargetSelector = 'select, textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])'
+							+ ':not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="file"])';
+
+	var connectLabels = function(root) {
+		root = root || document;
+
+		[].forEach.call(root.querySelectorAll('.mpcf-field-option label[for]'), function(label) {
+			let field = label.closest('.mpcf-field-option');
+
+			if (label.closest('.wp-editor-wrap')) return;							// labels of the WordPress editor
+			if (label.control && ownField(label.control) === field) return;		// already working
+
+			let target = label.parentElement.classList.contains('mpcf-title')
+					   ? findTitleLabelTarget(field)
+					   : findOptionLabelTarget(label, field);
+
+			if (target && target.id)
+				label.setAttribute('for', target.id);
+			else
+				label.removeAttribute('for');
+		});
+	}
+
+	//	the field an element belongs to (not the field of a repeater or conditional field around it)
+	var ownField = function(elem) {
+		return elem.closest('.mpcf-field-option');
+	}
+
+	var findTitleLabelTarget = function(field) {
+		return [].find.call(field.querySelectorAll(labelTargetSelector), elem => ownField(elem) === field) || null;
+	}
+
+	var findOptionLabelTarget = function(label, field) {
+		let previous = label.previousElementSibling;
+
+		if (previous && previous.matches('input:not([type="hidden"]), select, textarea') && ownField(previous) === field)
+			return previous;
+
+		return null;
+	}
+
 
 
 	// bugfix for Chrome
@@ -680,7 +1368,43 @@ var mpcf;
 
 
 	/**************************************************************
+		Options of conditional fields / panels
+
+		Either inline in data-options (as before, e.g. in AJAX
+		responses) or, on page load, printed once per page in
+		<script type="application/json" id="mpcf-options-{ref}">
+		and referenced with data-options-ref. Parsed once per
+		page and shared - the options are only read, never changed.
+	 **************************************************************/
+
+	var optionsStoreCache = {};
+
+	var readOptions = function(elem, fallback) {
+		let ref = elem.dataset.optionsRef;
+
+		if (ref && elem.dataset.options === undefined) {
+			if (!(ref in optionsStoreCache)) {
+				let store = document.getElementById('mpcf-options-' + ref);
+				if (!store) reportError('The options of a field are missing (data-options-ref="' + ref + '").', elem);
+
+				optionsStoreCache[ref] = store ? parseJSON(store.textContent, null, 'the options of a field', elem) : null;
+			}
+
+			if (optionsStoreCache[ref] !== null)
+				return optionsStoreCache[ref];
+		}
+
+		return parseJSON(fallback === undefined ? elem.dataset.options : (elem.dataset.options || fallback), {}, 'the options of a field', elem);
+	}
+
+
+
+	/**************************************************************
 		Conditional fields
+
+		A select (or checkbox) that decides which sub-fields are
+		shown. When the choice changes, the sub-fields are fetched
+		from the server via AJAX.
 	 **************************************************************/
 
 	class ConditionalFields {
@@ -701,13 +1425,14 @@ var mpcf;
 					wrapper  = element.querySelector('.mpcf-conditional-wrapper'),
 					parent   = furthestAncestor(wrapper, '.mpcf-conditional-input'),
 					baseName = select.dataset.basename,
-					options  = JSON.parse(select.dataset.options || '[]'),
+					options  = readOptions(select, '[]'),
 					isSingle = select.tagName.toLowerCase() === 'input';
 
 				element.setAttribute('data-registered', 1);
 				element.setAttribute('data-id', id);
 
 				select.removeAttribute('data-options');
+				select.removeAttribute('data-options-ref');
 				select.removeAttribute('data-values');
 
 				renameDynamicFields(parent);
@@ -732,25 +1457,32 @@ var mpcf;
 			if ((field.isSingle && field.select.checked === false) || typeof field.options[field.select.value] === 'undefined')
 				return;
 
-			let request = {
+			let request = withNonce({
 				'action': 'mpcf_get_conditional_fields',
 				'fields': JSON.stringify(field.options[field.select.value].fields)
-			};
+			});
 
 			updateLoadingElements(field.element);
 			field.loader.classList.add('mpcf-loading-active');
 
-			$.post(ajaxurl, request, response => {
-				removeQTranslateX(field.wrapper);
-				field.wrapper.innerHTML = response;
-				renameDynamicFields(field.parent);
+			trackRequest($.post(ajaxurl, request, response => {
+				runSafely('The fields of this option could not be inserted.', () => batchRenames(() => {
+					removeQTranslateX(field.wrapper);
+					field.wrapper.innerHTML = response;
+					renameDynamicFields(field.parent);
 
+					field.loader.classList.remove('mpcf-loading-active');
+					updateLoadingElements(field.element, true);
+
+					checkCheckableElements(field.wrapper);
+					registerAsyncElements(field.wrapper);
+				}));
+			}).fail(xhr => {
+			//	request failed: stop the loading state, so the post can still be saved
 				field.loader.classList.remove('mpcf-loading-active');
 				updateLoadingElements(field.element, true);
-
-				checkCheckableElements(field.wrapper);
-				registerAsyncElements(field.wrapper);
-			});
+				reportRequestError('The fields of this option could not be loaded.', xhr);
+			}));
 
 		}
 
@@ -763,6 +1495,10 @@ var mpcf;
 
 	/**************************************************************
 		Conditional panel fields
+
+		Like conditional fields, but the sub-fields are shown in an
+		additional panel (tab) of the meta box. Often used inside a
+		repeater to build pages from "modules".
 	 **************************************************************/
 
 	class ConditionalPanelsFields {
@@ -785,8 +1521,8 @@ var mpcf;
 					tabs     = set.querySelector('.mpcf-panels-tabs'),
 					tab      = tabs.querySelector('.mpcf-panel[data-panel-id="' + id + '"]'),
 					select   = field.querySelector('.mpcf-conditional-choice select, .mpcf-conditional-choice input[type="checkbox"]'),
-					options  = JSON.parse(select.dataset.options),
-					values   = JSON.parse(select.dataset.values);				
+					options  = readOptions(select),
+					values   = parseJSON(select.dataset.values, {}, 'the values of a conditional panels field', field);				
 
 				if (!menuItem) {
 					menuItem = document.createElement('li');
@@ -805,6 +1541,7 @@ var mpcf;
 				field.dataset.registered = 1;
 				field.setAttribute('data-panel-id', id);
 				select.removeAttribute('data-options');
+				select.removeAttribute('data-options-ref');
 				select.removeAttribute('data-values');
 
 				select.addEventListener('change', (() => { 
@@ -832,7 +1569,6 @@ var mpcf;
 				};
 			}).bind(this));
 
-			newFields.forEach((newField) => (() => { this.switchContent(id); }).bind(this));
 			newFields.forEach((newField => this.fields[newField.id] = newField).bind(this));
 		}
 
@@ -848,41 +1584,47 @@ var mpcf;
 
 			updateLoadingElements(field.element);
 
-			let request = {
+			let request = withNonce({
 				'action': 'mpcf_get_conditional_panels_fields',
 				'panel':  JSON.stringify(field.options[field.select.value].panel),
 				'values': field.values
-			};
+			});
 
-			$.post(ajaxurl, request, (response => {
-				response = JSON.parse(response);
-				if (field.tab) removeQTranslateX(field.tab);
+			trackRequest($.post(ajaxurl, request, (response => {
+				runSafely('The panel of this option could not be inserted.', () => batchRenames(() => {
+					response = JSON.parse(response);
+					if (field.tab) removeQTranslateX(field.tab);
 
-				field.menuItem.outerHTML = response.menu;
-				field.tab.outerHTML      = response.tab;
+					field.menuItem.outerHTML = response.menu;
+					field.tab.outerHTML      = response.tab;
 
-				field.menuItem = field.menu.querySelector('[data-index="-1"]');
-				field.tab      = field.tabs.querySelector('[data-index="-1"]');
+					field.menuItem = field.menu.querySelector('[data-index="-1"]');
+					field.tab      = field.tabs.querySelector('[data-index="-1"]');
 
-				field.menuItem.setAttribute('data-panel-id', id);
-				field.tab.setAttribute('data-panel-id', id);
+					field.menuItem.setAttribute('data-panel-id', id);
+					field.tab.setAttribute('data-panel-id', id);
 
-				field.menuItem.setAttribute('data-index', this.getElemOrder(field.menuItem));
-				field.tab.setAttribute('data-index', this.getElemOrder(field.tab));
-				field.tab.setAttribute('data-basename', field.baseName);
-				field.tab.classList.add('mpcf-conditionalpanel');
+					field.menuItem.setAttribute('data-index', this.getElemOrder(field.menuItem));
+					field.tab.setAttribute('data-index', this.getElemOrder(field.tab));
+					field.tab.setAttribute('data-basename', field.baseName);
+					field.tab.classList.add('mpcf-conditionalpanel');
 
-				let boxID = field.element.closest('.postbox').id;
+					let boxID = field.element.closest('.postbox').id;
 
-				panelSwitchers.registerMenuItem(boxID, field.menuItem);
-				panelSwitchers.registerPanel(boxID, field.tab);
-				panelSwitchers.activatePreactivatedPanel(boxID);
+					panelSwitchers.registerMenuItem(boxID, field.menuItem);
+					panelSwitchers.registerPanel(boxID, field.tab);
+					panelSwitchers.activatePreactivatedPanel(boxID);
 
-				renameDynamicFields(field.set);
+					renameDynamicFields(field.set);
+					updateLoadingElements(field.element, true);
+					checkCheckableElements(field.tab);
+					registerAsyncElements(field.tab);
+				}));
+			}).bind(this)).fail(xhr => {
+			//	request failed: stop the loading state, so the post can still be saved
 				updateLoadingElements(field.element, true);
-				checkCheckableElements(field.tab);
-				registerAsyncElements(field.tab);
-			}).bind(this));
+				reportRequestError('The panel of this option could not be loaded.', xhr);
+			}));
 		}
 
 		getElemOrder(elem) {
@@ -906,7 +1648,11 @@ var mpcf;
 
 
 	/**************************************************************
-		Conditional panel fields
+		Module boxes
+
+		Meta boxes registered with mpcf_add_module_metabox(): a list
+		of collapsible modules of different types that can be added,
+		moved and removed.
 	 **************************************************************/
 
 	class ModuleBoxes {
@@ -928,7 +1674,7 @@ var mpcf;
 					select      = box.querySelector('.mpcf-modules-controls-inner select'),
 					addBtn      = box.querySelector('.mpcf-modules-add-module'),
 					activeInput = box.querySelector('.activetab'),
-					options     = JSON.parse(select.dataset.modules);		
+					options     = parseJSON(select.dataset.modules, {}, 'the module types of a module box', box);		
 
 				box.dataset.registered = 1;
 				box.setAttribute('data-module-id', id);
@@ -965,30 +1711,36 @@ var mpcf;
 			updateLoadingElements(box.box);
 
 			let type = box.select.value,
-				request = {
+				request = withNonce({
 					'action':	'mpcf_get_modules_fields',
 					'module':	JSON.stringify(box.options[type]),
 					'type':		type,
 					'i': 		box.modules.length,
 					'baseName':	box.baseName
-				};
+				});
 
-			$.post(ajaxurl, request, (response => {
-				let newModule = document.createElement('section');
-				box.modulesList.appendChild(newModule);
-				newModule.outerHTML = response;
+			trackRequest($.post(ajaxurl, request, (response => {
+				runSafely('The new module could not be inserted.', () => batchRenames(() => {
+					let newModule = document.createElement('section');
+					box.modulesList.appendChild(newModule);
+					newModule.outerHTML = response;
 
-				newModule = box.modulesList.children[box.modulesList.children.length - 1];
+					newModule = box.modulesList.children[box.modulesList.children.length - 1];
 
-				this.boxes[id].modules = [].slice.call(box.modulesList.querySelectorAll('.mpcf-module'));
-				this.activateModule(id, newModule);
-				this.registerModuleEvents(id, newModule);
+					this.boxes[id].modules = [].slice.call(box.modulesList.querySelectorAll('.mpcf-module'));
+					this.activateModule(id, newModule);
+					this.registerModuleEvents(id, newModule);
 
-				this.reorderModules(id);
+					this.reorderModules(id);
+					updateLoadingElements(box.box, true);
+					checkCheckableElements(box.box);
+					registerAsyncElements(box.box);
+				}));
+			}).bind(this)).fail(xhr => {
+			//	request failed: stop the loading state, so the post can still be saved
 				updateLoadingElements(box.box, true);
-				checkCheckableElements(box.box);
-				registerAsyncElements(box.box);
-			}).bind(this));
+				reportRequestError('The new module could not be loaded.', xhr);
+			}));
 		}
 
 
@@ -1035,8 +1787,10 @@ var mpcf;
 			let mod = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module');
 			if (mod.previousElementSibling === null) return;
 
+			detachEditors(mod);			// TinyMCE does not survive being moved
 			mod.previousElementSibling.before(mod);
 			this.reorderModules(id);
+			registerEditors(mod);
 		}
 
 
@@ -1046,8 +1800,10 @@ var mpcf;
 			let mod = e.target.classList.contains('mpcf-module') ? e.target : e.target.closest('.mpcf-module');
 			if (mod.nextElementSibling === null) return;
 
+			detachEditors(mod);
 			mod.nextElementSibling.after(mod);
 			this.reorderModules(id);
+			registerEditors(mod);
 		}
 
 
@@ -1208,7 +1964,7 @@ var mpcf;
 				center = container.getAttribute('center') ? JSON.parse(container.getAttribute('center')) : [0, 0],
 				zoom = container.getAttribute('zoom') ? parseInt(container.getAttribute('zoom')) : 10,
 				options = {
-					center: { lat: parseInt(center[0]), lng: parseInt(center[1]) },
+					center: { lat: parseFloat(center[0]), lng: parseFloat(center[1]) },
 					zoom: zoom,
 					streetViewControl: false
 				};
@@ -1292,8 +2048,10 @@ var mpcf;
 		Register color pickers
 	 **************************************************************/
 
-	function registerColorPicker() {
-		$('.mpcf-color-input').find('input').wpColorPicker();
+	//	Only the text input of color fields that are not initialised yet: once initialised, the field
+	//	also contains the picker's own "Clear" button, which must not become a color picker itself.
+	function registerColorPicker(parent) {
+		$(parent || document).find('.mpcf-color-input input[type="text"]:not(.wp-color-picker)').wpColorPicker();
 	}
 
 
@@ -1471,14 +2229,12 @@ var mpcf;
 						dropArea.addEventListener('dragleave', () => elem.classList.remove('drag-over'));
 						dropArea.addEventListener('drop',      () => elem.classList.remove('drag-over'));
 					} else {
-						elem.classList.remove('drag-drop');
-						dropArea.removeEventListener('dragover');
-						dropArea.removeEventListener('dragleave');
-						dropArea.removeEventListener('drop');
+						elem.classList.remove('drag-drop');		// no listeners have been added in this case
 					}
 
-					if (u.runtime === 'html4')
-						 elem.querySelector('.upload-flash-bypass').styles.display = 'none';
+					let flashBypass = elem.querySelector('.upload-flash-bypass');
+					if (u.runtime === 'html4' && flashBypass)
+						flashBypass.style.display = 'none';
 				});
 
 				uploader.bind('postinit', u => u.refresh());
@@ -1566,7 +2322,7 @@ var mpcf;
 
 			if (max <= hundredMB || file.size <= hundredMB) return;
 
-			setTimeout(function () {
+			setTimeout(() => {
 				if (file.status >= 3 || file.loaded !== 0) return;
 
 				this.displayErrorMessage(id, up, file, localizedmpcf.bigUploadFailed.replace('%1$s', '<a class="uploader-html" href="#">').replace('%2$s', "</a>"));
@@ -1579,9 +2335,11 @@ var mpcf;
 
 		uploadProgress(id, up, file) {
 			let picker       = this.pickers[id],
-				item         = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id),
-				progressBar  = picker.element.querySelector('.progress-bar'),
-				progressText = picker.element.querySelector('.progress-text');
+				item         = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id) || picker.element,
+				progressBar  = item.querySelector('.progress-bar'),
+				progressText = item.querySelector('.progress-text');
+
+			if (!progressBar || !progressText) return;
 
 			progressBar.style.transform = 'translate(0%, -50%) scaleX(' + (file.percent / 100) + ')';
 			progressText.innerText = (file.percent || 0) + '%';
@@ -1613,15 +2371,15 @@ var mpcf;
 			let picker = this.pickers[id],
 				item   = picker.element.querySelector('#mpcf-bulkmedia-item-' + file.id + ' .item');
 
-			$.get(ajaxurl, {
+			$.get(ajaxurl, withNonce({
 				attachment_id:	response,
 				fieldName:		picker.element.getAttribute('name'),
 				fieldOwnName: 	picker.element.getAttribute('data-own-name'),
 				action:			'mpcf_bulk_media_fetch_action'
-			}, response => {
+			}), response => {
 				item.innerHTML = response;
 				this.registerItemEvents(item);
-			});
+			}).fail(xhr => reportRequestError('An uploaded file could not be added to the list.', xhr));
 		}
 
 
@@ -1721,16 +2479,16 @@ var mpcf;
 					item.setAttribute('id', 'mpcf-bulkmedia-item-' + choice.id);
 					picker.itemsContainer.appendChild(item);
 
-					$.get(ajaxurl, {
+					$.get(ajaxurl, withNonce({
 						attachment_id:	choice.id,
 						fieldName:		picker.element.getAttribute('name'),
 						fieldOwnName: 	picker.element.getAttribute('data-own-name'),
 						action:			'mpcf_bulk_media_fetch_action',
 						removeOuter:    true
-					}, response => {
+					}), response => {
 						item.innerHTML = response;
 						this.registerItemEvents(item);
-					});
+					}).fail(xhr => reportRequestError('A selected file could not be added to the list.', xhr));
 				});
 			});
 
@@ -1810,194 +2568,19 @@ var mpcf;
 
 
 	/**************************************************************
-		General helpers
-	 **************************************************************/
-
-	/**********
-		Drag and drop
-	 **********/
-
-	class addDragDrop {
-		constructor (target, args = {}) {
-			this.elems = [];
-			this.dragSource = null;
-			this.isDragging = false;
-			this.defaults = {
-				cbStart: null,
-				cbOver: null,
-				cbEnter: null,
-				cbLeave: null,
-				cbDrop: null,
-				cbEnd: null,
-				clickElem: null
-			};
-
-			this.args = Object.assign(this.defaults, args);
-			this.addElements(target);
-			return this;
-		}
-
-		addElements(newElems) {
-			if (!newElems || newElems.length === 0) return;
-			
-			var obj = this;
-
-			if (newElems.length)
-				newElems = [].slice.call(newElems);
-			else
-				newElems = [newElems];
-
-			this.elems = this.elems.concat(newElems);
-
-			newElems.forEach(function(elem) {
-				obj.addHandlers(elem);
-			});
-		}
-
-		addHandlers(elem) {
-			elem.addEventListener('mousedown', (e) => this.handleClick(e),     false);
-			elem.addEventListener('dragstart', (e) => this.handleDragStart(e), false);
-			elem.addEventListener('dragenter', (e) => this.handleDragEnter(e), false);
-			elem.addEventListener('dragover',  (e) => this.handleDragOver(e),  false);
-			elem.addEventListener('dragleave', (e) => this.handleDragLeave(e), false);
-			elem.addEventListener('drop',      (e) => this.handleDragDrop(e),  false);
-			elem.addEventListener('dragend',   (e) => this.handleDragEnd(e),   false);
-		}
-
-		handleClick(e) {
-			var elem = e.target;
-
-			if (this.args.clickElem !== null) {
-				if (!elem.matches(this.args.clickElem))
-					elem = elem.closest(this.args.clickElem);
-
-				if (elem === null) return;
-			}
-
-			while (this.elems.indexOf(elem) === -1 && elem.parentNode !== null)
-				elem = elem.parentNode;
-
-			if (elem === null) return;
-
-			elem.draggable = true;
-			this.isDragging = true;
-		}
-
-		handleDragStart(e) {
-			if (!this.isDragging) return;
-
-			var elem = e.target,
-				inputs = elem.querySelectorAll('input, textarea');
-
-			this.dragSource = elem;
-			e.dataTransfer.effectAllowed = 'move';
-
-			[].forEach.call(inputs, function(input) {
-				input.dataset.value = input.value;
-			});
-
-			e.dataTransfer.setData('text/html', elem.outerHTML);
-			elem.classList.add('dragged');
-
-			if (typeof this.args.cbStart === 'function')
-				this.args.cbStart(elem);
-		}
-
-		handleDragOver(e) {
-			var elem = e.target;
-
-			if (e.preventDefault)
-				e.preventDefault();
-
-			elem.classList.add('dragover');
-			e.dataTransfer.dropEffect = 'move';
-
-			if (typeof this.args.cbOver === 'function')
-				this.args.cbOver(elem);
-
-			return false;
-		}
-
-		handleDragEnter(e) {
-			var elem = e.target;
-
-			if (typeof this.args.cbEnter === 'function')
-				this.args.cbEnter(elem);
-		}
-
-		handleDragLeave(e) {
-			var elem = e.target;
-
-			elem.classList.remove('dragover');
-
-			if (typeof this.args.cbLeave === 'function')
-				this.args.cbLeave(elem);
-		}
-
-		handleDragDrop(e) {
-			if (!this.isDragging) return;
-
-			var elem = e.target;
-
-			if (e.stopPropagation)
-				e.stopPropagation();
-
-			if (this.dragSource !== elem) {
-				var dropHtml = e.dataTransfer.getData('text/html'),
-					parent = elem.parentNode,
-					dropElem;
-
-				parent.removeChild(this.dragSource);
-				elem.insertAdjacentHTML('beforebegin', dropHtml);
-				dropElem = elem.previousSibling;
-				this.addHandlers(dropElem);
-
-				[].forEach.call(dropElem.querySelectorAll('input, textarea'), function(input) {
-					input.value = input.dataset.value;
-					input.removeAttribute('data-value');
-				});
-
-
-				[].forEach.call(parent.querySelectorAll('meta'), function(meta) {
-					parent.removeChild(meta);
-				});
-			}
-
-			elem.classList.remove('dragover');
-			this.isDragging = false;
-
-			if (typeof this.args.cbDrop === 'function')
-				this.args.cbDrop(elem);
-
-			return false;
-		}
-
-		handleDragEnd(e) {
-			var elem = e.target;
-
-			this.isDragging = false;
-
-			this.elems.forEach(function(elem) {
-				elem.draggable = false;
-				elem.classList.remove('dragover', 'dragged');
-			});
-
-			if (typeof this.args.cbEnd === 'function')
-				this.args.cbEnd(elem);
-		}
-	}
-
-
-
-
-	/**************************************************************
 		Add qTranslate-X/qTranslate-XT after dynamically loaded fields
 	**************************************************************/
 
 	function addQTranslateX(parent = null) {
 		if (typeof qTranslateConfig === 'undefined') return;
-		
+
 		parent = parent || document;
+
+	//	while batching, field IDs are not final yet - hook fields up after renaming
+		if (qtxQueue !== null) {
+			if (qtxQueue.indexOf(parent) === -1) qtxQueue.push(parent);
+			return;
+		}
 
 		var fields = parent.querySelectorAll('.mpcf-multilingual');
 		[].forEach.call(fields, function(field) {
@@ -2031,6 +2614,11 @@ var mpcf;
 
 	/**************************************************************
 		Update loading elements
+
+		Disables the publish/update button while content is loaded.
+		Note: removing one element clears the whole list (the filter
+		compares each element with itself). Kept as is, as fixing it
+		could leave the button disabled when a request fails.
 	**************************************************************/
 
 	var updateLoadingElements = function(elem, toRemove = false) {
@@ -2105,7 +2693,10 @@ var mpcf;
 		painter.setColors(colors);
 
 		[].forEach.call(modules, function(module) {
-			var options  = document.querySelectorAll('.mpcf-imagebuttongroup-option');
+			if (module.dataset.mpcfPainted) return;			// already registered
+			module.dataset.mpcfPainted = 1;
+
+			var options  = module.querySelectorAll('.mpcf-imagebuttongroup-option');
 
 			var changeSelection = function() {
 				[].forEach.call(options, function(option) {
@@ -2153,7 +2744,7 @@ var mpcf;
 					nextOpenBracket  = list.indexOf('[');
 
 				if (nextOpenBracket === 0) {
-					let nextCloseBracket = list.indexOf(']')
+					let nextCloseBracket = list.indexOf(']'),
 						item             = list.substring(0, nextCloseBracket);
 
 					arr.push(decodeOrderList(item));
@@ -2185,7 +2776,10 @@ var mpcf;
 			let order = decodeOrderList(elem.dataset.jsonSafeOrder);
 
 			order.forEach(key => {
-				let child = elem.querySelector('[value="' + key + '"]');
+				let child = elem.querySelector('[value="' + CSS.escape(String(key)) + '"]');
+
+			//	e.g. values containing a comma are split up in the order list - leave those where they are
+				if (!child) return;
 
 				while (child.parentElement !== elem) {
 					child = child.parentElement;
@@ -2265,7 +2859,7 @@ var mpcf;
 
 
 	/**************************************************************
-		Helper function
+		Helper functions
 	 **************************************************************/
 
 	var furthestAncestor = function(elem, selector) {

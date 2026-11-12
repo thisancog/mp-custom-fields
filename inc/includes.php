@@ -1,5 +1,7 @@
 <?php
 
+require_once('mpcf-ajax.php');
+require_once('mpcf-submission.php');
 require_once('mpcf-modules.php');
 require_once('mpcf-actions.php');
 require_once('mpcf-register-metaboxes.php');

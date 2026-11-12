@@ -1,0 +1,3 @@
+panels: 2
+values: 
+checksum of the complete result: ca5d70f0a46677b626d37e2937a520aa

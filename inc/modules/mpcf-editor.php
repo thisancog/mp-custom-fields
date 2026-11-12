@@ -88,7 +88,6 @@ class MPCFEditorField extends MPCFModule {
 		$name         = mpcf_get_input_name($this);
 		$id           = str_replace(array('-', '_', '[', ']'), '', strtolower($name)) . uniqid();
 		$wpautop      = isset($args['addparagraphs']) ? boolval($args['addparagraphs']) : true;
-		$isRegistered = wp_doing_ajax() ? 0 : 1;
 
 		$defaultTinyMCE = array(
 			'wpautop'	=> $wpautop,
@@ -129,10 +128,16 @@ class MPCFEditorField extends MPCFModule {
 			$editorArgsJS['tinymce']['external_plugins'] = $additionalPlugins;
 
 		$settings = esc_attr(json_encode($editorArgsJS, JSON_HEX_QUOT | JSON_HEX_APOS));
+
+	//	Output as a plain textarea: admin.js initialises the editor with the settings above once it
+	//	becomes visible (initialising all editors of a page on load is slow). Until then, the
+	//	textarea holds the content, so saving works the same.
+		$editorargs['tinymce']   = false;
+		$editorargs['quicktags'] = false;
 	// 	@ Wordpress Bug: editor_height is not honored
 		$minHeight = isset($editorargs['editor_height']) ? $editorargs['editor_height']
 				   : $this->get_editor_min_height_from_rows($editorargs['textarea_rows']); ?>
-		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>" data-is-registered="<?php echo $isRegistered; ?>">
+		<div class="mpcf-editor-inner" data-settings="<?php echo $settings; ?>" data-is-registered="0">
 <?php		wp_editor(mpcf_mknice($args['value']), $id, $editorargs); ?>
 			<style>#<?php echo mpcf_mknice($id); ?>_ifr, .mpcf-input-editor[name="<?php echo mpcf_mknice($id); ?>"] { min-height: <?php echo $minHeight; ?>px; }</style>
 		</div>

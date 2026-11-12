@@ -49,11 +49,11 @@ class MPCFConditionalPanelField extends MPCFModule {
 			$value[$prop] = mpcf_mknice($val); 
 		}
 
-		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+		$optionsAttr = mpcf_options_data_attribute($options);
 		$valuesJSON  = esc_attr(json_encode($value, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
 
 		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . ' data-own-name="type"'
-					 . ' data-basename="' . $args['name'] . '" data-options="' . $optionsJSON . '"'
+					 . ' data-basename="' . $args['name'] . '"' . $optionsAttr
 					 . ' data-values="' . $valuesJSON . '"'; ?>
 
 		<div class="mpcf-conditionalpanels-container" data-basename="<?php echo $args['name']; ?>">

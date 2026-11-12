@@ -144,7 +144,7 @@ class MPCFRepeaterField extends MPCFModule {
 				$currentField = null;
 
 				array_walk($fields, function($field) use (&$currentField, $subValueKey) {
-					if ($field == null || $field['name'] !== $subValueKey) return;
+					if ($field == null || !isset($field['name']) || $field['name'] !== $subValueKey) return;
 					$currentField = $field;
 				});
 

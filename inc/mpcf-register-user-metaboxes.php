@@ -59,6 +59,10 @@ function mpcf_remove_custom_fields_user($boxID) {
 
 
 function mpcf_remove_all_custom_fields_user() {
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach (array_keys(get_option('mpcf_user_boxes', array())) as $id)
+		mpcf_remove_metabox_from_versions($id, 'user');
+
 	update_option('mpcf_user_boxes', array());
 }
 
@@ -71,7 +75,8 @@ function mpcf_remove_all_custom_fields_user() {
 function mpcf_add_metaboxes_user() {
 	$boxes = mpcf_get_user_boxes();
 
-	foreach ($boxes as $id => $box) {
+//	declared only once - declaring it inside the loop caused a fatal error with more than one user box
+	if (!function_exists('metaBoxLoader')) {
 		function metaBoxLoader($user, $id, $box) {
 			$roles           = $box['roles'];
 			$registerThisBox = true;
@@ -84,7 +89,9 @@ function mpcf_add_metaboxes_user() {
 				mpcf_meta_box_init_user($user, $id, $box);
 			}
 		}
+	}
 
+	foreach ($boxes as $id => $box) {
 		add_action('edit_user_profile',        function($user) use ($id, $box) { metaBoxLoader($user, $id, $box); });
 		add_action('profile_personal_options', function($user) use ($id, $box) { metaBoxLoader($user, $id, $box); });
 	}
@@ -179,6 +186,11 @@ function mpcf_get_meta_box_user_position($id, $box) {
  *****************************************************/
 
 function mpcf_save_meta_boxes_user($userID) {
+	if (!mpcf_submission_is_complete()) {				// see inc/mpcf-submission.php
+		mpcf_report_incomplete_submission('user ' . $userID);
+		return;
+	}
+
 	$boxes = mpcf_get_user_boxes();
 
 	foreach ($boxes as $id => $box) {

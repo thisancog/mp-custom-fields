@@ -236,6 +236,9 @@ function mpcf_bulk_media_action() {
 
 
 function mpcf_bulk_media_fetch_action() {
+	if (!check_ajax_referer(MPCF_AJAX_NONCE_ACTION, 'nonce', false))
+		mpcf_ajax_fail('The request could not be verified (invalid or expired nonce). Please reload the page.', 403);
+
 	if (!isset($_REQUEST['attachment_id']) || !intval($_REQUEST['attachment_id'])) exit;
 	if (!isset($_REQUEST['fieldName'])     || !isset($_REQUEST['fieldOwnName']))   exit;
 

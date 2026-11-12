@@ -1,0 +1,22 @@
+{
+  "name": "mp-custom-fields",
+  "version": "1.5.0",
+  "description": "A WordPress plugin to register custom fields from code, with a clean, tabbed interface in the admin.",
+  "private": true,
+  "scripts": {
+    "build": "gulp build",
+    "test": "gulp test",
+    "test:update-snapshots": "php tests/php/run.php --update-snapshots && node tests/browser/run.js --update-snapshots",
+    "setup": "playwright install chromium"
+  },
+  "devDependencies": {
+    "gulp": "^5.0.0",
+    "gulp-bump": "^3.2.0",
+    "gulp-git": "^2.10.1",
+    "gulp-prompt": "^1.2.0",
+    "gulp-string-replace": "^1.1.2",
+    "jquery": "^3.7.1",
+    "playwright": "^1.48.0",
+    "semver": "^7.6.3"
+  }
+}

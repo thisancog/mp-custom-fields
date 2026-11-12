@@ -206,7 +206,7 @@ function mpcf_admin_edit_box($id) {
 		<div id="message" class="mpcf-message updated fade"><p><strong><?php echo $message; ?></strong></p></div>
 <?php	} ?>
 
-	<?php mpcf_build_gui_as_panels($gui, $box); ?>
+	<?php mpcf_build_gui_as_panels('mpcf-edit-box', $gui, $box); ?>
 
 	<div class="mpcf-options-inputs">
 		<input type="hidden" name="update_settings" id="update_settings" value="Y" />

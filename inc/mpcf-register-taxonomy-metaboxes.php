@@ -60,6 +60,10 @@ function mpcf_remove_custom_fields_taxonomy($boxID) {
 }
 
 function mpcf_remove_all_custom_fields_taxonomies() {
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach (array_keys(get_option('mpcf_taxonomy_boxes', array())) as $id)
+		mpcf_remove_metabox_from_versions($id, 'tax');
+
 	update_option('mpcf_taxonomy_boxes', array());
 }
 
@@ -132,6 +136,11 @@ function mpcf_edit_custom_fields_taxonomy($term, $tax) {
 
 function mpcf_save_custom_fields_taxonomy($term_id) {
 	if (!isset($_POST['mpcf-is-complete-save'])) return;
+
+	if (!mpcf_submission_is_complete()) {				// see inc/mpcf-submission.php
+		mpcf_report_incomplete_submission('term ' . $term_id);
+		return;
+	}
 	
 	$termObj = get_term($term_id);
 	$tax     = $termObj->taxonomy;

@@ -78,6 +78,7 @@ function mpcf_build_gui_as_modules($id, $modules, $values, $baseName, $active) {
 	$modulesJSON = esc_attr(json_encode($modules, JSON_FORCE_OBJECT | JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP)); ?>
 
 	<div class="mpcf-modules" data-basename="<?php echo $baseName; ?>">
+<?php	mpcf_interface_ready_input(); ?>
 		<div class="mpcf-modules-inner">
 <?php 	for ($i = 0; $i < count($values); $i++) {
 	 			$valueModule = $values[$i];
@@ -171,7 +172,7 @@ function mpcf_build_module($module, $type, $values, $i, $baseName, $isActive = f
 
 
 function mpcf_ajax_get_module_fields() {
-	$module   = json_decode(stripcslashes($_POST['module']), true);
+	$module   = mpcf_ajax_get_verified_definition(isset($_POST['module']) ? $_POST['module'] : null);	// see inc/mpcf-ajax.php
 	$type     = $_POST['type'];
 	$i        = intval($_POST['i']);
 	$baseName = $_POST['baseName'];

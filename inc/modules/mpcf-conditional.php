@@ -49,10 +49,10 @@ class MPCFConditionalField extends MPCFModule {
 		$type        = isset($value['type']) ? $value['type'] : null;
 		$selected    = null;
 		$order       = $args['original_order'];
-		$optionsJSON = esc_attr(json_encode($options, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP));
+		$optionsAttr = mpcf_options_data_attribute($options);
 
 		$attrs       = mpcf_input_name($this, 'type') . mpcf_input_id($this, 'type') . mpcf_input_own_name($this)
-					 . ' data-basename="' . $args['name'] . '" data-options="' . $optionsJSON . '"'; ?>
+					 . ' data-basename="' . $args['name'] . '"' . $optionsAttr; ?>
 
 		<div class="mpcf-conditional-container" data-basename="<?php echo $args['name']; ?>">
 			<div class="mpcf-conditional-choice">

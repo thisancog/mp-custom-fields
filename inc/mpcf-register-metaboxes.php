@@ -64,6 +64,12 @@ function mpcf_remove_custom_fields($boxID) {
 }
 
 function mpcf_remove_all_custom_fields() {
+//	forget the registered versions, so the boxes are registered again when added anew
+	foreach (get_option('mpcf_meta_boxes', array()) as $id => $box) {
+		$type = isset($box['type']) && $box['type'] === 'module-metabox' ? 'module' : 'post';
+		mpcf_remove_metabox_from_versions($id, $type);
+	}
+
 	update_option('mpcf_meta_boxes', array());
 }
 
