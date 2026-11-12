@@ -176,7 +176,7 @@ function mpcf_enqueue_scripts() {
 
 
 function mpcf_build_panel_menu_item($panel, $i) { ?>
-	<li class="mpcf-panel-item" data-index="<?php echo $i; ?>" data-panel-id="<?php echo $panel['panel_id']; ?>" data-basename="<?php echo $panel['panel_basename']; ?>">
+	<li class="mpcf-panel-item" data-index="<?php echo $i; ?>" data-panel-id="<?php echo $panel['panel_id']; ?>" data-basename="<?php echo $panel['panel_basename']; ?>"<?php echo mpcf_panel_show_if_attribute($panel); ?>>
 <?php 	if (isset($panel['icon'])) {
 			if (strpos($panel['icon'], 'dashicons') > -1) { ?>
 			<div class="mpcf-panel-icon dashicons <?php echo $panel['icon']; ?>"></div>
@@ -195,7 +195,7 @@ function mpcf_build_panel_menu_item($panel, $i) { ?>
 
 function mpcf_build_panel_tab($panel, $values, $i) {
 	$className = 'mpcf-panel' . (isset($panel['class_name']) ? ' ' . $panel['class_name'] : ''); ?>
-	<div class="<?php echo $className; ?>" data-index="<?php echo $i; ?>" data-panel-id="<?php echo $panel['panel_id']; ?>" data-basename="<?php echo $panel['panel_basename']; ?>">
+	<div class="<?php echo $className; ?>" data-index="<?php echo $i; ?>" data-panel-id="<?php echo $panel['panel_id']; ?>" data-basename="<?php echo $panel['panel_basename']; ?>"<?php echo mpcf_panel_show_if_attribute($panel); ?>>
 		<?php mpcf_build_gui_from_fields($panel['fields'], $values); ?>
 	</div>
 <?php
@@ -239,6 +239,9 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 				$attrs  .= ' data-panel-id="' . $field['value'][$field['name']]['panel_id'] . '"';
 				unset($field['value'][$field['name']]['panel_id']);
 			}
+
+			if (!empty($field['show_if']))
+				$attrs .= mpcf_show_if_attribute($field['show_if'], $field['name']);
 
 			$wrapperClasses = isset($module->wrapperClasses) && !empty($module->wrapperClasses) ? ' ' . $module->wrapperClasses : ''; ?>
 
@@ -288,6 +291,117 @@ function mpcf_build_gui_from_fields($fields, $values, $echoRequired = true) {
 	AJAX responses keep the data-options attribute, as
 	does any option set below the size threshold.
  *****************************************************/
+
+/*****************************************************
+	Fields shown depending on other fields (show_if)
+
+	The setting show_if of a field or panel is brought
+	into one form here and printed in data-show-if; the
+	browser evaluates it (see admin.js). Shorthands:
+
+		array('layout' => 'gallery')				layout = gallery
+		array('layout' => array('a', 'b'))			layout is a or b
+		array(cond1, cond2)							all of them
+		array('any' => array(cond1, cond2))			one of them
+
+	Normalised form:
+
+		{ "field": "layout", "operator": "=", "value": "gallery" }
+		{ "all": [ ... ] }	/	{ "any": [ ... ] }
+
+	Invalid conditions are logged and left out, so a
+	mistake never hides a field.
+ *****************************************************/
+
+function mpcf_show_if_operators() {
+	return array('=', '!=', 'in', 'not_in', 'empty', 'not_empty', 'checked', 'not_checked', '>', '<', '>=', '<=', 'contains');
+}
+
+
+function mpcf_normalize_show_if($condition, $context = '') {
+	if (!is_array($condition) || empty($condition)) {
+		mpcf_log('show_if of "' . $context . '" is not a list of conditions and is ignored.');
+		return null;
+	}
+
+	$normalizeList = function($list) use ($context) {
+		$result = array();
+		foreach ((array) $list as $item) {
+			$item = mpcf_normalize_show_if($item, $context);
+			if ($item !== null) $result[] = $item;
+		}
+		return $result;
+	};
+
+//	one of them
+	if (isset($condition['any'])) {
+		$list = $normalizeList($condition['any']);
+		return empty($list) ? null : array('any' => $list);
+	}
+
+//	all of them (also written as 'all' => ...)
+	if (isset($condition['all'])) {
+		$list = $normalizeList($condition['all']);
+		return empty($list) ? null : array('all' => $list);
+	}
+
+//	one condition
+	if (isset($condition['field']) && is_string($condition['field'])) {
+		$operator = isset($condition['operator']) ? strtolower(trim((string) $condition['operator'])) : '=';
+		$value    = array_key_exists('value', $condition) ? $condition['value'] : null;
+
+		if ($operator === '==')  $operator = '=';
+		if ($operator === '<>')  $operator = '!=';
+		if (is_array($value) && $operator === '=')  $operator = 'in';
+		if (is_array($value) && $operator === '!=') $operator = 'not_in';
+		if (in_array($operator, array('in', 'not_in'), true)) $value = array_values((array) $value);
+
+		if (!in_array($operator, mpcf_show_if_operators(), true)) {
+			mpcf_log('show_if of "' . $context . '": unknown operator "' . $operator . '" - the condition is ignored.');
+			return null;
+		}
+
+		return array('field' => $condition['field'], 'operator' => $operator, 'value' => $value);
+	}
+
+//	a list of conditions: all of them
+	if (array_keys($condition) === range(0, count($condition) - 1)) {
+		$list = $normalizeList($condition);
+		if (empty($list))		return null;
+		if (count($list) === 1)	return $list[0];
+		return array('all' => $list);
+	}
+
+//	shorthand: field name => value(s)
+	$list = array();
+	foreach ($condition as $field => $value) {
+		$item = mpcf_normalize_show_if(array('field' => (string) $field, 'value' => $value), $context);
+		if ($item !== null) $list[] = $item;
+	}
+	if (empty($list))		return null;
+	if (count($list) === 1)	return $list[0];
+	return array('all' => $list);
+}
+
+
+//	' data-show-if="..."' for a field or panel, or '' without (valid) conditions
+function mpcf_show_if_attribute($condition, $context = '') {
+	$normalized = mpcf_normalize_show_if($condition, $context);
+	if ($normalized === null) return '';
+
+//	JSON_HEX_*: esc_attr() does not encode existing entities again, so "&" etc. must not reach it
+	return ' data-show-if="' . esc_attr(json_encode($normalized, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)) . '"';
+}
+
+
+function mpcf_panel_show_if_attribute($panel) {
+	if (empty($panel['show_if'])) return '';
+
+	$context = isset($panel['title']) ? $panel['title'] : (isset($panel['name']) ? $panel['name'] : 'panel');
+	return mpcf_show_if_attribute($panel['show_if'], $context);
+}
+
+
 
 $GLOBALS['mpcf_options_store'] = array(
 	'depth'   => 0,			// nesting level of mpcf_build_gui_from_fields()

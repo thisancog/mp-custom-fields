@@ -114,5 +114,20 @@ module.exports = {
 		ctx.equal(state, 'true 3/3', 'menu items are menu items, 3 of 3');
 		ctx.noErrors(result);
 		await page.close();
+	},
+
+	'radio buttons keep their selection when rows are moved (they used to lose it)': async ctx => {
+		const result = await ctx.openPage({ body: ctx.buildPage({ rows: 3 }).body }),
+			  page   = result.page,
+			  groups = () => page.evaluate(() => {
+				  const names = new Set([...document.querySelectorAll('input[type=radio]')].map(r => r.name));
+				  return [...names].filter(name => !document.querySelector(`input[type=radio][name="${name}"]:checked`)).join(', ');
+			  });
+
+		await page.click(`${ROWS}:nth-child(1) > .mpcf-repeater-row-controls .mpcf-repeater-row-move-down`);
+		await page.click(`${ROWS}:nth-child(3) > .mpcf-repeater-row-controls .mpcf-repeater-row-move-up`);
+		ctx.equal(await groups(), '', 'radio groups without a selection');
+		ctx.noErrors(result);
+		await page.close();
 	}
 };

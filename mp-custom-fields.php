@@ -5,7 +5,7 @@ Plugin Name: MP Custom Fields
 Plugin URI: http://www.matthias-planitzer.de/
 Description: A plugin to easily create a backend custom field interface.
 Author: Matthias Planitzer
-Version: 1.6
+Version: 1.6.1
 */
 
 /*****************************************
@@ -80,6 +80,7 @@ function mpcf_admin_init() {
 		'waitForFields'		=> __('Please wait until all fields have been loaded, then save again.', 'mpcf'),
 		'interfaceBroken'	=> __('The custom fields could not be loaded completely. Please reload the page before saving, otherwise data may be lost.', 'mpcf'),
 		'nonce'				=> mpcf_ajax_nonce(),
+		'warnUnsaved'		=> apply_filters('mpcf_warn_unsaved_changes', true) ? '1' : '0',
 	);
 
 	$ver = filemtime(plugin_dir_path(__FILE__) . '/inc/js/admin.js');

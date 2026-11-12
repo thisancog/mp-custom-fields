@@ -17,16 +17,19 @@ MP Custom Fields is meant as a lean alternative to large custom field plugins: f
 5. [Field settings shared by all types](#field-settings-shared-by-all-types)
 6. [Field types](#field-types)
 7. [Nested fields: repeaters, conditional fields and panels](#nested-fields-repeaters-conditional-fields-and-panels)
-8. [Reading values](#reading-values)
-9. [Field actions (callbacks)](#field-actions-callbacks)
-10. [Writing your own field type](#writing-your-own-field-type)
-11. [Plugin settings](#plugin-settings)
-12. [Filters](#filters)
-13. [Saving](#saving)
-14. [Security](#security)
-15. [Error reporting](#error-reporting)
-16. [Good to know](#good-to-know)
-17. [Development](#development)
+8. [Showing fields depending on other fields](#showing-fields-depending-on-other-fields)
+9. [Reading values](#reading-values)
+10. [Field actions (callbacks)](#field-actions-callbacks)
+11. [Writing your own field type](#writing-your-own-field-type)
+12. [Plugin settings](#plugin-settings)
+13. [Filters](#filters)
+14. [Saving](#saving)
+15. [Security](#security)
+16. [Error reporting](#error-reporting)
+17. [Good to know](#good-to-know)
+18. [Development](#development)
+
+For LLMs and coding agents, [AGENTS.md](AGENTS.md) summarises the API and the rules for changing the plugin.
 
 ---
 
@@ -110,6 +113,8 @@ $panel = array(
 	'fields' => array( /* fields */ )
 );
 ```
+
+Panels can also be shown depending on field values with `show_if`, see [Showing fields depending on other fields](#showing-fields-depending-on-other-fields).
 
 Box definitions are stored in the WordPress options table and only rewritten when they change, so registering on every request is cheap.
 
@@ -244,6 +249,7 @@ The values are stored in one option, by default named `mpcf_{id}` (`mpcf_site-op
 | `required` | `true` to make the field mandatory (for most types). |
 | `inputClass` | Additional CSS class(es) for the input element. |
 | `actions` | Callbacks, see [Field actions](#field-actions-callbacks). |
+| `show_if` | Show the field only if other fields have certain values, see [Showing fields depending on other fields](#showing-fields-depending-on-other-fields). |
 
 All other settings depend on the field type.
 
@@ -406,6 +412,125 @@ Nested fields can be combined freely: conditional fields inside repeaters, repea
 
 ---
 
+## Showing fields depending on other fields
+
+With the setting `show_if`, a field (or a whole panel) is only shown if other fields have certain values:
+
+```php
+array(
+	'name'    => 'linktarget',
+	'title'   => 'Open link in',
+	'type'    => 'select',
+	'options' => array('_self' => 'Same tab', '_blank' => 'New tab'),
+	'show_if' => array('field' => 'linkurl', 'operator' => 'not_empty')
+),
+```
+
+The fields are shown and hidden in the browser as soon as the other field changes, without reloading anything.
+
+**Hidden fields keep their values.** They are only hidden: their values are still sent and saved, so nothing is lost when an editor switches back and forth. When reading values, check the condition yourself if a hidden value should be ignored:
+
+```php
+$target = mpcf_get_field('linkurl') ? mpcf_get_field('linktarget') : '_self';
+```
+
+This differs from [conditional fields](#conditional-field), which load different sub-fields for each choice.
+
+### One condition
+
+| Key | Description |
+|---|---|
+| `field` | The `name` of the other field (see [Which field is meant](#which-field-is-meant)). |
+| `operator` | How to compare, default `=` (see below). |
+| `value` | The value to compare with. A list for `in` and `not_in`; not needed for `empty`, `not_empty`, `checked` and `not_checked`. |
+
+| Operator | Met if the other field ... |
+|---|---|
+| `=` | has the value (`==` works too). With a list of values: one of them. |
+| `!=` | does not have the value (`<>` works too). With a list of values: none of them. |
+| `in` / `not_in` | has one / none of the values in the list. |
+| `empty` / `not_empty` | is empty / not empty. Fields with several values (checkbox groups, multiple selects) are empty if nothing is chosen. |
+| `checked` / `not_checked` | is switched on / off: a checked `checkbox`, a `truefalse` field set to true. |
+| `>` `<` `>=` `<=` | compared as a number. Not met if either side is not a number. |
+| `contains` | contains the text (for text fields), or has the value among its chosen values (checkbox groups, multiple selects). |
+
+Values are compared as text, so `'value' => 2` and `'value' => '2'` are the same. `true` and `false` match the usual values of checkboxes and true/false fields (`true`, `1`, `on`, `yes`, `checked` / `false`, `0`, `no`, empty).
+
+### Shorthands
+
+```php
+'show_if' => array('layout' => 'gallery')                    // layout = gallery
+'show_if' => array('layout' => array('gallery', 'slider'))   // layout is gallery or slider
+'show_if' => array('layout' => 'gallery', 'columns' => 3)    // both
+```
+
+Fields named `field`, `any` or `all` can't be used in the shorthand; write the condition out in full for them.
+
+### Several conditions
+
+A list of conditions means **all** of them must be met; `any` means **at least one**. They can be nested:
+
+```php
+'show_if' => array(
+	array('field' => 'layout', 'value' => 'gallery'),
+	array('any' => array(
+		array('field' => 'columns',   'operator' => '>', 'value' => 2),
+		array('field' => 'fullwidth', 'operator' => 'checked')
+	))
+)
+```
+
+`array('all' => array(...))` is the same as a plain list.
+
+### Which field is meant
+
+The name refers to a field **at the same level**:
+
+- In a box: any field of the box, also on other panels.
+- In a repeater row: the field in the **same row**. Every row is shown or hidden on its own, also after adding or moving rows.
+- In a conditional field, conditional panel or module: the field in the same one.
+- `../` goes one level up, e.g. `'../layout'` in a repeater row for the field `layout` next to the repeater. It can be repeated (`'../../layout'`).
+
+```php
+array(
+	'name'   => 'slides',
+	'type'   => 'repeater',
+	'fields' => array(
+		array('name' => 'type',    'type' => 'select', 'options' => array('image' => 'Image', 'text' => 'Text')),
+		array('name' => 'image',   'type' => 'media',    'show_if' => array('type' => 'image')),
+		array('name' => 'caption', 'type' => 'text',     'show_if' => array('type' => 'image')),
+		array('name' => 'text',    'type' => 'textarea', 'show_if' => array('type' => 'text')),
+		array('name' => 'credits', 'type' => 'text',     'show_if' => array('../showcredits' => true))
+	)
+)
+```
+
+A field can depend on a hidden field; the hidden field's value counts.
+
+### Panels
+
+A panel with `show_if` is hidden with its tab. If the open panel is hidden, the first visible one is opened. Panel conditions refer to the fields of the box:
+
+```php
+array(
+	'name'    => 'Gallery',
+	'show_if' => array('layout' => 'gallery'),
+	'fields'  => array( /* fields */ )
+)
+```
+
+### Details
+
+- **Required fields** are only required while they are visible. Otherwise the form could not be sent.
+- **Mistakes never hide a field:** an unknown operator or a condition that is not an array is ignored (and logged with `WP_DEBUG`). A condition on a field that does not exist counts as met, and is reported in the browser console with the prefix `[MPCF]`. A field with no valid conditions is always shown.
+- **Your own scripts** can react to fields being shown or hidden: an `mpcf:visibility` event bubbles up from the field (or panel) with `event.detail.visible`. The class `mpcf-hidden-by-condition` marks hidden elements.
+
+```js
+document.addEventListener('mpcf:visibility', e => console.log(e.target.id, e.detail.visible));
+```
+
+---
+
 ## Reading values
 
 Read values with the `mpcf_get_field()` family of functions. They find the value in the right place (post, term or user meta, archive or options page) and apply the field's `display_before` callback (see [Field actions](#field-actions-callbacks)):
@@ -541,6 +666,7 @@ Always create name and ID with `mpcf_input_name($this)`, `mpcf_input_id($this)` 
 | `mpcf_options_store_enabled` | Return `false` to output the options of conditional fields in each field again, instead of once per page (see below). |
 | `mpcf_ajax_definition_allowed` | `($allowed, $definition)`: allow the AJAX rendering of field definitions which are not part of a registered box, e.g. fields you output yourself with `mpcf_build_gui_from_fields()` on a custom admin page (see [Security](#security)). |
 | `mpcf_enable_bulk_copypaste_panels` | Return `false` to hide the copy/paste panel (shown to administrators by default). |
+| `mpcf_warn_unsaved_changes` | Return `false` to switch off the warning about unsaved changes (see [Saving](#saving)). |
 
 ---
 
@@ -551,6 +677,22 @@ Fields which are missing from a submitted form are saved as empty, i.e. their va
 - While the page is still loading or fields are being loaded (e.g. after choosing an option of a conditional field), saving is blocked and a message asks the user to wait. In the block editor, the save button is locked.
 - If the interface could not be built completely (a JavaScript error), saving the custom fields stays blocked until the page is reloaded.
 - If a form is sent anyway, e.g. by other code, the server does not save the custom fields of that submission and shows a notice. Title, content and other data are saved by WordPress as usual.
+
+### Warning about unsaved changes
+
+When the user leaves a page with changed custom fields without saving, the browser asks whether to leave the page ("Changes you made may not be saved"). The text of this dialog is set by the browser and cannot be changed.
+
+- A change is anything that would be saved differently: typed text, chosen options, picked images, added, removed or moved rows. Undoing a change (e.g. moving a row back) is no change.
+- Switching panels, opening and closing boxes and other display state are not changes.
+- Editors count as changed when their text has been edited, in the visual or the text tab.
+- Saving does not ask. In the block editor and when adding a term (both save without reloading the page), the saved state becomes the new starting point.
+- Browsers only show the dialog if the user has interacted with the page.
+
+WordPress shows its own warning for the title and content of a post, this one covers the custom fields. To switch it off:
+
+```php
+add_filter('mpcf_warn_unsaved_changes', '__return_false');
+```
 
 ---
 
@@ -602,9 +744,10 @@ npx playwright install chromium
 
 **Tests** (`tests/`)
 
-- `tests/php/` - the server side with stand-ins for WordPress functions: security of the AJAX requests, saving only complete forms, conditional panels, the option store, registering and removing boxes. Run with `php tests/php/run.php`.
-- `tests/browser/` - the interface in Chromium with the real `admin.js` and `admin.css` on generated test pages: field names, labels, repeaters (moving, dragging, keyboard, nested repeaters), saving only complete forms, editors, individual fields. Run with `node tests/browser/run.js`.
+- `tests/php/` - the server side with stand-ins for WordPress functions: security of the AJAX requests, saving only complete forms, conditional panels, the option store, registering and removing boxes, `show_if` conditions. Run with `php tests/php/run.php`.
+- `tests/browser/` - the interface in Chromium with the real `admin.js` and `admin.css` on generated test pages: field names, labels, repeaters (moving, dragging, keyboard, nested repeaters), saving only complete forms, editors, individual fields, the warning about unsaved changes, `show_if`. Run with `node tests/browser/run.js`.
 
 Field names decide where values are stored, so they are compared with **snapshots** (`tests/*/snapshots/`) created with the original implementation. If a change is meant to alter the results, update the snapshots with `npm run test:update-snapshots` - for field names, this should never be the case.
 
 Environment variables for the tests: `CHROME_PATH` (use a local Chrome instead of Playwright's Chromium), `JQUERY_PATH` (jQuery outside `node_modules`), `MPCF_ADMIN_JS` and `MPCF_GUI_PHP` (test another version of `admin.js` or `gui.php`, e.g. to compare with an older release).
+

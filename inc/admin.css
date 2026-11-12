@@ -2019,3 +2019,10 @@ body.no-js .mpcf-file-picker + label {
 	grid-column: 1 / span 2;
 	margin-top: -20px;
 }
+
+
+
+/*	fields and panels hidden by their show_if conditions (still submitted) */
+.mpcf-hidden-by-condition {
+	display: none !important;
+}

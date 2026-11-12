@@ -162,6 +162,320 @@ var mpcf;
 
 
 	/**************************************************************
+		Warning about unsaved changes
+
+		When leaving the page with changed custom fields, the browser
+		asks whether to leave it. Changes are found by comparing all
+		field values with a snapshot taken when the interface was
+		built, so changes made by scripts (media pickers, moved rows)
+		count as well - and moving a row back is no change.
+
+		Editors are not compared by value (TinyMCE reformats content
+		when it starts), but with TinyMCE's own "dirty" state and
+		typing in their text mode.
+
+		Can be switched off with the filter mpcf_warn_unsaved_changes.
+	 **************************************************************/
+
+	var fieldsSnapshot  = null,
+		userInteracted  = false,
+		formSubmitting  = false,
+		changedEditors  = new WeakSet();		// editor fields (.mpcf-editor-inner) changed by the user
+
+	var fieldContainerSelector = '.mpcf-panels, .mpcf-modules, .mpcf-parent';
+
+	//	the values of all custom fields that are submitted with the form
+	var serializeFields = function() {
+		return [].filter.call(document.querySelectorAll('input[name], select[name], textarea[name]'), function(elem) {
+			if (!elem.closest(fieldContainerSelector) || elem.disabled) return false;
+			if (elem.classList.contains('mpcf-interface-ready') || elem.classList.contains('activetab')) return false;	// no field values
+			if (elem.classList.contains('wp-editor-area')) return false;													// editors, see above
+
+			return [ 'button', 'submit', 'reset', 'file', 'image' ].indexOf(elem.type) === -1;
+		}).map(function(elem) {
+			if (elem.type === 'checkbox' || elem.type === 'radio')	return elem.name + '=' + (elem.checked ? elem.value : '');
+			if (elem.type === 'select-multiple')					return elem.name + '=' + [].filter.call(elem.options, o => o.selected).map(o => o.value).join(',');
+			return elem.name + '=' + elem.value;
+		}).join('\n');
+	}
+
+	var activeEditors = function() {
+		if (!window.tinymce || !tinymce.get) return [];
+
+		return [].map.call(document.querySelectorAll('.mpcf-editor-inner[data-is-registered="1"] textarea.wp-editor-area'), textarea => tinymce.get(textarea.id))
+				 .filter(Boolean);
+	}
+
+	var hasUnsavedChanges = function() {
+		if (fieldsSnapshot === null) return false;
+
+		let editorsChanged = activeEditors().some(editor => editor.isDirty()) || [].some.call(document.querySelectorAll('.mpcf-editor-inner'), inner => changedEditors.has(inner));
+		return editorsChanged || serializeFields() !== fieldsSnapshot;
+	}
+
+	//	the current state counts as saved
+	var takeFieldsSnapshot = function() {
+		fieldsSnapshot = serializeFields();
+		changedEditors = new WeakSet();
+		activeEditors().forEach(editor => editor.setDirty(false));
+	}
+
+	//	keep the change state of an editor that is removed before moving it (see detachEditors)
+	var rememberEditorChanges = function(inner, editorID) {
+		let editor = window.tinymce && tinymce.get ? tinymce.get(editorID) : null;
+		if (editor && editor.isDirty()) changedEditors.add(inner);
+	}
+
+	var warningEnabled = function() {
+		return !(window.localizedmpcf && localizedmpcf.warnUnsaved === '0');
+	};
+
+	//	any user input in the custom fields
+	[ 'input', 'change' ].forEach(function(type) {
+		document.addEventListener(type, function(e) {
+			if (!e.target.closest || !e.target.closest(fieldContainerSelector)) return;
+
+			userInteracted = true;
+			if (e.target.classList.contains('wp-editor-area')) {
+				let inner = e.target.closest('.mpcf-editor-inner');
+				if (inner) changedEditors.add(inner);
+			}
+		}, true);
+	});
+
+	//	a form that is really sent (i.e. not stopped, e.g. while fields are loading) leaves the page as intended
+	document.addEventListener('submit', function(e) {
+		if (!e.defaultPrevented && e.target.querySelector && e.target.querySelector('.mpcf-interface-ready'))
+			formSubmitting = true;
+	});
+
+	window.addEventListener('beforeunload', function(e) {
+		if (formSubmitting || !warningEnabled() || !hasUnsavedChanges()) return;
+
+		e.preventDefault();
+		e.returnValue = '';		// the browser shows its own message
+	});
+
+	//	some fields set their values only when the page has loaded completely (e.g. maps)
+	window.addEventListener('load', function() {
+		if (fieldsSnapshot !== null && !userInteracted) takeFieldsSnapshot();
+	});
+
+	//	pages that save without reloading: the saved state is the new starting point
+	var watchSavingWithoutReload = function() {
+	//	block editor: after a successful save
+		if (document.body.classList.contains('block-editor-page') && window.wp && wp.data && wp.data.subscribe) {
+			let wasSaving = false;
+
+			wp.data.subscribe(function() {
+				let editor = wp.data.select('core/editor');
+				if (!editor) return;
+
+				let isSaving = editor.isSavingPost() && !editor.isAutosavingPost();
+				if (wasSaving && !isSaving && !editor.didPostSaveRequestFail()) takeFieldsSnapshot();
+				wasSaving = isSaving;
+			});
+		}
+
+	//	"Add new term": the form is sent via AJAX and emptied afterwards
+		$(document).on('ajaxSuccess', function(e, xhr, settings) {
+			if (settings && typeof settings.data === 'string' && settings.data.indexOf('action=add-tag') > -1)
+				takeFieldsSnapshot();
+		});
+	}
+
+
+
+	/**************************************************************
+		Fields shown depending on other fields (show_if)
+
+		Fields and panels with the setting show_if carry their
+		conditions (normalised by the server, see mpcf_show_if_attribute()
+		in gui.php) in data-show-if:
+
+			{ field, operator, value }	one condition
+			{ all: [ ... ] }			all of them
+			{ any: [ ... ] }			at least one of them
+
+		A field name refers to the field in the same "scope": the same
+		repeater row, conditional field, conditional panel or module,
+		or the box. Each leading "../" goes one scope up.
+
+		Hidden fields are only hidden: they are still submitted and
+		saved, so no data is lost by switching back and forth.
+	 **************************************************************/
+
+	var conditionScopeSelector = '.mpcf-repeater-row, .mpcf-conditional-container, .mpcf-conditionalpanel, .mpcf-module, .mpcf-panels, .mpcf-parent, .mpcf-modules',
+		hiddenByCondition      = 'mpcf-hidden-by-condition',
+		reportedConditions     = new WeakSet(),		// elements whose missing fields have been reported
+		showIfScheduled        = false;
+
+	var conditionScope = function(elem) {
+		return elem.parentElement ? elem.parentElement.closest(conditionScopeSelector) : null;
+	}
+
+	//	the field wrapper (.mpcf-field-option) a condition of elem refers to
+	var findConditionField = function(elem, path) {
+		let scope = conditionScope(elem),
+			name  = String(path);
+
+		while (name.indexOf('../') === 0 && scope) {
+			name  = name.slice(3);
+			scope = conditionScope(scope);
+		}
+		if (!scope) return null;
+
+		let candidates = scope.querySelectorAll('.mpcf-field-option[id="mpcf-field-' + CSS.escape(name) + '"]');
+		return [].find.call(candidates, candidate => conditionScope(candidate) === scope) || null;
+	}
+
+	//	the submitted values of a field (without those of fields nested in it)
+	var readConditionValues = function(wrapper) {
+		let values = [],
+			multi  = false;
+
+		[].forEach.call(wrapper.querySelectorAll('input[name], select[name], textarea[name]'), function(input) {
+			if (input.closest('.mpcf-field-option') !== wrapper) return;
+			if ([ 'button', 'submit', 'reset', 'image' ].indexOf(input.type) > -1) return;
+
+			if (input.type === 'checkbox') {
+				multi = true;
+				if (input.checked) values.push(input.value);
+			} else if (input.type === 'radio') {
+				if (input.checked) values.push(input.value);
+			} else if (input.type === 'select-multiple') {
+				multi = true;
+				[].forEach.call(input.options, option => { if (option.selected) values.push(option.value); });
+			} else {
+				values.push(input.value);
+			}
+		});
+
+		return { values: values.length ? values : [ '' ], multi: multi || values.length > 1 };
+	}
+
+	//	true and false (from PHP) match the usual values of checkboxes and true/false fields
+	var conditionValueMatches = function(actual, expected) {
+		if (expected === true)						return [ 'true', '1', 'on', 'yes', 'checked' ].indexOf(actual) > -1;
+		if (expected === false || expected === null)	return [ 'false', '0', '', 'no' ].indexOf(actual) > -1;
+		return actual === String(expected);
+	}
+
+	var evaluateCondition = function(condition, elem) {
+		if (Array.isArray(condition.all)) return condition.all.every(c => evaluateCondition(c, elem));
+		if (Array.isArray(condition.any)) return condition.any.some(c => evaluateCondition(c, elem));
+
+		let field = findConditionField(elem, condition.field);
+
+	//	a missing field must not hide anything: the condition counts as met
+		if (!field) {
+			if (!reportedConditions.has(elem)) {
+				reportedConditions.add(elem);
+				reportError('show_if of "' + (elem.id || elem.dataset.panelId || elem.className) + '" refers to the field "' + condition.field + '", which was not found. The condition counts as met.');
+			}
+			return true;
+		}
+
+		let read     = readConditionValues(field),
+			values   = read.values,
+			expected = condition.value,
+			list     = Array.isArray(expected) ? expected : [ expected ],
+			number   = value => parseFloat(String(value).replace(',', '.')),
+			compare  = fn => { let a = number(values[0]), b = number(expected); return !isNaN(a) && !isNaN(b) && fn(a, b); };
+
+		switch (condition.operator) {
+			case '=':			return values.some(v => conditionValueMatches(v, expected));
+			case '!=':			return !values.some(v => conditionValueMatches(v, expected));
+			case 'in':			return values.some(v => list.some(e => conditionValueMatches(v, e)));
+			case 'not_in':		return !values.some(v => list.some(e => conditionValueMatches(v, e)));
+			case 'empty':		return values.every(v => v === '');
+			case 'not_empty':	return values.some(v => v !== '');
+			case 'checked':		return values.some(v => conditionValueMatches(v, true));
+			case 'not_checked':	return !values.some(v => conditionValueMatches(v, true));
+			case '>':			return compare((a, b) => a > b);
+			case '<':			return compare((a, b) => a < b);
+			case '>=':			return compare((a, b) => a >= b);
+			case '<=':			return compare((a, b) => a <= b);
+			case 'contains':	return read.multi
+										? values.some(v => conditionValueMatches(v, expected))
+										: values[0].indexOf(String(expected)) > -1;
+		}
+
+		return true;
+	}
+
+	//	shows and hides all elements with conditions
+	var applyShowIf = function() {
+		showIfScheduled = false;
+
+		let elements = document.querySelectorAll('[data-show-if]');
+		if (!elements.length) return;
+
+		let panelsChanged = false;
+
+		[].forEach.call(elements, function(elem) {
+			let condition = parseJSON(elem.dataset.showIf, null, 'the show_if conditions', elem);
+			if (!condition) return;
+
+			let visible = evaluateCondition(condition, elem);
+			if (elem.classList.contains(hiddenByCondition) !== visible) return;		// unchanged
+
+			elem.classList.toggle(hiddenByCondition, !visible);
+			if (elem.matches('.mpcf-panel-item, .mpcf-panel')) panelsChanged = true;
+			elem.dispatchEvent(new CustomEvent('mpcf:visibility', { bubbles: true, detail: { visible } }));
+		});
+
+	//	hidden fields are not required (the form could not be sent otherwise)
+		[].forEach.call(document.querySelectorAll('.' + hiddenByCondition + ' [required]'), function(input) {
+			input.removeAttribute('required');
+			input.dataset.mpcfRequired = '1';
+		});
+		[].forEach.call(document.querySelectorAll('[data-mpcf-required]'), function(input) {
+			if (input.closest('.' + hiddenByCondition)) return;
+			input.setAttribute('required', '');
+			delete input.dataset.mpcfRequired;
+		});
+
+	//	an active panel that was hidden: show the first visible one
+		if (panelsChanged) {
+			[].forEach.call(document.querySelectorAll('.mpcf-panels-menu'), function(menu) {
+				let active = menu.querySelector('.mpcf-panel-item.active');
+				if (active && !active.classList.contains(hiddenByCondition)) return;
+
+				let first = [].find.call(menu.children, item => item.classList.contains('mpcf-panel-item') && !item.classList.contains(hiddenByCondition));
+				if (first && active) first.click();
+			});
+
+			if (panelSwitchers && panelSwitchers.resizePanelMenus) panelSwitchers.resizePanelMenus();
+		}
+	}
+
+	//	showing and hiding does not change any values, so an error here does not block saving
+	var applyShowIfSafely = function() {
+		try {
+			applyShowIf();
+		} catch (error) {
+			showIfScheduled = false;
+			reportError('Fields could not be shown or hidden (show_if).', error);
+		}
+	}
+
+	//	evaluates once per frame at most, e.g. while typing
+	var scheduleShowIf = function() {
+		if (showIfScheduled) return;
+		showIfScheduled = true;
+		requestAnimationFrame(applyShowIfSafely);
+	};
+
+	[ 'input', 'change' ].forEach(function(type) {
+		document.addEventListener(type, function(e) {
+			if (e.target.closest && e.target.closest(fieldContainerSelector)) scheduleShowIf();
+		}, true);
+	});
+
+
+
+	/**************************************************************
 		AJAX requests
 
 		All requests of this plugin carry a nonce, which the server
@@ -208,6 +522,9 @@ var mpcf;
 
 		interfaceReady = true;
 		updateSaveState();
+
+		takeFieldsSnapshot();
+		watchSavingWithoutReload();
 	};
 
 	//	registers all components of the interface, see the overview at the top
@@ -594,6 +911,8 @@ var mpcf;
 	var detachEditors = function(container) {
 		[].forEach.call(container.querySelectorAll('.mpcf-editor-inner[data-is-registered="1"]'), function(inner) {
 			let textarea = inner.querySelector('textarea.wp-editor-area');
+
+			if (textarea) rememberEditorChanges(inner, textarea.id);
 
 			if (textarea && window.wp && wp.editor && wp.editor.remove)
 				wp.editor.remove(textarea.id);
@@ -1156,6 +1475,11 @@ var mpcf;
 			pass     = 0,
 			repeat   = true;
 
+	//	While rows are renamed one after the other, two rows can share a radio group
+	//	for a moment, and the browser then unchecks one of them. Restore them afterwards.
+		let checkedRadios = [];
+		roots.forEach(root => checkedRadios.push(...root.querySelectorAll('input[type="radio"]:checked')));
+
 	//	usually one pass is enough, see renameDynamicFieldsPass()
 		while (repeat && pass < maxPass) {
 			repeat = false;
@@ -1163,11 +1487,15 @@ var mpcf;
 			pass++;
 		}
 
+		checkedRadios.forEach(radio => { if (!radio.checked) radio.checked = true; });
+
 		if (repeat)
 			reportError('Field names did not stabilise after ' + maxPass + ' passes.');
 
 		parents.forEach(parent => { if (parent.classList) parent.classList.toggle('empty', parent.childElementCount === 0); });
 		roots.forEach(root => connectLabels(root));
+
+		applyShowIfSafely();		// new or moved fields
 	}
 
 
@@ -2145,6 +2473,7 @@ var mpcf;
 
 				picker.idField.setAttribute('value', choice.id);
 				picker.changeMedia.setAttribute('value', localizedmpcf.change);
+				scheduleShowIf();
 				picker.clearMedia.classList.remove('hidden');
 
 				if (picker.isFilePicker) {
@@ -2169,6 +2498,7 @@ var mpcf;
 			this.callbacks.forEach(cb => cb('clear', picker, id));
 
 			picker.idField.setAttribute('value', '');
+			scheduleShowIf();
 
 			picker.changeMedia.setAttribute('value', picker.isFilePicker ? localizedmpcf.addFile : localizedmpcf.addMedia)
 			picker.clearMedia.classList.add('hidden');
@@ -2846,6 +3176,7 @@ var mpcf;
 			let target = e.target.classList.contains('mpcf-colorselect-option') ? e.target : e.target.closest('.mpcf-colorselect-option');
 
 			this.fields[id].field.value = target.dataset.name;
+			scheduleShowIf();
 			this.fields[id].list.classList.remove('visible');
 			this.fields[id].select.innerHTML = target.innerHTML;
 		}
